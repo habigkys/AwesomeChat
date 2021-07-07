@@ -17,7 +17,7 @@ dependencies {
 	api "org.springframework.boot:spring-boot-starter-data-jpa:${versions.springBoot}"
 	api "org.springframework.boot:spring-boot-starter-aop:${versions.springBoot}"
 	api "org.springframework.boot:spring-boot-starter-web:${versions.springBoot}"
-	api "org.springframework.boot:spring-boot-starter-jta-atomikos:${versions.springBoot}"
+
 
 	api "org.apache.httpcomponents:httpclient:${versions.httpclient}"
 
@@ -32,7 +32,6 @@ dependencies {
 
 	testImplementation	"org.springframework.boot:spring-boot-starter-test:${versions.springBoot}"
 
-	testCompile "com.h2database:h2:${versions.h2}"
 	testCompile "org.junit.jupiter:junit-jupiter-api:${versions.junitJupiter}"
 	testCompile "org.junit.jupiter:junit-jupiter-params:${versions.junitJupiter}"
 	testRuntime "org.junit.jupiter:junit-jupiter-engine:${versions.junitJupiter}"

@@ -10,4 +10,4 @@
 rootProject.name = 'awesome'
 
 include "awesome-core"
-// include "awesome-interface"
+include "awesome-interface"

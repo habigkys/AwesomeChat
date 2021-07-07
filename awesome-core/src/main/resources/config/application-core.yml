@@ -1,0 +1,39 @@
+# #############################
+# https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  jackson:
+    time-zone: "Asia/Seoul"
+  # ########################################
+  # Datasouce + POOL
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    platform: mysql
+    hikari:
+      connection-timeout: 1000
+      idle-timeout: 20000
+      max-lifetime: 40000
+      maximum-pool-size: 2
+      minimum-idle: 1
+
+  # ########################################
+  # http request + response
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+
+    # ########################################
+    # JPA
+    # https://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/session-configuration.html#configuration-optional
+    # jpa default : scan all application package entity
+
+---
+spring.profiles: local
+spring:
+  datasource:
+    jdbc-url: jdbc:mysql://localhost:3306/template?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: admin
