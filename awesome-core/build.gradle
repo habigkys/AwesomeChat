@@ -1,0 +1,51 @@
+
+plugins {
+	id "org.flywaydb.flyway" version "6.1.0"
+}
+
+flyway {
+    driver = 'com.mysql.jpa.Driver'
+	url = 'jdbc:mysql://localhost:3306/whitewhale'
+    schemas = ['awesome']
+    encoding = 'UTF-8'
+	user = 'root'
+	password = 'admin'
+}
+
+dependencies {
+	// spring boot
+	api "org.springframework.boot:spring-boot-starter-data-jpa:${versions.springBoot}"
+	api "org.springframework.boot:spring-boot-starter-aop:${versions.springBoot}"
+	api "org.springframework.boot:spring-boot-starter-web:${versions.springBoot}"
+	api "org.springframework.boot:spring-boot-starter-jta-atomikos:${versions.springBoot}"
+
+	api "org.apache.httpcomponents:httpclient:${versions.httpclient}"
+
+	compileOnly "org.projectlombok:lombok:${versions.lombok}"
+	annotationProcessor "org.projectlombok:lombok:${versions.lombok}"
+
+	api "mysql:mysql-connector-java:${versions.mysqlConnectorJava}"
+
+	api "org.apache.commons:commons-lang3:${versions.commonsLang3}"
+	api "commons-collections:commons-collections:${versions.commonsCollections}"
+	api "com.google.guava:guava:${versions.guava}"
+
+	testImplementation	"org.springframework.boot:spring-boot-starter-test:${versions.springBoot}"
+
+	testCompile "com.h2database:h2:${versions.h2}"
+	testCompile "org.junit.jupiter:junit-jupiter-api:${versions.junitJupiter}"
+	testCompile "org.junit.jupiter:junit-jupiter-params:${versions.junitJupiter}"
+	testRuntime "org.junit.jupiter:junit-jupiter-engine:${versions.junitJupiter}"
+}
+
+
+
+// jar 를 확장한 bootJar 는 사용하지 않는다. model 은 일반 jar 로 api 프로젝트에 포함될 것이다.
+bootJar {
+	enabled = false
+}
+
+// jar 로 모듈을 아카이빙한다.
+jar {
+	enabled = true
+}
