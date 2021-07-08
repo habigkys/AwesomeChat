@@ -17,7 +17,6 @@ spring:
       max-lifetime: 40000
       maximum-pool-size: 2
       minimum-idle: 1
-
   # ########################################
   # http request + response
   http:
@@ -29,6 +28,10 @@ spring:
     # JPA
     # https://docs.jboss.org/hibernate/orm/3.3/reference/en-US/html/session-configuration.html#configuration-optional
     # jpa default : scan all application package entity
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
 ---
 spring.profiles: local

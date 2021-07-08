@@ -1,4 +1,4 @@
 package com.awesome.domains.entities;
 
-public class SampleEntity {
+public interface Entities {
 }
