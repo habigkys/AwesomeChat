@@ -32,11 +32,13 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    generate-ddl: true
 
 ---
 spring.profiles: local
 spring:
   datasource:
-    jdbc-url: jdbc:mysql://localhost:3306/demo_db?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    jdbc-url: jdbc:mysql://localhost:3306/template?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
-    password: moreco2!!
+    password: admin
