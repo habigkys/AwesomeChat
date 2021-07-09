@@ -1,7 +1,7 @@
 package com.awesome.domains.entities;
 import java.time.LocalDate;
-import com.awesome.domains.enums.TaskType;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,28 +12,42 @@ import static org.junit.jupiter.api.Assertions.*;
 @AwesomeBootTest
 class ProjectTest {
     @Autowired
-    private ProjectTaskDAO projectTaskDAO;
+    private ProjectDAO projectDAO;
     @Test
     void testAssertNotNull() {
-        assertNotNull(projectTaskDAO);
+        assertNotNull(projectDAO);
     }
 
-    @Transactional
     @Test
     void testSave() {
-        ProjectTask projectTask = new ProjectTask();
-        projectTask.setProjectId(0L);
-        projectTask.setParentTaskId(0L);
-        projectTask.setSummary("");
-        projectTask.setTaskStartDate(LocalDate.now());
-        projectTask.setTaskEndDate(LocalDate.now());
-        projectTask.setPersons("");
-        projectTask.setType(TaskType.ISSUE);
-        projectTask.setCreatedAt(LocalDateTime.now());
-        projectTask.setUpdatedAt(LocalDateTime.now());
+        Project project = new Project();
+        project.setId(0L);
+        project.setProjectName("");
+        project.setSummary("");
+        project.setStartDate(LocalDate.now());
+        project.setEndDate(LocalDate.now());
+        project.setCreatedAt(LocalDateTime.now());
+        project.setUpdatedAt(LocalDateTime.now());
 
-        projectTaskDAO.save(projectTask);
-
+        projectDAO.save(project);
     }
 
+    @Test
+    void testUpdate() {
+        Optional<Project> byId = projectDAO.findById(1L);
+        assertFalse(byId.isEmpty());
+
+        Project one = byId.get();
+        one.setProjectName("testfire");
+        projectDAO.save(one);
+        Optional<Project> after = projectDAO.findById(1L);
+
+        assertEquals("testfire", after.get().getProjectName());
+    }
+
+    @Test
+    void testSelect() {
+        Optional<Project> byId = projectDAO.findById(1L);
+        assertEquals("testfire", byId.get().getProjectName());
+    }
 }
