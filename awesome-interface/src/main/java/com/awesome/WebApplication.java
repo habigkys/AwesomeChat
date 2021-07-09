@@ -18,8 +18,8 @@ public class WebApplication {
         // @EnableAutoConfiguration 선언된 객체의 패키지를 ROOT 로 해서 스캔하면서 설정이 올라온다.
         new SpringApplicationBuilder()
                 .parent(RootApplication.class, RootConfiguration.class)
-                .child(WebApplication.class, WebConfiguration.class).listeners(new ApplicationPidFileWriter())
+                .listeners(new ApplicationPidFileWriter())
                 .build()
-                .run(args);
+                .run(WebApplication.class, args);
     }
 }
