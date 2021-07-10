@@ -4,16 +4,22 @@ import com.awesome.domains.entities.Project;
 import com.awesome.domains.entities.ProjectTask;
 import com.awesome.domains.entities.ProjectTaskDAO;
 import com.awesome.domains.enums.TaskType;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
+@Service
 public class ProjectTaskService {
     private ProjectTaskDAO projectTaskDAO;
 
     public ProjectTaskService(ProjectTaskDAO projectTaskDAO) {
         this.projectTaskDAO = projectTaskDAO;
+    }
+
+    public ProjectTask getProjectTask(Long taskId){
+        return projectTaskDAO.findById(taskId).get();
     }
 
     /** Project Task에 대한 서비스 정의
@@ -27,6 +33,7 @@ public class ProjectTaskService {
         Optional<ProjectTask> byId = projectTaskDAO.findById(projectTask.getId());
 
         ProjectTask toDateUpdateOne = byId.get();
+
         toDateUpdateOne.setTaskStartDate(projectTask.getTaskStartDate());
         toDateUpdateOne.setTaskEndDate(projectTask.getTaskEndDate());
 

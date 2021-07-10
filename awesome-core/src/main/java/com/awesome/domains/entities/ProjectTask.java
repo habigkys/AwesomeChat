@@ -69,4 +69,19 @@ public class ProjectTask {
 
     @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Override
+    public String toString() {
+        return "ProjectTask { id: " + id
+                + ", projectId: " + projectId
+                + ", parentTaskId: " + parentTaskId
+                + ", summary: " + summary
+                + ", taskStartDate: " + taskStartDate
+                + ", taskEndDate: " + taskEndDate
+                + ", persons: " + persons
+                + ", type: " + type
+                + ", createdAt: " + createdAt
+                + ", updatedAt: " + updatedAt
+                + " }";
+    }
 }

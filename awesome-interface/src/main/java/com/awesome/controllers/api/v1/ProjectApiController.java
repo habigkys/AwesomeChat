@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
-@RestController("/api/v1/projects")
+@RestController("/api/v1/projects/13579")
 public class ProjectApiController {
 
   private final ProjectDAO projectDAO;
