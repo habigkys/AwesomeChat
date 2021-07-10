@@ -1,5 +1,6 @@
 package com.awesome.domains.entities;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -50,4 +51,16 @@ public class Project {
 
     @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Override
+    public String toString() {
+        return "Project { id: " + id
+                + ", projectName: " + projectName
+                + ", summary: " + summary
+                + ", startDate: " + startDate
+                + ", endDate: " + endDate
+                + ", createdAt: " + createdAt
+                + ", updatedAt: " + updatedAt
+                + " }";
+    }
 }

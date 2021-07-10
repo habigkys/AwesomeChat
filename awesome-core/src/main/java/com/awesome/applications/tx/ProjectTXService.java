@@ -2,6 +2,7 @@ package com.awesome.applications.tx;
 
 import com.awesome.domains.entities.Project;
 import com.awesome.domains.entities.ProjectDAO;
+import com.awesome.domains.entities.ProjectTask;
 import com.awesome.domains.entities.ProjectTaskDAO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,12 @@ public class ProjectTXService {
         List<Project> projectList = projectDAO.findAll();
 
         return projectList;
+    }
+
+    public List<ProjectTask> getProjectTaskList(){
+        List<ProjectTask> projectTaskList = projectTaskDAO.findAll();
+
+        return projectTaskList;
     }
 
     @Transactional
