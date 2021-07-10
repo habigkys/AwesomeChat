@@ -16,31 +16,38 @@ public class ProjectTaskController {
     }
 
     @GetMapping("/")
-    public String projectList() {
-        List<Project> projectList = projectService.getProjectList();
-
-        return projectList.toString();
-    }
-
-    @GetMapping("/{id}")
-    public String projectOne(@PathVariable("id") Long id) {
-        Project project = projectService.getProject(id);
-
-        return project.toString();
-    }
-
-    @GetMapping("/{id}/tasks")
-    public String projectTaskList(@PathVariable("id") Long id) {
-        List<ProjectTask> projectTaskList = projectService.getProjectTaskList(id);
+    public String projectTaskList() {
+        List<ProjectTask> projectTaskList = projectService.getProjectTaskList();
 
         return projectTaskList.toString();
     }
 
-    @PutMapping("/{id}")
-    public String projectUpdate(@RequestBody Project project) {
-        Project updatedProject = projectService.updateProject(project);
+    @GetMapping("/{id}")
+    public String projectTaskOne(@PathVariable("id") Long id) {
+        ProjectTask projectTask = projectService.getProjectTask(id);
 
-        return updatedProject.toString();
+        return projectTask.toString();
+    }
+
+    @PostMapping("/{id}")
+    public String projectList(@RequestBody ProjectTask projectTask, @PathVariable("id") Long id) {
+        projectService.createProjectTask(projectTask, id);
+
+        return "redirect:/";
+    }
+
+    @PutMapping("/{id}")
+    public String projectTaskUpdate(@RequestBody ProjectTask projectTask) {
+        ProjectTask updatedProjectTask = projectService.updateProjectTask(projectTask);
+
+        return updatedProjectTask.toString();
+    }
+
+    @PutMapping("/{id}/Issue")
+    public String projectTaskIssueUpdate(@RequestBody ProjectTask projectTask) {
+        ProjectTask updatedProjectTask = projectService.updateProjectTaskIssue(projectTask);
+
+        return updatedProjectTask.toString();
     }
 
     @DeleteMapping("/{id}")
