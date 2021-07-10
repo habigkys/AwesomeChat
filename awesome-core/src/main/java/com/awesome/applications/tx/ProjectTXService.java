@@ -1,22 +1,22 @@
-package com.awesome.domains.services;
+package com.awesome.applications.tx;
 
 import com.awesome.domains.entities.Project;
 import com.awesome.domains.entities.ProjectDAO;
+import com.awesome.domains.entities.ProjectTaskDAO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class SampleService {
+public class ProjectTXService {
     private ProjectDAO projectDAO;
+    private ProjectTaskDAO projectTaskDAO;
 
-    public SampleService(ProjectDAO projectDAO) {
+    public ProjectTXService(ProjectDAO projectDAO) {
         this.projectDAO = projectDAO;
     }
 
-    @Transactional
     public Long saveProject(Project project){
         return projectDAO.save(project).getId();
     }
@@ -29,21 +29,11 @@ public class SampleService {
 
     @Transactional
     public void updateProject(List<Project> projectList){
-        for(Project projectToUpdateOne : projectList){
-            Optional<Project> byId = projectDAO.findById(projectToUpdateOne.getId()); // 가능?
-
-            Project toBeUpdate = byId.get();
-            projectDAO.save(toBeUpdate);
-        }
+        projectDAO.saveAll(projectList);
     }
 
     @Transactional
     public void deleteProject(List<Project> projectList){
-        for(Project projectToDelOne : projectList){
-            Optional<Project> byId = projectDAO.findById(projectToDelOne.getId()); // 가능?
-
-            Project toBeDelete = byId.get();
-            projectDAO.delete(toBeDelete);
-        }
+        projectDAO.deleteAll(projectList);
     }
 }
