@@ -8,6 +8,7 @@ import com.awesome.domains.enums.TaskType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,131 +16,262 @@ import java.util.Optional;
 public class ProjectService {
     private ProjectDAO projectDAO;
     private ProjectTaskDAO projectTaskDAO;
+    private ProjectDTO projectDto;
+    private ProjectTaskDTO projectTaskDto;
 
     public ProjectService(ProjectDAO projectDAO, ProjectTaskDAO projectTaskDao) {
         this.projectDAO = projectDAO;
         this.projectTaskDAO = projectTaskDAO;
     }
 
-    public List<Project> getProjectList(){
+    /**
+     * 1. 프로젝트 리스트 - ProjectController
+     * @return
+     */
+    public List<ProjectDTO> getProjectList(){
         List<Project> projectList = projectDAO.findAll();
+        List<ProjectDTO> projectDTOList = getProjectDTOS(projectList);
 
-        return projectList;
+        return projectDTOList;
     }
 
-    public List<ProjectTask> getProjectTaskList(){
-        List<ProjectTask> projectTaskList = projectTaskDAO.findAll();
-
-        return projectTaskList;
+    /**
+     * 2. 특정 프로젝트 - ProjectController
+     * @param id
+     * @return
+     */
+    public ProjectDTO getProject(Long id){
+        return projectDto.convert(projectDAO.findById(id).get());
     }
 
-    public List<ProjectTask> getProjectTaskListByProject(Long id){
+    /**
+     * 3. 프로젝트 Like 검색 - ProjectController
+     * @param projectName
+     * @return
+     */
+    public List<ProjectDTO> getProjectNameLike(String projectName){
+        List<Project> projectNameLikeList = projectDAO.findAllByProjectNameLike(projectName);
+        List<ProjectDTO> projectNameLikeDTOList = getProjectDTOS(projectNameLikeList);
+
+        return projectNameLikeDTOList;
+    }
+
+    /**
+     * 4. 특정 프로젝트의 타스크 리스트 - ProjectController
+     * @param id
+     * @return
+     */
+    public List<ProjectTaskDTO> getProjectTaskListByProject(Long id){
         List<ProjectTask> projectTaskList = projectTaskDAO.findAllByProjectId(id);
+        List<ProjectTaskDTO> projectTaskDTOList = getProjectTaskDTOS(projectTaskList);
 
-        return projectTaskList;
+        return projectTaskDTOList;
     }
 
-    public Project getProject(Long id){
-        return projectDAO.findById(id).get();
-    }
-
-    public ProjectTask getProjectTask(Long id){
-        return projectTaskDAO.findById(id).get();
-    }
-
-    public List<Project> getProjectNameLike(String projectName){
-        return projectDAO.findAllByProjectNameLike(projectName);
-    }
-
-    public Project updateProject(Project project){
-        Optional<Project> byId = projectDAO.findById(project.getId());
-
-        if(project.getEndDate().isAfter(project.getStartDate())){
-            // todo
-        }
-
-        Project toUpdateOne = byId.get();
-        toUpdateOne.setProjectName(project.getProjectName());
-        toUpdateOne.setSummary(project.getSummary());
-        toUpdateOne.setStartDate(project.getStartDate());
-        toUpdateOne.setEndDate(project.getEndDate());
-        toUpdateOne.setUpdatedAt(LocalDateTime.now());
-
-        return projectDAO.save(toUpdateOne);
-    }
-
-    public ProjectTask updateProjectTask(ProjectTask projectTask){
-        Optional<ProjectTask> byId = projectTaskDAO.findById(projectTask.getId());
-
-        if(projectTask.getTaskEndDate().isAfter(projectTask.getTaskStartDate())){
-            // todo
-        }
-
-        ProjectTask toUpdateOne = byId.get();
-        toUpdateOne.setSummary(projectTask.getSummary());
-        toUpdateOne.setPersons(projectTask.getPersons());
-        toUpdateOne.setTaskStartDate(projectTask.getTaskStartDate());
-        toUpdateOne.setTaskEndDate(projectTask.getTaskEndDate());
-        toUpdateOne.setType(TaskType.TASK);
-        toUpdateOne.setUpdatedAt(LocalDateTime.now());
-
-        return projectTaskDAO.save(toUpdateOne);
-    }
-
-    public ProjectTask updateProjectTaskIssue(ProjectTask projectTask){
-        Optional<ProjectTask> byId = projectTaskDAO.findById(projectTask.getId());
-
-        if(projectTask.getTaskEndDate().isAfter(projectTask.getTaskStartDate())){
-            // todo
-        }
-
-        ProjectTask toUpdateOne = byId.get();
-        toUpdateOne.setSummary(projectTask.getSummary());
-        toUpdateOne.setPersons(projectTask.getPersons());
-        toUpdateOne.setTaskStartDate(projectTask.getTaskStartDate());
-        toUpdateOne.setTaskEndDate(projectTask.getTaskEndDate());
-        toUpdateOne.setType(TaskType.ISSUE);
-        toUpdateOne.setUpdatedAt(LocalDateTime.now());
-
-        return projectTaskDAO.save(toUpdateOne);
-    }
-
-    public void deleteProject(Long id){
-        projectDAO.deleteById(id);
-    }
-
-    public Project createProject(Project project){
-        if(project.getEndDate().isAfter(project.getStartDate())){
+    /**
+     * 5. 프로젝트 생성 - ProjectController
+     * @param projectDto
+     * @return
+     */
+    public ProjectDTO createProject(ProjectDTO projectDto){
+        if(!isCorrectProjectDate(projectDto)) {
             // todo
         }
 
         Project toCreateProject = new Project();
-        project.setProjectName(project.getProjectName());
-        project.setSummary(project.getSummary());
-        project.setStartDate(project.getStartDate());
-        project.setEndDate(project.getEndDate());
-        project.setCreatedAt(LocalDateTime.now());
-        project.setUpdatedAt(LocalDateTime.now());
+        toCreateProject.setProjectName(projectDto.getProjectName());
+        toCreateProject.setSummary(projectDto.getSummary());
+        toCreateProject.setStartDate(projectDto.getStartDate());
+        toCreateProject.setEndDate(projectDto.getEndDate());
+        toCreateProject.setCreatedAt(LocalDateTime.now());
+        toCreateProject.setUpdatedAt(LocalDateTime.now());
 
-        return projectDAO.save(toCreateProject);
+        return projectDto.convert(projectDAO.save(toCreateProject));
     }
 
-    public ProjectTask createProjectTask(ProjectTask projectTask, Long id){
-        if(projectTask.getTaskEndDate().isAfter(projectTask.getTaskStartDate())){
+    /**
+     * 6. 프로젝트 수정 - ProjectController
+     * @param projectDto
+     * @return
+     */
+    public ProjectDTO updateProject(ProjectDTO projectDto){
+        if(!isCorrectProjectDate(projectDto)) {
+            // todo
+        }
+
+        Optional<Project> byId = projectDAO.findById(projectDto.getId());
+
+        Project toUpdateOne = byId.get();
+        toUpdateOne.setProjectName(projectDto.getProjectName());
+        toUpdateOne.setSummary(projectDto.getSummary());
+        toUpdateOne.setStartDate(projectDto.getStartDate());
+        toUpdateOne.setEndDate(projectDto.getEndDate());
+        toUpdateOne.setUpdatedAt(LocalDateTime.now());
+
+        return projectDto.convert(projectDAO.save(toUpdateOne));
+    }
+
+    /**
+     * 7. 프로젝트 삭제 - ProjectController
+     * @param id
+     */
+    public void deleteProject(Long id){
+        projectDAO.deleteById(id);
+    }
+
+    /**
+     * 1. 프로젝트 타스크/이슈 리스트 - ProjectTaskController
+     * @return
+     */
+    public List<ProjectTaskDTO> getProjectTaskList(){
+        List<ProjectTask> projectTaskList = projectTaskDAO.findAll();
+        List<ProjectTaskDTO> projectTaskDTOList = getProjectTaskDTOS(projectTaskList);
+
+        return projectTaskDTOList;
+    }
+
+    /**
+     * 2. 특정 프로젝트 타스크/이슈 - ProjectTaskController
+     * @param id
+     * @return
+     */
+    public ProjectTaskDTO getProjectTask(Long id){
+        return projectTaskDto.convert(projectTaskDAO.findById(id).get());
+    }
+
+    /**
+     * 3. 프로젝트 타스크 (타입 : TASK) 생성 - ProjectTaskController
+     * @param projectTaskDto
+     * @param id
+     * @return
+     */
+    public ProjectTaskDTO createProjectTask(ProjectTaskDTO projectTaskDto, Long id){
+        if(!isCorrectProjectTaskDate(projectDto)) {
             // todo
         }
 
         ProjectTask toCreateProjectTask = new ProjectTask();
-        toCreateProjectTask.setId(projectTask.getId());
+        toCreateProjectTask.setId(projectTaskDto.getId());
         toCreateProjectTask.setProjectId(id);
-        toCreateProjectTask.setPersons(projectTask.getPersons());
+        toCreateProjectTask.setPersons(projectTaskDto.getPersons());
         toCreateProjectTask.setType(TaskType.TASK);
-        toCreateProjectTask.setSummary(projectTask.getSummary());
-        toCreateProjectTask.setTaskStartDate(projectTask.getTaskStartDate());
-        toCreateProjectTask.setTaskEndDate(projectTask.getTaskEndDate());
+        toCreateProjectTask.setSummary(projectTaskDto.getSummary());
+        toCreateProjectTask.setTaskStartDate(projectTaskDto.getTaskStartDate());
+        toCreateProjectTask.setTaskEndDate(projectTaskDto.getTaskEndDate());
         toCreateProjectTask.setCreatedAt(LocalDateTime.now());
         toCreateProjectTask.setUpdatedAt(LocalDateTime.now());
 
-        return projectTaskDAO.save(toCreateProjectTask);
+        return projectTaskDto.convert(projectTaskDAO.save(toCreateProjectTask));
+    }
+
+    /**
+     * 4. 프로젝트 이슈 (타입 : ISSUE) 생성 - ProjectTaskController
+     * @param projectTaskDto
+     * @param id
+     * @return
+     */
+    public ProjectTaskDTO createProjectIssue(ProjectTaskDTO projectTaskDto, Long id){
+        if(!isCorrectProjectTaskDate(projectDto)) {
+            // todo
+        }
+
+        ProjectTask toCreateProjectTask = new ProjectTask();
+        toCreateProjectTask.setId(projectTaskDto.getId());
+        toCreateProjectTask.setProjectId(id);
+        toCreateProjectTask.setPersons(projectTaskDto.getPersons());
+        toCreateProjectTask.setType(TaskType.ISSUE);
+        toCreateProjectTask.setSummary(projectTaskDto.getSummary());
+        toCreateProjectTask.setTaskStartDate(projectTaskDto.getTaskStartDate());
+        toCreateProjectTask.setTaskEndDate(projectTaskDto.getTaskEndDate());
+        toCreateProjectTask.setCreatedAt(LocalDateTime.now());
+        toCreateProjectTask.setUpdatedAt(LocalDateTime.now());
+
+        return projectTaskDto.convert(projectTaskDAO.save(toCreateProjectTask));
+    }
+
+    /**
+     * 5. 프로젝트 타스크/이슈 업데이트 - ProjectTaskController
+     * @param projectTaskDto
+     * @return
+     */
+    public ProjectTaskDTO updateProjectTask(ProjectTaskDTO projectTaskDto){
+        if(!isCorrectProjectTaskDate(projectDto)) {
+            // todo
+        }
+
+        Optional<ProjectTask> byId = projectTaskDAO.findById(projectTaskDto.getId());
+
+        ProjectTask toUpdateOne = byId.get();
+        toUpdateOne.setSummary(projectTaskDto.getSummary());
+        toUpdateOne.setPersons(projectTaskDto.getPersons());
+        toUpdateOne.setTaskStartDate(projectTaskDto.getTaskStartDate());
+        toUpdateOne.setTaskEndDate(projectTaskDto.getTaskEndDate());
+        toUpdateOne.setType(projectTaskDto.getType());
+        toUpdateOne.setUpdatedAt(LocalDateTime.now());
+
+        return projectTaskDto.convert(projectTaskDAO.save(toUpdateOne));
+    }
+
+    /**
+     * 6. 프로젝트 타스크/이슈 삭제- ProjectTaskController
+     * @param id
+     */
+    public void deleteProjectTask(Long id){
+        projectTaskDAO.deleteById(id);
+    }
+
+
+    /**
+     * Project Entity -> ProjectDTO
+     * @param projectList
+     * @return
+     */
+    private List<ProjectDTO> getProjectDTOS(List<Project> projectList) {
+        List<ProjectDTO> projectDTOList = new ArrayList<>();
+
+        for(Project projectObj : projectList){
+            projectDTOList.add(projectDto.convert(projectObj));
+        }
+        return projectDTOList;
+    }
+
+    /**
+     * ProjectTask Entity -> ProjectTaskDTO
+     * @param projectTaskList
+     * @return
+     */
+    private List<ProjectTaskDTO> getProjectTaskDTOS(List<ProjectTask> projectTaskList) {
+        List<ProjectTaskDTO> projectTaskDTOList = new ArrayList<>();
+
+        for(ProjectTask projectTaskObj : projectTaskList){
+            projectTaskDTOList.add(projectTaskDto.convert(projectTaskObj));
+        }
+        return projectTaskDTOList;
+    }
+
+    /**
+     * 프로젝트 시작일, 종료일 날짜 체크
+     * @param projectDto
+     * @return
+     */
+    private boolean isCorrectProjectDate(ProjectDTO projectDto) {
+        if(projectDto.getEndDate().isAfter(projectDto.getStartDate())){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * 타스크 시작일, 종료일 날짜 체크
+     * @param projectDto
+     * @return
+     */
+    private boolean isCorrectProjectTaskDate(ProjectDTO projectDto) {
+        if(projectDto.getEndDate().isAfter(projectDto.getStartDate())){
+            return true;
+        }else{
+            return false;
+        }
     }
 }
