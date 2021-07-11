@@ -26,7 +26,7 @@ public class ProjectDTO {
 
     private LocalDateTime updatedAt;
 
-    public ProjectDTO convert(Project project) {
+    public static ProjectDTO convert(Project project) {
         ProjectDTO dto = new ProjectDTO();
         dto.setId(project.getId());
         dto.setProjectName(project.getProjectName());

@@ -34,7 +34,7 @@ public class ProjectTaskDTO {
 
     private LocalDateTime updatedAt;
 
-    public ProjectTaskDTO convert(ProjectTask projectTask) {
+    public static ProjectTaskDTO convert(ProjectTask projectTask) {
         ProjectTaskDTO taskDto = new ProjectTaskDTO();
         taskDto.setId(projectTask.getId());
         taskDto.setProjectId(projectTask.getProjectId());
