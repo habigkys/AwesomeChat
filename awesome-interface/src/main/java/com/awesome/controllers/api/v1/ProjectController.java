@@ -1,7 +1,5 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.entities.Project;
-import com.awesome.domains.entities.ProjectTask;
 import com.awesome.domains.services.ProjectDTO;
 import com.awesome.domains.services.ProjectService;
 import com.awesome.domains.services.ProjectTaskDTO;

@@ -1,7 +1,5 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.entities.ProjectTask;
-import com.awesome.domains.services.ProjectDTO;
 import com.awesome.domains.services.ProjectTaskDTO;
 import com.awesome.domains.services.ProjectService;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +38,7 @@ public class ProjectTaskController {
     }
 
     /**
-     * 3. 프로젝트 타스크 (타입 : TASK) 생성
+     * 3. 프로젝트 타스크/이슈 생성
      * @param projectTaskDto
      * @param id
      * @return
@@ -53,20 +51,7 @@ public class ProjectTaskController {
     }
 
     /**
-     * 4. 프로젝트 이슈 (타입 : ISSUE) 생성
-     * @param projectTaskDto
-     * @param id
-     * @return
-     */
-    @PostMapping("/{id}")
-    public String createProjectIssue(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("id") Long id) {
-        ProjectTaskDTO projectIssue = projectService.createProjectIssue(projectTaskDto, id);
-
-        return null;
-    }
-
-    /**
-     * 5. 프로젝트 타스크/이슈 업데이트
+     * 4. 프로젝트 타스크/이슈 업데이트
      * @param projectTaskDto
      * @return
      */
@@ -78,7 +63,7 @@ public class ProjectTaskController {
     }
 
     /**
-     * 6. 프로젝트 타스크/이슈 삭제
+     * 5. 프로젝트 타스크/이슈 삭제
      * @param id
      * @return
      */

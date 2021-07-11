@@ -4,7 +4,6 @@ import com.awesome.domains.entities.Project;
 import com.awesome.domains.entities.ProjectDAO;
 import com.awesome.domains.entities.ProjectTask;
 import com.awesome.domains.entities.ProjectTaskDAO;
-import com.awesome.domains.enums.TaskType;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -16,8 +15,6 @@ import java.util.Optional;
 public class ProjectService {
     private ProjectDAO projectDAO;
     private ProjectTaskDAO projectTaskDAO;
-    private ProjectDTO projectDto;
-    private ProjectTaskDTO projectTaskDto;
 
     public ProjectService(ProjectDAO projectDAO, ProjectTaskDAO projectTaskDao) {
         this.projectDAO = projectDAO;
@@ -41,7 +38,7 @@ public class ProjectService {
      * @return
      */
     public ProjectDTO getProject(Long id){
-        return projectDto.convert(projectDAO.findById(id).get());
+        return ProjectDTO.convert(projectDAO.findById(id).get());
     }
 
     /**
@@ -86,7 +83,7 @@ public class ProjectService {
         toCreateProject.setCreatedAt(LocalDateTime.now());
         toCreateProject.setUpdatedAt(LocalDateTime.now());
 
-        return projectDto.convert(projectDAO.save(toCreateProject));
+        return ProjectDTO.convert(projectDAO.save(toCreateProject));
     }
 
     /**
@@ -108,7 +105,7 @@ public class ProjectService {
         toUpdateOne.setEndDate(projectDto.getEndDate());
         toUpdateOne.setUpdatedAt(LocalDateTime.now());
 
-        return projectDto.convert(projectDAO.save(toUpdateOne));
+        return ProjectDTO.convert(projectDAO.save(toUpdateOne));
     }
 
     /**
@@ -136,66 +133,42 @@ public class ProjectService {
      * @return
      */
     public ProjectTaskDTO getProjectTask(Long id){
-        return projectTaskDto.convert(projectTaskDAO.findById(id).get());
+        return ProjectTaskDTO.convert(projectTaskDAO.findById(id).get());
     }
 
     /**
-     * 3. 프로젝트 타스크 (타입 : TASK) 생성 - ProjectTaskController
+     * 3. 프로젝트 타스크/이슈 생성 - ProjectTaskController
      * @param projectTaskDto
-     * @param id
+     * @param projectId
      * @return
      */
-    public ProjectTaskDTO createProjectTask(ProjectTaskDTO projectTaskDto, Long id){
-        if(!isCorrectProjectTaskDate(projectDto)) {
+    public ProjectTaskDTO createProjectTask(ProjectTaskDTO projectTaskDto, Long projectId){
+        if(!isCorrectProjectTaskDate(projectTaskDto)) {
             // todo
         }
 
         ProjectTask toCreateProjectTask = new ProjectTask();
         toCreateProjectTask.setId(projectTaskDto.getId());
-        toCreateProjectTask.setProjectId(id);
+        toCreateProjectTask.setProjectId(projectId);
+        toCreateProjectTask.setParentTaskId(projectTaskDto.getParentTaskId());
         toCreateProjectTask.setPersons(projectTaskDto.getPersons());
-        toCreateProjectTask.setType(TaskType.TASK);
+        toCreateProjectTask.setType(projectTaskDto.getType());
         toCreateProjectTask.setSummary(projectTaskDto.getSummary());
         toCreateProjectTask.setTaskStartDate(projectTaskDto.getTaskStartDate());
         toCreateProjectTask.setTaskEndDate(projectTaskDto.getTaskEndDate());
         toCreateProjectTask.setCreatedAt(LocalDateTime.now());
         toCreateProjectTask.setUpdatedAt(LocalDateTime.now());
 
-        return projectTaskDto.convert(projectTaskDAO.save(toCreateProjectTask));
+        return ProjectTaskDTO.convert(projectTaskDAO.save(toCreateProjectTask));
     }
 
     /**
-     * 4. 프로젝트 이슈 (타입 : ISSUE) 생성 - ProjectTaskController
-     * @param projectTaskDto
-     * @param id
-     * @return
-     */
-    public ProjectTaskDTO createProjectIssue(ProjectTaskDTO projectTaskDto, Long id){
-        if(!isCorrectProjectTaskDate(projectDto)) {
-            // todo
-        }
-
-        ProjectTask toCreateProjectTask = new ProjectTask();
-        toCreateProjectTask.setId(projectTaskDto.getId());
-        toCreateProjectTask.setProjectId(id);
-        toCreateProjectTask.setPersons(projectTaskDto.getPersons());
-        toCreateProjectTask.setType(TaskType.ISSUE);
-        toCreateProjectTask.setSummary(projectTaskDto.getSummary());
-        toCreateProjectTask.setTaskStartDate(projectTaskDto.getTaskStartDate());
-        toCreateProjectTask.setTaskEndDate(projectTaskDto.getTaskEndDate());
-        toCreateProjectTask.setCreatedAt(LocalDateTime.now());
-        toCreateProjectTask.setUpdatedAt(LocalDateTime.now());
-
-        return projectTaskDto.convert(projectTaskDAO.save(toCreateProjectTask));
-    }
-
-    /**
-     * 5. 프로젝트 타스크/이슈 업데이트 - ProjectTaskController
+     * 4. 프로젝트 타스크/이슈 업데이트 - ProjectTaskController
      * @param projectTaskDto
      * @return
      */
     public ProjectTaskDTO updateProjectTask(ProjectTaskDTO projectTaskDto){
-        if(!isCorrectProjectTaskDate(projectDto)) {
+        if(!isCorrectProjectTaskDate(projectTaskDto)) {
             // todo
         }
 
@@ -209,11 +182,11 @@ public class ProjectService {
         toUpdateOne.setType(projectTaskDto.getType());
         toUpdateOne.setUpdatedAt(LocalDateTime.now());
 
-        return projectTaskDto.convert(projectTaskDAO.save(toUpdateOne));
+        return ProjectTaskDTO.convert(projectTaskDAO.save(toUpdateOne));
     }
 
     /**
-     * 6. 프로젝트 타스크/이슈 삭제- ProjectTaskController
+     * 5. 프로젝트 타스크/이슈 삭제- ProjectTaskController
      * @param id
      */
     public void deleteProjectTask(Long id){
@@ -230,7 +203,7 @@ public class ProjectService {
         List<ProjectDTO> projectDTOList = new ArrayList<>();
 
         for(Project projectObj : projectList){
-            projectDTOList.add(projectDto.convert(projectObj));
+            projectDTOList.add(ProjectDTO.convert(projectObj));
         }
         return projectDTOList;
     }
@@ -244,7 +217,7 @@ public class ProjectService {
         List<ProjectTaskDTO> projectTaskDTOList = new ArrayList<>();
 
         for(ProjectTask projectTaskObj : projectTaskList){
-            projectTaskDTOList.add(projectTaskDto.convert(projectTaskObj));
+            projectTaskDTOList.add(ProjectTaskDTO.convert(projectTaskObj));
         }
         return projectTaskDTOList;
     }
@@ -264,11 +237,11 @@ public class ProjectService {
 
     /**
      * 타스크 시작일, 종료일 날짜 체크
-     * @param projectDto
+     * @param projectTaskDto
      * @return
      */
-    private boolean isCorrectProjectTaskDate(ProjectDTO projectDto) {
-        if(projectDto.getEndDate().isAfter(projectDto.getStartDate())){
+    private boolean isCorrectProjectTaskDate(ProjectTaskDTO projectTaskDto) {
+        if(projectTaskDto.getTaskEndDate().isAfter(projectTaskDto.getTaskStartDate())){
             return true;
         }else{
             return false;
