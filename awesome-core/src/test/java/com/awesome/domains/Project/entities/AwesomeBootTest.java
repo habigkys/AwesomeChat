@@ -1,4 +1,4 @@
-package com.awesome.domains.entities;
+package com.awesome.domains.Project.entities;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;

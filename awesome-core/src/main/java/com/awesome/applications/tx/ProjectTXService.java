@@ -1,9 +1,9 @@
 package com.awesome.applications.tx;
 
-import com.awesome.domains.entities.Project;
-import com.awesome.domains.entities.ProjectDAO;
-import com.awesome.domains.entities.ProjectTask;
-import com.awesome.domains.entities.ProjectTaskDAO;
+import com.awesome.domains.Project.entities.ProjectEntity;
+import com.awesome.domains.Project.entities.ProjectDAO;
+import com.awesome.domains.ProjectTask.entities.ProjectTaskEntity;
+import com.awesome.domains.ProjectTask.entities.ProjectTaskDAO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,29 +18,29 @@ public class ProjectTXService {
         this.projectDAO = projectDAO;
     }
 
-    public Long saveProject(Project project){
-        return projectDAO.save(project).getId();
+    public Long saveProject(ProjectEntity projectEntity){
+        return projectDAO.save(projectEntity).getId();
     }
 
-    public List<Project> getProjectList(){
-        List<Project> projectList = projectDAO.findAll();
+    public List<ProjectEntity> getProjectList(){
+        List<ProjectEntity> projectEntityList = projectDAO.findAll();
 
-        return projectList;
+        return projectEntityList;
     }
 
-    public List<ProjectTask> getProjectTaskList(){
-        List<ProjectTask> projectTaskList = projectTaskDAO.findAll();
+    public List<ProjectTaskEntity> getProjectTaskList(){
+        List<ProjectTaskEntity> projectTaskEntityList = projectTaskDAO.findAll();
 
-        return projectTaskList;
-    }
-
-    @Transactional
-    public void updateProject(List<Project> projectList){
-        projectDAO.saveAll(projectList);
+        return projectTaskEntityList;
     }
 
     @Transactional
-    public void deleteProject(List<Project> projectList){
-        projectDAO.deleteAll(projectList);
+    public void updateProject(List<ProjectEntity> projectEntityList){
+        projectDAO.saveAll(projectEntityList);
+    }
+
+    @Transactional
+    public void deleteProject(List<ProjectEntity> projectEntityList){
+        projectDAO.deleteAll(projectEntityList);
     }
 }

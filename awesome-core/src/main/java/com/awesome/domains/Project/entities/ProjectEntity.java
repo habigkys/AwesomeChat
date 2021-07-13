@@ -1,22 +1,19 @@
-package com.awesome.domains.entities;
+package com.awesome.domains.Project.entities;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
 @Table(name = "project")
-public class Project {
+public class ProjectEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

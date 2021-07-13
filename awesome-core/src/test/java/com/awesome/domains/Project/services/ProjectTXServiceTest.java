@@ -1,7 +1,7 @@
-package com.awesome.domains.services;
+package com.awesome.domains.Project.services;
 
 import com.awesome.applications.tx.ProjectTXService;
-import com.awesome.domains.entities.AwesomeBootTest;
+import com.awesome.domains.Project.entities.AwesomeBootTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
