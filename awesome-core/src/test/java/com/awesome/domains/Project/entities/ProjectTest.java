@@ -1,11 +1,10 @@
-package com.awesome.domains.entities;
+package com.awesome.domains.Project.entities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,34 +19,34 @@ class ProjectTest {
 
     @Test
     void testSave() {
-        Project project = new Project();
-        project.setId(0L);
-        project.setProjectName("");
-        project.setSummary("");
-        project.setStartDate(LocalDate.now());
-        project.setEndDate(LocalDate.now());
-        project.setCreatedAt(LocalDateTime.now());
-        project.setUpdatedAt(LocalDateTime.now());
+        ProjectEntity projectEntity = new ProjectEntity();
+        projectEntity.setId(0L);
+        projectEntity.setProjectName("");
+        projectEntity.setSummary("");
+        projectEntity.setStartDate(LocalDate.now());
+        projectEntity.setEndDate(LocalDate.now());
+        projectEntity.setCreatedAt(LocalDateTime.now());
+        projectEntity.setUpdatedAt(LocalDateTime.now());
 
-        projectDAO.save(project);
+        projectDAO.save(projectEntity);
     }
 
     @Test
     void testUpdate() {
-        Optional<Project> byId = projectDAO.findById(1L);
+        Optional<ProjectEntity> byId = projectDAO.findById(1L);
         assertFalse(byId.isEmpty());
 
-        Project one = byId.get();
+        ProjectEntity one = byId.get();
         one.setProjectName("testfire");
         projectDAO.save(one);
-        Optional<Project> after = projectDAO.findById(1L);
+        Optional<ProjectEntity> after = projectDAO.findById(1L);
 
         assertEquals("testfire", after.get().getProjectName());
     }
 
     @Test
     void testSelect() {
-        Optional<Project> byId = projectDAO.findById(1L);
+        Optional<ProjectEntity> byId = projectDAO.findById(1L);
         assertEquals("testfire", byId.get().getProjectName());
     }
 }

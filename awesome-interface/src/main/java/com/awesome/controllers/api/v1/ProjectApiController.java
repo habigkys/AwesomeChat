@@ -1,7 +1,7 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.entities.Project;
-import com.awesome.domains.entities.ProjectDAO;
+import com.awesome.domains.Project.entities.ProjectEntity;
+import com.awesome.domains.Project.entities.ProjectDAO;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class ProjectApiController {
 
   @GetMapping("/{id}")
   public ResponseEntity<ProjectDTO> geById(@PathVariable Long id) {
-    Optional<Project> byId = projectDAO.findById(id);
+    Optional<ProjectEntity> byId = projectDAO.findById(id);
 
     if (byId.isEmpty()) {
       return (ResponseEntity<ProjectDTO>) ResponseEntity.EMPTY;
@@ -71,15 +71,15 @@ public class ProjectApiController {
 
     private LocalDateTime updatedAt;
 
-    public static ProjectDTO convert(Project project) {
+    public static ProjectDTO convert(ProjectEntity projectEntity) {
       ProjectDTO dto = new ProjectDTO();
-      dto.setId(project.getId());
-      dto.setProjectName(project.getProjectName());
-      dto.setSummary(project.getSummary());
-      dto.setStartDate(project.getStartDate());
-      dto.setEndDate(project.getEndDate());
-      dto.setCreatedAt(project.getCreatedAt());
-      dto.setUpdatedAt(project.getUpdatedAt());
+      dto.setId(projectEntity.getId());
+      dto.setProjectName(projectEntity.getProjectName());
+      dto.setSummary(projectEntity.getSummary());
+      dto.setStartDate(projectEntity.getStartDate());
+      dto.setEndDate(projectEntity.getEndDate());
+      dto.setCreatedAt(projectEntity.getCreatedAt());
+      dto.setUpdatedAt(projectEntity.getUpdatedAt());
       return dto;
     }
   }
@@ -88,7 +88,7 @@ public class ProjectApiController {
   public class ProjectServiceImpl {
     private ProjectDAO projectDAO;
 
-    public List<Project> getAllProjectByName(String projectName) {
+    public List<ProjectEntity> getAllProjectByName(String projectName) {
 
       if (StringUtils.isBlank(projectName)) {
         return Lists.newArrayList();

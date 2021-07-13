@@ -1,6 +1,6 @@
-package com.awesome.domains.entities;
+package com.awesome.domains.ProjectTask.entities;
 
-import com.awesome.domains.enums.TaskType;
+import com.awesome.domains.Project.enums.TaskType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "project_task")
-public class ProjectTask {
+public class ProjectTaskEntity {
     /**
      * 타스크 아이디
      */

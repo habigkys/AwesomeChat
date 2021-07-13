@@ -1,8 +1,8 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.services.ProjectDTO;
-import com.awesome.domains.services.ProjectService;
-import com.awesome.domains.services.ProjectTaskDTO;
+import com.awesome.domains.Project.services.ProjectDTO;
+import com.awesome.domains.Project.services.ProjectService;
+import com.awesome.domains.ProjectTask.services.ProjectTaskDTO;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -50,17 +50,6 @@ public class ProjectController {
         return projectNameLike;
     }
 
-    /**
-     * 4. 특정 프로젝트의 타스크 리스트
-     * @param id
-     * @return
-     */
-    @GetMapping("/{id}/tasks")
-    public List<ProjectTaskDTO> projectTaskList(@PathVariable("id") Long id) {
-        List<ProjectTaskDTO> projectTaskList = projectService.getProjectTaskListByProject(id);
-
-        return projectTaskList;
-    }
 
     /**
      * 5. 프로젝트 생성
