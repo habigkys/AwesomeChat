@@ -1,7 +1,7 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.Project.entities.ProjectEntity;
-import com.awesome.domains.Project.entities.ProjectDAO;
+import com.awesome.domains.project.entities.ProjectEntity;
+import com.awesome.domains.project.entities.ProjectDAO;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
