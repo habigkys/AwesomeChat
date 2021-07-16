@@ -65,7 +65,7 @@ public class ProjectService {
             if(projectDto.getStatus().equals(ProjectStatus.TODO)){
                 throw new IllegalArgumentException();
             }
-        // 프로젝트 시작~종료일 사이에 현재가 있을 때
+        // 프로젝트 시작~종료일 사이에 현재가 있을
         }else if(LocalDate.now().isAfter(projectDto.getStartDate()) && LocalDate.now().isBefore(projectDto.getEndDate())){
             // 현재의 프로젝트는 TODO 상태를 가질 수 없음
             if(projectDto.getStatus().equals(ProjectStatus.TODO)){
