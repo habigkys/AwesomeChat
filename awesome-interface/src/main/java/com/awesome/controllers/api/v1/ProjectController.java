@@ -1,8 +1,7 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.Project.services.ProjectDTO;
-import com.awesome.domains.Project.services.ProjectService;
-import com.awesome.domains.ProjectTask.services.ProjectTaskDTO;
+import com.awesome.domains.project.dtos.ProjectDTO;
+import com.awesome.domains.project.services.ProjectService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

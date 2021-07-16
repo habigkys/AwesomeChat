@@ -1,9 +1,9 @@
 package com.awesome.applications.tx;
 
-import com.awesome.domains.Project.entities.ProjectEntity;
-import com.awesome.domains.Project.entities.ProjectDAO;
-import com.awesome.domains.ProjectTask.entities.ProjectTaskEntity;
-import com.awesome.domains.ProjectTask.entities.ProjectTaskDAO;
+import com.awesome.domains.project.entities.ProjectEntity;
+import com.awesome.domains.project.entities.ProjectDAO;
+import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
+import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

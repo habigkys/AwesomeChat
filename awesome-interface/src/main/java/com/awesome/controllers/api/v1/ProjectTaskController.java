@@ -1,8 +1,7 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.ProjectTask.services.ProjectTaskDTO;
-import com.awesome.domains.Project.services.ProjectService;
-import com.awesome.domains.ProjectTask.services.ProjectTaskService;
+import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
+import com.awesome.domains.projecttask.services.ProjectTaskService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
