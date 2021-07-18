@@ -34,6 +34,12 @@ public class UserEntity {
     @Column(nullable = false, name = "user_position")
     private UserPosition userPosition;
 
+    /**
+     * 년차
+     */
+    @Column(nullable = true, name = "user_year")
+    private long userYear;
+
     @Column(nullable = true, name = "created_at")
     private LocalDateTime createdAt;
 

@@ -1,6 +1,7 @@
 package com.awesome.domains.project.entities;
 
 import com.awesome.domains.project.enums.ProjectStatus;
+import com.awesome.domains.user.entities.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,6 +10,7 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -39,6 +41,12 @@ public class ProjectEntity {
      */
     @Column(nullable = false, name = "project_status")
     private ProjectStatus status;
+
+    /**
+     * 프로젝트 참여인력
+     */
+    @Column(nullable = true, name = "project_persons")
+    private List<UserEntity> projectPersons;
 
     /**
      * 프로젝트 시작 시간

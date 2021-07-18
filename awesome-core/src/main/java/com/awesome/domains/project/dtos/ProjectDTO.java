@@ -2,12 +2,14 @@ package com.awesome.domains.project.dtos;
 
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.enums.ProjectStatus;
+import com.awesome.domains.user.entities.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +22,8 @@ public class ProjectDTO {
     private String summary;
 
     private ProjectStatus status;
+
+    private List<UserEntity> projectPersons;
 
     private LocalDate startDate;
 
@@ -35,6 +39,7 @@ public class ProjectDTO {
         dto.setProjectName(projectEntity.getProjectName());
         dto.setSummary(projectEntity.getSummary());
         dto.setStatus(projectEntity.getStatus());
+        dto.setProjectPersons(projectEntity.getProjectPersons());
         dto.setStartDate(projectEntity.getStartDate());
         dto.setEndDate(projectEntity.getEndDate());
         dto.setCreatedAt(projectEntity.getCreatedAt());

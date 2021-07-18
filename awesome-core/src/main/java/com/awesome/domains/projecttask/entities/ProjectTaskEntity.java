@@ -31,7 +31,7 @@ public class ProjectTaskEntity {
     private Long projectId;
 
     /**
-     * 타스크 소속 프로젝트
+     * 타스크 소속 타스크(이슈)
      */
     @Column(nullable = false, name = "parent_task_id")
     private Long parentTaskId;
@@ -55,7 +55,7 @@ public class ProjectTaskEntity {
     private LocalDate taskEndDate;
 
     /**
-     * 프로젝트 참여인력
+     * 타스크 참여인력
      */
     @Column(nullable = false, name = "persons")
     private String persons;

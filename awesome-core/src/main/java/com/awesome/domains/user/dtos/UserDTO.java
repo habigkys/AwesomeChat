@@ -21,6 +21,8 @@ public class UserDTO {
 
     private UserPosition userPosition;
 
+    private Long userYear;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
@@ -29,6 +31,7 @@ public class UserDTO {
         UserDTO userDto = new UserDTO();
         userDto.setId(userEntity.getId());
         userDto.setUserName(userEntity.getUserName());
+        userDto.setUserYear(userEntity.getUserYear());
         userDto.setUserPosition(userEntity.getUserPosition());
         userDto.setCreatedAt(userEntity.getCreatedAt());
         userDto.setUpdatedAt(userEntity.getUpdatedAt());
