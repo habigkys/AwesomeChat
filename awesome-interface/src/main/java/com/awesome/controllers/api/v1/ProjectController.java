@@ -1,18 +1,19 @@
 package com.awesome.controllers.api.v1;
 
+import com.awesome.applications.tx.ProjectTXService;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
+import com.awesome.domains.user.dtos.UserDTO;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RestController("/api/v1/projects")
 public class ProjectController {
     private final ProjectService projectService;
-
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
-    }
+    private final ProjectTXService projectTXService;
 
     /**
      * 1. 프로젝트 리스트
@@ -56,8 +57,8 @@ public class ProjectController {
      * @return
      */
     @PostMapping
-    public ProjectDTO projectCreate(@RequestBody ProjectDTO projectDto) {
-        ProjectDTO createdProject = projectService.createProject(projectDto);
+    public ProjectDTO projectCreate(@RequestBody ProjectDTO projectDto, @RequestBody List<UserDTO> userDto) {
+        ProjectDTO createdProject = projectTXService.createProject(projectDto, userDto);
 
         return createdProject;
     }
@@ -68,8 +69,8 @@ public class ProjectController {
      * @return
      */
     @PutMapping("/{id}")
-    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto) {
-        ProjectDTO updatedProject = projectService.updateProject(projectDto);
+    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<UserDTO> userDto) {
+        ProjectDTO updatedProject = projectTXService.updateProject(projectDto, userDto);
 
         return updatedProject;
     }
