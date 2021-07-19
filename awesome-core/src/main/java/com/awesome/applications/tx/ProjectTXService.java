@@ -1,15 +1,18 @@
 package com.awesome.applications.tx;
 
+import com.awesome.domains.mapping.entities.ProjectUserDAO;
+import com.awesome.domains.mapping.entities.ProjectUserEntity;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
 import com.awesome.domains.project.enums.ProjectStatus;
-import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
+import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
 import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
 import lombok.AllArgsConstructor;
+import lombok.ToString;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +31,14 @@ public class ProjectTXService {
     private ProjectDAO projectDao;
     private ProjectTaskDAO projectTaskDao;
     private UserDAO userDao;
+    private ProjectUserDAO projectUserDao;
 
     /**
-     * 1. 프로젝트 생성 - ProjectController
-     * @param projectDto
+     * 4. 프로젝트 생성 - ProjectController
+     * @param projectDto, userDto
      * @return
      */
+    @Transactional
     public ProjectDTO createProject(ProjectDTO projectDto, List<UserDTO> userDto){
         if(!validateProjectDate(projectDto)) {
             throw new IllegalArgumentException();
@@ -50,25 +55,15 @@ public class ProjectTXService {
             throw new IllegalArgumentException();
         }
 
+        // 프로젝트 <> 유저 매핑 정보 저장
+        ProjectUserMapping(projectDto, userDto);
+
         ProjectEntity toCreateProjectEntity = new ProjectEntity();
-        List<UserEntity> toCreateProjectPersons = new ArrayList<>();
 
-        for(UserDTO user : userDto){
-            UserEntity userEntity = new UserEntity();
-            userEntity.setId(user.getId());
-            userEntity.setUserName(user.getUserName());
-            userEntity.setUserYear(user.getUserYear());
-            userEntity.setUserPosition(user.getUserPosition());
-            userEntity.setCreatedAt(user.getCreatedAt());
-            userEntity.setUpdatedAt(user.getUpdatedAt());
-
-            toCreateProjectPersons.add(userEntity);
-        }
 
         toCreateProjectEntity.setProjectName(projectDto.getProjectName());
         toCreateProjectEntity.setSummary(projectDto.getSummary());
         toCreateProjectEntity.setStatus(projectDto.getStatus());
-        toCreateProjectEntity.setProjectPersons(toCreateProjectPersons);
         toCreateProjectEntity.setStartDate(projectDto.getStartDate());
         toCreateProjectEntity.setEndDate(projectDto.getEndDate());
         toCreateProjectEntity.setCreatedAt(LocalDateTime.now());
@@ -78,10 +73,11 @@ public class ProjectTXService {
     }
 
     /**
-     * 2. 프로젝트 수정 - ProjectController
+     * 5. 프로젝트 수정 - ProjectController
      * @param projectDto
      * @return
      */
+    @Transactional
     public ProjectDTO updateProject(ProjectDTO projectDto, List<UserDTO> userDto){
         if(!validateProjectDate(projectDto)) {
             throw new IllegalArgumentException();
@@ -99,21 +95,14 @@ public class ProjectTXService {
 
         // 프로젝트 참여인력 변경이 있을 경우
         if(!CollectionUtils.isEmpty(userDto)){
-            List<UserEntity> toCreateProjectPersons = new ArrayList<>();
+            List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectDto.getId());
 
-            for(UserDTO user : userDto){
-                UserEntity userEntity = new UserEntity();
-                userEntity.setId(user.getId());
-                userEntity.setUserName(user.getUserName());
-                userEntity.setUserYear(user.getUserYear());
-                userEntity.setUserPosition(user.getUserPosition());
-                userEntity.setCreatedAt(user.getCreatedAt());
-                userEntity.setUpdatedAt(user.getUpdatedAt());
-
-                toCreateProjectPersons.add(userEntity);
+            // 기존 매핑 정보 삭제 후
+            for(ProjectUserEntity mappingEntity : byProjectId){
+                projectUserDao.delete(mappingEntity);
             }
-
-            toUpdateOne.setProjectPersons(toCreateProjectPersons);
+            // 프로젝트 <> 유저 매핑 정보 저장
+            ProjectUserMapping(projectDto, userDto);
         }
 
         toUpdateOne.setProjectName(projectDto.getProjectName());
@@ -124,6 +113,44 @@ public class ProjectTXService {
         toUpdateOne.setUpdatedAt(LocalDateTime.now());
 
         return ProjectDTO.convert(projectDao.save(toUpdateOne));
+    }
+
+    /**
+     * 8. 특정 프로젝트의 유저 리스트 조회 - UserController
+     * @param projectId
+     * @return
+     */
+    public List<UserDTO> getProjectUserList(Long projectId){
+        List<UserDTO> userDTOList = new ArrayList<>();
+        List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
+
+        for(ProjectUserEntity projectUserEntity : byProjectId){
+            Optional<UserEntity> user = userDao.findById(projectUserEntity.getUserId());
+
+            UserDTO userDTO = UserDTO.convert(user.get());
+            userDTOList.add(userDTO);
+        }
+
+        return userDTOList;
+    }
+
+    /**
+     * 프로젝트 <> 유저 매핑
+     * @param projectDto
+     * @param userDto
+     */
+    private void ProjectUserMapping(ProjectDTO projectDto, List<UserDTO> userDto) {
+        for(UserDTO user : userDto){
+            ProjectUserEntity projectUserEntity = new ProjectUserEntity();
+
+            projectUserEntity.setProjectId(projectDto.getId());
+            projectUserEntity.setProjectName(projectDto.getProjectName());
+            projectUserEntity.setUserId(user.getId());
+            projectUserEntity.setUserName(user.getUserName());
+            projectUserEntity.setCreatedAt(LocalDateTime.now());
+
+            projectUserDao.save(projectUserEntity);
+        }
     }
 
 

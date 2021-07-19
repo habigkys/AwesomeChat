@@ -50,9 +50,8 @@ public class ProjectController {
         return projectNameLike;
     }
 
-
     /**
-     * 5. 프로젝트 생성
+     * 4. 프로젝트 생성
      * @param projectDto
      * @return
      */
@@ -64,7 +63,7 @@ public class ProjectController {
     }
 
     /**
-     * 6. 프로젝트 수정
+     * 5. 프로젝트 수정
      * @param projectDto
      * @return
      */
@@ -76,7 +75,7 @@ public class ProjectController {
     }
 
     /**
-     * 7. 프로젝트 삭제
+     * 6. 프로젝트 삭제
      * @param id
      * @return
      */
