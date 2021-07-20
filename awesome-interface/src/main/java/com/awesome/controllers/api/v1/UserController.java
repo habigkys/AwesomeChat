@@ -1,6 +1,7 @@
 package com.awesome.controllers.api.v1;
 
 import com.awesome.applications.tx.ProjectTXService;
+import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.services.UserService;
 import lombok.AllArgsConstructor;
@@ -50,7 +51,7 @@ public class UserController {
     }
 
     /**
-     * 5. 유저 생성
+     * 4. 유저 생성
      * @param UserDTO
      * @return
      */
@@ -62,7 +63,7 @@ public class UserController {
     }
 
     /**
-     * 6. 유저 수정
+     * 5. 유저 수정
      * @param UserDTO
      * @return
      */
@@ -74,7 +75,7 @@ public class UserController {
     }
 
     /**
-     * 7. 유저 삭제
+     * 6. 유저 삭제
      * @param userId
      * @return
      */
@@ -86,7 +87,7 @@ public class UserController {
     }
 
     /**
-     * 8. 특정 프로젝트의 유저 리스트 조회
+     * 7. 특정 프로젝트의 유저 리스트 조회
      * @param projectId
      * @return
      */
@@ -95,5 +96,18 @@ public class UserController {
         List<UserDTO> userList = projectTXService.getProjectUserList(projectId);
 
         return userList;
+    }
+
+
+    /**
+     * 8. 특정 유저의 프로젝트 리스트 조회
+     * @param userId
+     * @return
+     */
+    @GetMapping("/{projectId}/users")
+    public List<ProjectDTO> userProjectList(@PathVariable("userId") Long userId) {
+        List<ProjectDTO> projectList = projectTXService.getUserProjectList(userId);
+
+        return projectList;
     }
 }

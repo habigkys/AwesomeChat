@@ -1,6 +1,6 @@
 package com.awesome.domains.mapping.entities;
 
-import com.awesome.domains.user.enums.UserPosition;
+import com.awesome.domains.document.enums.DocumentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "project_user")
+@Table(name = "project_document")
 @ToString
-public class ProjectUserEntity {
+public class ProjectDocumentEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,22 +34,16 @@ public class ProjectUserEntity {
     private String projectName;
 
     /**
-     * 유저 ID
+     * 산출물 ID
      */
-    @Column(nullable = false, name = "user_id")
-    private Long userId;
+    @Column(nullable = false, name = "document_id")
+    private Long documentId;
 
     /**
-     * 유저 직책
-     */
-    @Column(nullable = false, name = "user_position")
-    private UserPosition userPosition;
-
-    /**
-     * 유저 성명
+     * 산출물 타입
      */
     @Column(nullable = false, name = "user_name")
-    private String userName;
+    private DocumentType documentType;
 
     @Column(nullable = true, name = "created_at")
     private LocalDateTime createdAt;

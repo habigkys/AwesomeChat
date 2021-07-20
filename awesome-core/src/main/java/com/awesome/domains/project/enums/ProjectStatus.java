@@ -13,5 +13,5 @@ public enum ProjectStatus {
     // 취소됨
     CANCELED,
     // 완료됨
-    RESOLVED
+    RESOLVED;
 }

@@ -3,6 +3,7 @@ package com.awesome.controllers.api.v1;
 import com.awesome.applications.tx.ProjectTXService;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
+import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.user.dtos.UserDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +83,18 @@ public class ProjectController {
     @DeleteMapping("/{id}")
     public String projectDelete(@PathVariable("id") Long id) {
         projectService.deleteProject(id);
+
+        return null;
+    }
+
+    /**
+     * 7. 프로젝트 산출물 수정
+     * @param projectDto, projectDocumentDTO
+     * @return
+     */
+    @PutMapping("/documents/{id}")
+    public String projectDocumentUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<DocumentDTO> documentDTO) {
+        projectTXService.updateProjectDocuments(projectDto, documentDTO);
 
         return null;
     }
