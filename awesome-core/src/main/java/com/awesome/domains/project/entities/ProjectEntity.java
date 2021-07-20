@@ -43,12 +43,6 @@ public class ProjectEntity {
     private ProjectStatus status;
 
     /**
-     * 프로젝트 참여인력
-     */
-    @Column(nullable = true, name = "project_persons")
-    private List<UserEntity> projectPersons;
-
-    /**
      * 프로젝트 시작 시간
      */
     @Column(nullable = false, name = "start_date")
