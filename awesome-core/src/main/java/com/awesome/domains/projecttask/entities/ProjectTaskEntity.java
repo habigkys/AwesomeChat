@@ -1,5 +1,6 @@
 package com.awesome.domains.projecttask.entities;
 
+import com.awesome.domains.projecttask.enums.TaskPriority;
 import com.awesome.domains.projecttask.enums.TaskType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -55,16 +56,18 @@ public class ProjectTaskEntity {
     private LocalDate taskEndDate;
 
     /**
-     * 타스크 참여인력
-     */
-    @Column(nullable = false, name = "persons")
-    private String persons;
-
-    /**
      * 타스크의 스코프
      */
     @Column(nullable = false, name = "type")
+    @Enumerated(EnumType.STRING)
     private TaskType type;
+
+    /**
+     * 타스크 우선순위
+     */
+    @Column(nullable = false, name = "task_priority")
+    @Enumerated(EnumType.STRING)
+    private TaskPriority taskPriority;
 
     @Column(nullable = true, name = "created_at")
     private LocalDateTime createdAt;

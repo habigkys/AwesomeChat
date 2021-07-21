@@ -32,6 +32,7 @@ public class UserEntity {
      * 직책
      */
     @Column(nullable = false, name = "user_position")
+    @Enumerated(EnumType.STRING)
     private UserPosition userPosition;
 
     /**

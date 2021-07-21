@@ -21,9 +21,16 @@ public class DocumentEntity {
     private Long id;
 
     /**
+     * 산출물 소속 프로젝트
+     */
+    @Column(nullable = false, name = "project_id")
+    private Long projectId;
+
+    /**
      * 산출물 종류
      */
     @Column(nullable = false, name = "document_type")
+    @Enumerated(EnumType.STRING)
     private DocumentType documentType;
 
     @Column(nullable = true, name = "created_at")

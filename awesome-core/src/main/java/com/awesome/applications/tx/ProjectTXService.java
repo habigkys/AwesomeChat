@@ -1,16 +1,15 @@
 package com.awesome.applications.tx;
 
-import com.awesome.domains.mapping.entities.ProjectDocumentDAO;
-import com.awesome.domains.mapping.entities.ProjectDocumentEntity;
+import com.awesome.domains.document.entities.DocumentDAO;
+import com.awesome.domains.document.entities.DocumentEntity;
+import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.mapping.entities.ProjectUserDAO;
 import com.awesome.domains.mapping.entities.ProjectUserEntity;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
+import com.awesome.domains.project.enums.ProjectPriority;
 import com.awesome.domains.project.enums.ProjectStatus;
-import com.awesome.domains.document.dtos.DocumentDTO;
-import com.awesome.domains.document.entities.DocumentDAO;
-import com.awesome.domains.document.entities.DocumentEntity;
 import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
@@ -35,7 +34,7 @@ public class ProjectTXService {
     private ProjectTaskDAO projectTaskDao;
     private UserDAO userDao;
     private ProjectUserDAO projectUserDao;
-    private ProjectDocumentDAO projectDocumentDao;
+    private DocumentDAO documentDao;
 
     /**
      * 4. 프로젝트 생성 - ProjectController
@@ -43,18 +42,18 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public ProjectDTO createProject(ProjectDTO projectDto, List<UserDTO> userDto){
+    public ProjectDTO createProject(ProjectDTO projectDto, List<Long> userIds){
         if(!validateProjectDate(projectDto)) {
             throw new IllegalArgumentException();
         }
 
         // 프로젝트 참여인력이 없으면 안됨
-        if(CollectionUtils.isEmpty(userDto)){
+        if(CollectionUtils.isEmpty(userIds)){
             throw new IllegalArgumentException();
         }
 
         // 프로젝트 리더는 1명을 초과할 수 없음
-        if(getLeaderCnt(userDto) > 1){
+        if(getLeaderCnt(userIds) > 1){
             throw new IllegalArgumentException();
         }
 
@@ -74,12 +73,12 @@ public class ProjectTXService {
         toCreateProjectEntity.setCreatedAt(LocalDateTime.now());
         toCreateProjectEntity.setUpdatedAt(LocalDateTime.now());
 
-        ProjectDTO savedProjectDTO = ProjectDTO.convert(projectDao.save(toCreateProjectEntity));
+        ProjectEntity savedProjectEntity = projectDao.save(toCreateProjectEntity);
 
         // 프로젝트 <> 유저 매핑 정보 저장
-        projectUserMapping(savedProjectDTO, userDto);
+        projectUserMapping(savedProjectEntity.getId(), userIds);
 
-        return savedProjectDTO;
+        return ProjectDTO.convert(savedProjectEntity);
     }
 
     /**
@@ -88,7 +87,7 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public ProjectDTO updateProject(ProjectDTO projectDto, List<UserDTO> userDto){
+    public ProjectDTO updateProject(ProjectDTO projectDto, List<Long> userIds){
         if(!validateProjectDate(projectDto)) {
             throw new IllegalArgumentException();
         }
@@ -103,10 +102,27 @@ public class ProjectTXService {
             throw new IllegalArgumentException();
         }
 
+        // 프로젝트 종료까지 일주일 미만 남았으면 프로젝트 우선순위를 VERYHIGH로 변경 불가
+        if(ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority())
+                && ChronoUnit.WEEKS.between(toUpdateOne.getEndDate(), LocalDateTime.now()) < 1){
+            throw new IllegalArgumentException();
+        }
+
+        // 프로젝트 종료까지 이주일 미만 남았으면 프로젝트 우선순위를 HIGH로 변경 불가
+        if(ProjectPriority.HIGH.equals(projectDto.getProjectPriority())
+                && ChronoUnit.WEEKS.between(toUpdateOne.getEndDate(), LocalDateTime.now()) < 2){
+            throw new IllegalArgumentException();
+        }
+
         // 프로젝트 참여인력 변경이 있을 경우
-        if(!CollectionUtils.isEmpty(userDto)){
+        if(!CollectionUtils.isEmpty(userIds)){
+            // 프로젝트 우선순위가 VERYHIGH 또는 HIGH로 급할 경우 인력 교체 불가
+            if((ProjectPriority.HIGH.equals(projectDto.getProjectPriority()) || ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority()))){
+                throw new IllegalArgumentException();
+            }
+
             // 프로젝트 리더는 1명을 초과할 수 없음
-            if(getLeaderCnt(userDto) > 1){
+            if(getLeaderCnt(userIds) > 1){
                 throw new IllegalArgumentException();
             }
 
@@ -117,7 +133,7 @@ public class ProjectTXService {
                 projectUserDao.delete(mappingEntity);
             }
             // 프로젝트 <> 유저 매핑 정보 저장
-            projectUserMapping(projectDto, userDto);
+            projectUserMapping(projectDto.getId(), userIds);
         }
 
         toUpdateOne.setProjectName(projectDto.getProjectName());
@@ -174,62 +190,43 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public void updateProjectDocuments(ProjectDTO projectDto, List<DocumentDTO> documentDTO){
-        Optional<ProjectEntity> byId = projectDao.findById(projectDto.getId());
-
-        ProjectEntity toUpdateOne = byId.get();
-
+    public void updateProjectDocuments(ProjectDTO projectDto, List<DocumentType> documentTypes){
         // 산출물 추가
-        if(!CollectionUtils.isEmpty(documentDTO)){
-            List<ProjectDocumentEntity> byProjectId = projectDocumentDao.findAllByProjectId(projectDto.getId());
+        if(!CollectionUtils.isEmpty(documentTypes)){
+            for(DocumentType documentType : documentTypes){
+                DocumentEntity documentEntity = new DocumentEntity();
 
-            // 기존 매핑 정보 삭제 후
-            for(ProjectDocumentEntity mappingEntity : byProjectId){
-                projectDocumentDao.delete(mappingEntity);
+                documentEntity.setProjectId(projectDto.getId());
+                documentEntity.setDocumentType(documentType);
+                documentEntity.setCreatedAt(LocalDateTime.now());
+
+                documentDao.save(documentEntity);
             }
-            // 프로젝트 <> 산출물 매핑 정보 저장
-            projectDocumentMapping(projectDto, documentDTO);
         }
     }
 
     /**
      * 프로젝트 <> 유저 매핑
-     * @param projectDto
-     * @param userDTOS
+     * @param projectId
+     * @param userIds
      */
-    private void projectUserMapping(ProjectDTO projectDto, List<UserDTO> userDTOS) {
-        for(UserDTO user : userDTOS){
+    private void projectUserMapping(Long projectId, List<Long> userIds) {
+        for(Long userId : userIds){
             ProjectUserEntity projectUserEntity = new ProjectUserEntity();
 
-            projectUserEntity.setProjectId(projectDto.getId());
-            projectUserEntity.setProjectName(projectDto.getProjectName());
-            projectUserEntity.setUserId(user.getId());
-            projectUserEntity.setUserName(user.getUserName());
+            UserEntity userEntity = userDao.getOne(userId);
+            ProjectEntity projectEntity = projectDao.getOne(projectId);
+
+            projectUserEntity.setProjectId(projectId);
+            projectUserEntity.setProjectName(projectEntity.getProjectName());
+            projectUserEntity.setUserId(userId);
+            projectUserEntity.setUserPosition(userEntity.getUserPosition());
+            projectUserEntity.setUserName(userEntity.getUserName());
             projectUserEntity.setCreatedAt(LocalDateTime.now());
 
             projectUserDao.save(projectUserEntity);
         }
     }
-
-    /**
-     * 프로젝트 <> 산출물 매핑
-     * @param projectDto
-     * @param documentDTOS
-     */
-    private void projectDocumentMapping(ProjectDTO projectDto, List<DocumentDTO> documentDTOS) {
-        for(DocumentDTO document : documentDTOS){
-            ProjectDocumentEntity projectDocumentEntity = new ProjectDocumentEntity();
-
-            projectDocumentEntity.setProjectId(projectDto.getId());
-            projectDocumentEntity.setProjectName(projectDto.getProjectName());
-            projectDocumentEntity.setDocumentId(document.getId());
-            projectDocumentEntity.setDocumentType(document.getDocumentType());
-            projectDocumentEntity.setCreatedAt(LocalDateTime.now());
-
-            projectDocumentDao.save(projectDocumentEntity);
-        }
-    }
-
 
     /**
      * 프로젝트 시작일, 종료일 날짜 체크
@@ -242,12 +239,13 @@ public class ProjectTXService {
 
     /**
      * 참여인력 중 리더 포지션 카운트
-     * @param userDto
+     * @param userIds
      * @return
      */
-    private int getLeaderCnt(List<UserDTO> userDto) {
+    private int getLeaderCnt(List<Long> userIds) {
         int leaderCnt = 0;
-        for(UserDTO user : userDto){
+        for(Long userId : userIds){
+            UserEntity user = userDao.getOne(userId);
             if(UserPosition.LEADER.equals(user.getUserPosition())){
                 leaderCnt++;
             }

@@ -1,6 +1,7 @@
 package com.awesome.domains.projecttask.dtos;
 
 import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
+import com.awesome.domains.projecttask.enums.TaskPriority;
 import com.awesome.domains.projecttask.enums.TaskType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,9 +26,9 @@ public class ProjectTaskDTO {
 
     private LocalDate taskEndDate;
 
-    private String persons;
-
     private TaskType type;
+
+    private TaskPriority taskPriority;
 
     private LocalDateTime createdAt;
 
@@ -41,8 +42,8 @@ public class ProjectTaskDTO {
         taskDto.setSummary(projectTaskEntity.getSummary());
         taskDto.setTaskStartDate(projectTaskEntity.getTaskStartDate());
         taskDto.setTaskEndDate(projectTaskEntity.getTaskEndDate());
-        taskDto.setPersons(projectTaskEntity.getPersons());
         taskDto.setType(projectTaskEntity.getType());
+        taskDto.setTaskPriority(projectTaskEntity.getTaskPriority());
         taskDto.setCreatedAt(projectTaskEntity.getCreatedAt());
         taskDto.setUpdatedAt(projectTaskEntity.getUpdatedAt());
         return taskDto;

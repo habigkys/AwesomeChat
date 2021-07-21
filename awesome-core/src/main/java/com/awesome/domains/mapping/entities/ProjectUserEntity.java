@@ -9,6 +9,9 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * 프로젝트 <> 유저 매핑
+ */
 @NoArgsConstructor
 @Getter
 @Setter

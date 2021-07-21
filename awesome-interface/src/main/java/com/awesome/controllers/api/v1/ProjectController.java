@@ -1,6 +1,7 @@
 package com.awesome.controllers.api.v1;
 
 import com.awesome.applications.tx.ProjectTXService;
+import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
 import com.awesome.domains.document.dtos.DocumentDTO;
@@ -54,11 +55,12 @@ public class ProjectController {
     /**
      * 4. 프로젝트 생성
      * @param projectDto
+     * @param userIds
      * @return
      */
     @PostMapping
-    public ProjectDTO projectCreate(@RequestBody ProjectDTO projectDto, @RequestBody List<UserDTO> userDto) {
-        ProjectDTO createdProject = projectTXService.createProject(projectDto, userDto);
+    public ProjectDTO projectCreate(@RequestBody ProjectDTO projectDto, @RequestBody List<Long> userIds) {
+        ProjectDTO createdProject = projectTXService.createProject(projectDto, userIds);
 
         return createdProject;
     }
@@ -69,8 +71,8 @@ public class ProjectController {
      * @return
      */
     @PutMapping("/{id}")
-    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<UserDTO> userDto) {
-        ProjectDTO updatedProject = projectTXService.updateProject(projectDto, userDto);
+    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<Long> userIds) {
+        ProjectDTO updatedProject = projectTXService.updateProject(projectDto, userIds);
 
         return updatedProject;
     }
@@ -89,12 +91,13 @@ public class ProjectController {
 
     /**
      * 7. 프로젝트 산출물 수정
-     * @param projectDto, projectDocumentDTO
+     * @param projectDto
+     * @param documentTypes
      * @return
      */
     @PutMapping("/documents/{id}")
-    public String projectDocumentUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<DocumentDTO> documentDTO) {
-        projectTXService.updateProjectDocuments(projectDto, documentDTO);
+    public String projectDocumentUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<DocumentType> documentTypes) {
+        projectTXService.updateProjectDocuments(projectDto, documentTypes);
 
         return null;
     }

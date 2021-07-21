@@ -1,6 +1,7 @@
 package com.awesome.domains.project.dtos;
 
 import com.awesome.domains.project.entities.ProjectEntity;
+import com.awesome.domains.project.enums.ProjectPriority;
 import com.awesome.domains.project.enums.ProjectStatus;
 import com.awesome.domains.user.entities.UserEntity;
 import lombok.Getter;
@@ -23,6 +24,8 @@ public class ProjectDTO {
 
     private ProjectStatus status;
 
+    private ProjectPriority projectPriority;
+
     private LocalDate startDate;
 
     private LocalDate endDate;
@@ -37,6 +40,7 @@ public class ProjectDTO {
         dto.setProjectName(projectEntity.getProjectName());
         dto.setSummary(projectEntity.getSummary());
         dto.setStatus(projectEntity.getStatus());
+        dto.setProjectPriority(projectEntity.getProjectPriority());
         dto.setStartDate(projectEntity.getStartDate());
         dto.setEndDate(projectEntity.getEndDate());
         dto.setCreatedAt(projectEntity.getCreatedAt());
