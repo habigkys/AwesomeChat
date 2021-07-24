@@ -61,9 +61,9 @@ public class ProjectTaskService {
         toCreateProjectTaskEntity.setId(projectTaskDto.getId());
         toCreateProjectTaskEntity.setProjectId(projectId);
         toCreateProjectTaskEntity.setParentTaskId(projectTaskDto.getParentTaskId());
-        toCreateProjectTaskEntity.setPersons(projectTaskDto.getPersons());
         toCreateProjectTaskEntity.setType(projectTaskDto.getType());
         toCreateProjectTaskEntity.setSummary(projectTaskDto.getSummary());
+        toCreateProjectTaskEntity.setTaskPriority(projectTaskDto.getTaskPriority());
         toCreateProjectTaskEntity.setTaskStartDate(projectTaskDto.getTaskStartDate());
         toCreateProjectTaskEntity.setTaskEndDate(projectTaskDto.getTaskEndDate());
         toCreateProjectTaskEntity.setCreatedAt(LocalDateTime.now());
@@ -86,7 +86,7 @@ public class ProjectTaskService {
 
         ProjectTaskEntity toUpdateOne = byId.get();
         toUpdateOne.setSummary(projectTaskDto.getSummary());
-        toUpdateOne.setPersons(projectTaskDto.getPersons());
+        toUpdateOne.setTaskPriority(projectTaskDto.getTaskPriority());
         toUpdateOne.setTaskStartDate(projectTaskDto.getTaskStartDate());
         toUpdateOne.setTaskEndDate(projectTaskDto.getTaskEndDate());
         toUpdateOne.setType(projectTaskDto.getType());

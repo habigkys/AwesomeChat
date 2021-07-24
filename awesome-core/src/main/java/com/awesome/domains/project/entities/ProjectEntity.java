@@ -1,5 +1,6 @@
 package com.awesome.domains.project.entities;
 
+import com.awesome.domains.project.enums.ProjectPriority;
 import com.awesome.domains.project.enums.ProjectStatus;
 import com.awesome.domains.user.entities.UserEntity;
 import lombok.Getter;
@@ -40,14 +41,21 @@ public class ProjectEntity {
      * 프로젝트 상태
      */
     @Column(nullable = false, name = "project_status")
+    @Enumerated(EnumType.STRING)
     private ProjectStatus status;
+
+    /**
+     * 프로젝트 우선순위
+     */
+    @Column(nullable = false, name = "project_priority")
+    @Enumerated(EnumType.STRING)
+    private ProjectPriority projectPriority;
 
     /**
      * 프로젝트 시작 시간
      */
     @Column(nullable = false, name = "start_date")
     private LocalDate startDate;
-
 
     /**
      * 프로젝트 종료 시간

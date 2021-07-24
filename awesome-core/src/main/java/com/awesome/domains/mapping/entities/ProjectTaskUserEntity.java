@@ -1,6 +1,6 @@
 package com.awesome.domains.mapping.entities;
 
-import com.awesome.domains.document.enums.DocumentType;
+import com.awesome.domains.user.enums.UserPosition;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,41 +9,37 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * 타스크 <> 유저 매핑
+ */
 @NoArgsConstructor
 @Getter
 @Setter
 @Entity
-@Table(name = "project_document")
+@Table(name = "project_task_user")
 @ToString
-public class ProjectDocumentEntity {
-
+public class ProjectTaskUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * 프로젝트 ID
+     * 타스크 ID
      */
-    @Column(nullable = false, name = "project_id")
-    private Long projectId;
+    @Column(nullable = false, name = "task_id")
+    private Long taskId;
 
     /**
-     * 프로젝트명
+     * 유저 ID
      */
-    @Column(nullable = true, name = "project_name")
-    private String projectName;
+    @Column(nullable = false, name = "user_id")
+    private Long userId;
 
     /**
-     * 산출물 ID
+     * 유저 직책
      */
-    @Column(nullable = false, name = "document_id")
-    private Long documentId;
-
-    /**
-     * 산출물 타입
-     */
-    @Column(nullable = false, name = "user_name")
-    private DocumentType documentType;
+    @Column(nullable = false, name = "user_position")
+    private UserPosition userPosition;
 
     @Column(nullable = true, name = "created_at")
     private LocalDateTime createdAt;
