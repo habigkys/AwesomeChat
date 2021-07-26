@@ -7,12 +7,14 @@ import com.awesome.domains.project.services.ProjectService;
 import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.user.dtos.UserDTO;
 import lombok.AllArgsConstructor;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @AllArgsConstructor
-@RestController("/api/v1/projects")
+@RestController
+@RequestMapping("/api/v1/projects")
 public class ProjectController {
     private final ProjectService projectService;
     private final ProjectTXService projectTXService;
@@ -22,20 +24,18 @@ public class ProjectController {
      * @return
      */
     @GetMapping("/")
-    public List<ProjectDTO> projectList() {
-        List<ProjectDTO> projectList = projectService.getProjectList();
-
-        return projectList;
+    public List<ProjectDTO> projectList(Model model) {
+        return projectService.getProjectList();
     }
 
     /**
      * 2. 특정 프로젝트
-     * @param id
+     * @param projectId
      * @return
      */
-    @GetMapping("/{id}")
-    public ProjectDTO projectOne(@PathVariable("id") Long id) {
-        ProjectDTO project = projectService.getProject(id);
+    @GetMapping("/{projectId}")
+    public ProjectDTO projectOne(@PathVariable("projectId") Long projectId) {
+        ProjectDTO project = projectService.getProject(projectId);
 
         return project;
     }
@@ -45,8 +45,8 @@ public class ProjectController {
      * @param projectName
      * @return
      */
-    @GetMapping("/nameLike/{name}")
-    public List<ProjectDTO> projectNameLike(@PathVariable("name") String projectName) {
+    @GetMapping("/nameLike/{projectName}")
+    public List<ProjectDTO> projectNameLike(@PathVariable("projectName") String projectName) {
         List<ProjectDTO> projectNameLike = projectService.getProjectNameLike(projectName);
 
         return projectNameLike;
@@ -58,7 +58,7 @@ public class ProjectController {
      * @param userIds
      * @return
      */
-    @PostMapping
+    @PostMapping("/create")
     public ProjectDTO projectCreate(@RequestBody ProjectDTO projectDto, @RequestBody List<Long> userIds) {
         ProjectDTO createdProject = projectTXService.createProject(projectDto, userIds);
 
@@ -70,21 +70,21 @@ public class ProjectController {
      * @param projectDto
      * @return
      */
-    @PutMapping("/{id}")
-    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<Long> userIds) {
-        ProjectDTO updatedProject = projectTXService.updateProject(projectDto, userIds);
+    @PutMapping("/update/{projectId}")
+    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @PathVariable("projectId") Long projectId, @RequestBody List<Long> userIds) {
+        ProjectDTO updatedProject = projectTXService.updateProject(projectDto, projectId, userIds);
 
         return updatedProject;
     }
 
     /**
      * 6. 프로젝트 삭제
-     * @param id
+     * @param projectId
      * @return
      */
-    @DeleteMapping("/{id}")
-    public String projectDelete(@PathVariable("id") Long id) {
-        projectService.deleteProject(id);
+    @DeleteMapping("/delete/{projectId}")
+    public String projectDelete(@PathVariable("id") Long projectId) {
+        projectService.deleteProject(projectId);
 
         return null;
     }
@@ -95,7 +95,7 @@ public class ProjectController {
      * @param documentTypes
      * @return
      */
-    @PutMapping("/documents/{id}")
+    @PutMapping("/documents")
     public String projectDocumentUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<DocumentType> documentTypes) {
         projectTXService.updateProjectDocuments(projectDto, documentTypes);
 

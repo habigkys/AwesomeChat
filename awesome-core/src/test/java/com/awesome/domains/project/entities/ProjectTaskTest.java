@@ -22,27 +22,4 @@ class ProjectTaskTest {
     void testAssertNotNull() {
         assertNotNull(projectTaskDAO);
     }
-
-    @Test
-    void testSave() {
-        ProjectTaskEntity projectTaskEntity = new ProjectTaskEntity();
-        projectTaskEntity.setProjectId(1L);
-        projectTaskEntity.setParentTaskId(0L);
-        projectTaskEntity.setSummary("");
-        projectTaskEntity.setTaskStartDate(LocalDate.now());
-        projectTaskEntity.setTaskEndDate(LocalDate.now());
-        projectTaskEntity.setPersons("");
-        projectTaskEntity.setType(TaskType.TASK);
-        projectTaskEntity.setCreatedAt(LocalDateTime.now());
-        projectTaskEntity.setUpdatedAt(LocalDateTime.now());
-
-        projectTaskDAO.save(projectTaskEntity);
-    }
-
-    @Test
-    void testSaveList() {
-        List<ProjectTaskEntity> byIdList = projectTaskDAO.findAllByProjectId(1L);
-
-        assertFalse(CollectionUtils.isEmpty(byIdList));
-    }
 }

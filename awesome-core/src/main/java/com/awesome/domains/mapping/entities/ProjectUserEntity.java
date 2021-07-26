@@ -46,6 +46,7 @@ public class ProjectUserEntity {
      * 유저 직책
      */
     @Column(nullable = false, name = "user_position")
+    @Enumerated(EnumType.STRING)
     private UserPosition userPosition;
 
     /**

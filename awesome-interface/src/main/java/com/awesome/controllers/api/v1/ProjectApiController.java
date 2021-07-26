@@ -1,3 +1,4 @@
+/*
 package com.awesome.controllers.api.v1;
 
 import com.awesome.domains.project.entities.ProjectEntity;
@@ -98,3 +99,4 @@ public class ProjectApiController {
   }
 
 }
+*/

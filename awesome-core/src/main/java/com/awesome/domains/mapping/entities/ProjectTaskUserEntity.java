@@ -39,6 +39,7 @@ public class ProjectTaskUserEntity {
      * 유저 직책
      */
     @Column(nullable = false, name = "user_position")
+    @Enumerated(EnumType.STRING)
     private UserPosition userPosition;
 
     @Column(nullable = true, name = "created_at")

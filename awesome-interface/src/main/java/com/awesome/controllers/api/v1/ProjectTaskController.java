@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @AllArgsConstructor
-@RestController("/api/v1/tasks")
+@RestController
+@RequestMapping("/api/v1/tasks")
 public class ProjectTaskController {
     private final ProjectTaskService projectTaskService;
 
@@ -25,12 +26,12 @@ public class ProjectTaskController {
 
     /**
      * 2. 특정 프로젝트 타스크/이슈
-     * @param id
+     * @param taskId
      * @return
      */
-    @GetMapping("/{id}")
-    public ProjectTaskDTO projectTaskOne(@PathVariable("id") Long id) {
-        ProjectTaskDTO projectTask = projectTaskService.getProjectTask(id);
+    @GetMapping("/{taskId}")
+    public ProjectTaskDTO projectTaskOne(@PathVariable("taskId") Long taskId) {
+        ProjectTaskDTO projectTask = projectTaskService.getProjectTask(taskId);
 
         return null;
     }
@@ -41,7 +42,7 @@ public class ProjectTaskController {
      * @param projectId
      * @return
      */
-    @GetMapping("/{projectId}/tasks")
+    @GetMapping("/taskList/{projectId}")
     public List<ProjectTaskDTO> projectTaskList(@PathVariable("projectId") Long projectId) {
         List<ProjectTaskDTO> projectTaskList = projectTaskService.getProjectTaskListByProject(projectId);
 
@@ -51,12 +52,12 @@ public class ProjectTaskController {
     /**
      * 4. 프로젝트 타스크/이슈 생성
      * @param projectTaskDto
-     * @param id
+     * @param projectId
      * @return
      */
-    @PostMapping("/{id}")
-    public ProjectTaskDTO createProjectTask(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("id") Long id) {
-        ProjectTaskDTO projectTask = projectTaskService.createProjectTask(projectTaskDto, id);
+    @PostMapping("/create")
+    public ProjectTaskDTO createProjectTask(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("projectId") Long projectId) {
+        ProjectTaskDTO projectTask = projectTaskService.createProjectTask(projectTaskDto, projectId);
 
         return projectTask;
     }
@@ -66,21 +67,21 @@ public class ProjectTaskController {
      * @param projectTaskDto
      * @return
      */
-    @PutMapping("/{id}")
-    public ProjectTaskDTO projectTaskUpdate(@RequestBody ProjectTaskDTO projectTaskDto) {
-        ProjectTaskDTO updatedProjectTask = projectTaskService.updateProjectTask(projectTaskDto);
+    @PutMapping("/update/{taskId}")
+    public ProjectTaskDTO projectTaskUpdate(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("taskId") Long taskId) {
+        ProjectTaskDTO updatedProjectTask = projectTaskService.updateProjectTask(projectTaskDto, taskId);
 
         return updatedProjectTask;
     }
 
     /**
      * 6. 프로젝트 타스크/이슈 삭제
-     * @param id
+     * @param taskId
      * @return
      */
-    @DeleteMapping("/{id}")
-    public String projectTaskDelete(@PathVariable("id") Long id) {
-        projectTaskService.deleteProjectTask(id);
+    @DeleteMapping("/delete/{taskId}")
+    public String projectTaskDelete(@PathVariable("id") Long taskId) {
+        projectTaskService.deleteProjectTask(taskId);
 
         return null;
     }

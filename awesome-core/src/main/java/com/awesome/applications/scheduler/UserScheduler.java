@@ -23,7 +23,7 @@ public class UserScheduler {
         for(UserDTO user : allUserList){
             user.setUserYear(user.getUserYear()+1);
 
-            userService.updateUser(user);
+            userService.updateUser(user, user.getId());
         }
     }
 }

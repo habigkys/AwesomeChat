@@ -87,12 +87,12 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public ProjectDTO updateProject(ProjectDTO projectDto, List<Long> userIds){
+    public ProjectDTO updateProject(ProjectDTO projectDto, Long ProjectId, List<Long> userIds){
         if(!validateProjectDate(projectDto)) {
             throw new IllegalArgumentException();
         }
 
-        Optional<ProjectEntity> byId = projectDao.findById(projectDto.getId());
+        Optional<ProjectEntity> byId = projectDao.findById(ProjectId);
 
         ProjectEntity toUpdateOne = byId.get();
 

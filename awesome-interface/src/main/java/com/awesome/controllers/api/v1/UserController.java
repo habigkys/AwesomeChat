@@ -10,7 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @AllArgsConstructor
-@RestController("/api/v1/users")
+@RestController
+@RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
     private final ProjectTXService projectTXService;
@@ -55,7 +56,7 @@ public class UserController {
      * @param UserDTO
      * @return
      */
-    @PostMapping
+    @PostMapping("/create")
     public UserDTO userCreate(@RequestBody UserDTO UserDTO) {
         UserDTO createduser = userService.createUser(UserDTO);
 
@@ -67,9 +68,9 @@ public class UserController {
      * @param UserDTO
      * @return
      */
-    @PutMapping("/{id}")
-    public UserDTO userUpdate(@RequestBody UserDTO UserDTO) {
-        UserDTO updateduser = userService.updateUser(UserDTO);
+    @PutMapping("/update/{userId}")
+    public UserDTO userUpdate(@RequestBody UserDTO UserDTO, @PathVariable("userId") Long userId) {
+        UserDTO updateduser = userService.updateUser(UserDTO, userId);
 
         return updateduser;
     }
@@ -79,7 +80,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @DeleteMapping("/{userId}")
+    @DeleteMapping("/delete/{userId}")
     public String userDelete(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
 
@@ -91,7 +92,7 @@ public class UserController {
      * @param projectId
      * @return
      */
-    @GetMapping("/{projectId}/users")
+    @GetMapping("/project/userList/{projectId}")
     public List<UserDTO> projectUserList(@PathVariable("projectId") Long projectId) {
         List<UserDTO> userList = projectTXService.getProjectUserList(projectId);
 
@@ -104,7 +105,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @GetMapping("/{projectId}/users")
+    @GetMapping("/user/projectList/{userId}")
     public List<ProjectDTO> userProjectList(@PathVariable("userId") Long userId) {
         List<ProjectDTO> projectList = projectTXService.getUserProjectList(userId);
 
