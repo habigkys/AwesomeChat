@@ -24,7 +24,7 @@ public class ProjectController {
      * @return
      */
     @GetMapping("/")
-    public List<ProjectDTO> projectList(Model model) {
+    public List<ProjectDTO> projectList() {
         return projectService.getProjectList();
     }
 

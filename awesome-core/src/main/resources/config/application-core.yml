@@ -42,3 +42,6 @@ spring:
     jdbc-url: jdbc:mysql://localhost:3306/demo_db?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
     username: root
     password: moreco2!
+---
+handlebars.suffix: .hbs
+handlebars.cache: false

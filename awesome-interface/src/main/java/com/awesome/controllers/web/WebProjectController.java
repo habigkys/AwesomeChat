@@ -1,8 +1,7 @@
-package com.awesome.controllers;
+package com.awesome.controllers.web;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @AllArgsConstructor

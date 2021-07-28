@@ -15,6 +15,7 @@ import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
+import com.awesome.infrastructures.AwesomeException;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -44,23 +45,23 @@ public class ProjectTXService {
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDto, List<Long> userIds){
         if(!validateProjectDate(projectDto)) {
-            throw new IllegalArgumentException();
+            throw new AwesomeException("시작일은 종료일보다 뒤에 올 수 없습니다.");
         }
 
         // 프로젝트 참여인력이 없으면 안됨
         if(CollectionUtils.isEmpty(userIds)){
-            throw new IllegalArgumentException();
+            throw new AwesomeException("프로젝트 참여인력을 포함해 주세요.");
         }
 
         // 프로젝트 리더는 1명을 초과할 수 없음
-        if(getLeaderCnt(userIds) > 1){
-            throw new IllegalArgumentException();
+        if(getLeaderCnt(projectDto.getId()) > 1){
+            throw new AwesomeException("프로젝트 리더는 1명을 초과할 수 없습니다.");
         }
 
         // 과거 또는 현재의 프로젝트 생성시 TODO 불가
         if((LocalDate.now().isAfter(projectDto.getEndDate()) || LocalDate.now().isAfter(projectDto.getStartDate()) && LocalDate.now().isBefore(projectDto.getEndDate()))
                 && ProjectStatus.TODO.equals(projectDto.getStatus())){
-            throw new IllegalArgumentException();
+            throw new AwesomeException("설정된 프로젝트 기간은 해야 함 프로젝트로 등록할 수 없습니다.");
         }
 
         ProjectEntity toCreateProjectEntity = new ProjectEntity();
@@ -87,43 +88,43 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public ProjectDTO updateProject(ProjectDTO projectDto, Long ProjectId, List<Long> userIds){
+    public ProjectDTO updateProject(ProjectDTO projectDto, Long projectId, List<Long> userIds){
         if(!validateProjectDate(projectDto)) {
-            throw new IllegalArgumentException();
+            throw new AwesomeException("시작일은 종료일보다 뒤에 올 수 없습니다.");
         }
 
-        Optional<ProjectEntity> byId = projectDao.findById(ProjectId);
+        Optional<ProjectEntity> byId = projectDao.findById(projectId);
 
         ProjectEntity toUpdateOne = byId.get();
 
         // TODO 상태가 아닌 프로젝트의 상태를 CANCELED로 변경하려고 할 때 생성일부터 일주일 미만인 프로젝트일 때 변경 불가
         if(ProjectStatus.CANCELED.equals(projectDto.getStatus()) && !ProjectStatus.TODO.equals(toUpdateOne.getStatus())
                 && ChronoUnit.WEEKS.between(toUpdateOne.getCreatedAt(), LocalDateTime.now()) < 1){
-            throw new IllegalArgumentException();
+            throw new AwesomeException("프로젝트 생성일이 " + toUpdateOne.getCreatedAt() + " 입니다. 생성일부터 일주일 미만인 프로젝트는 취소상태로 변경할 수 없습니다.");
         }
 
         // 프로젝트 종료까지 일주일 미만 남았으면 프로젝트 우선순위를 VERYHIGH로 변경 불가
         if(ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority())
                 && ChronoUnit.WEEKS.between(toUpdateOne.getEndDate(), LocalDateTime.now()) < 1){
-            throw new IllegalArgumentException();
+            throw new AwesomeException("프로젝트 종료일이 " + toUpdateOne.getEndDate() + " 입니다. 종료일까지 일주일 미만인 프로젝트는 우선순위를 매우 높음으로 변경할 수 없습니다.");
         }
 
         // 프로젝트 종료까지 이주일 미만 남았으면 프로젝트 우선순위를 HIGH로 변경 불가
         if(ProjectPriority.HIGH.equals(projectDto.getProjectPriority())
                 && ChronoUnit.WEEKS.between(toUpdateOne.getEndDate(), LocalDateTime.now()) < 2){
-            throw new IllegalArgumentException();
+            throw new AwesomeException("프로젝트 종료일이 " + toUpdateOne.getEndDate() + " 입니다. 종료일까지 이주일 미만인 프로젝트는 우선순위를 높음으로 변경할 수 없습니다.");
         }
 
         // 프로젝트 참여인력 변경이 있을 경우
         if(!CollectionUtils.isEmpty(userIds)){
             // 프로젝트 우선순위가 VERYHIGH 또는 HIGH로 급할 경우 인력 교체 불가
             if((ProjectPriority.HIGH.equals(projectDto.getProjectPriority()) || ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority()))){
-                throw new IllegalArgumentException();
+                throw new AwesomeException("프로젝트 우선순위가 " + projectDto.getProjectPriority() + " 입니다. 해당 우선순위의 프로젝트는 인력을 변경할 수 없습니다.");
             }
 
             // 프로젝트 리더는 1명을 초과할 수 없음
-            if(getLeaderCnt(userIds) > 1){
-                throw new IllegalArgumentException();
+            if(getLeaderCnt(projectId) > 1){
+                throw new AwesomeException("프로젝트 리더는 1명을 초과할 수 없습니다.");
             }
 
             List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectDto.getId());
@@ -239,17 +240,12 @@ public class ProjectTXService {
 
     /**
      * 참여인력 중 리더 포지션 카운트
-     * @param userIds
+     * @param projectId
      * @return
      */
-    private int getLeaderCnt(List<Long> userIds) {
-        int leaderCnt = 0;
-        for(Long userId : userIds){
-            UserEntity user = userDao.getOne(userId);
-            if(UserPosition.LEADER.equals(user.getUserPosition())){
-                leaderCnt++;
-            }
-        }
-        return leaderCnt;
+    private int getLeaderCnt(Long projectId) {
+        List<ProjectUserEntity> leaderCnt = projectUserDao.findAllByProjectIdAndUserPosition(projectId, UserPosition.LEADER);
+
+        return leaderCnt.size();
     }
 }
