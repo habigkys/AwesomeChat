@@ -3,14 +3,13 @@ package com.awesome.domains.project.dtos;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.enums.ProjectPriority;
 import com.awesome.domains.project.enums.ProjectStatus;
-import com.awesome.domains.user.entities.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
@@ -26,8 +25,10 @@ public class ProjectDTO {
 
     private ProjectPriority projectPriority;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
     private LocalDateTime createdAt;

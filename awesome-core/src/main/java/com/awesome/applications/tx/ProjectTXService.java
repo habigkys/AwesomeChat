@@ -43,13 +43,13 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public ProjectDTO createProject(ProjectDTO projectDto, List<Long> userIds){
+    public ProjectDTO createProject(ProjectDTO projectDto, Long[] userIds){
         if(!validateProjectDate(projectDto)) {
             throw new AwesomeException("시작일은 종료일보다 뒤에 올 수 없습니다.");
         }
 
         // 프로젝트 참여인력이 없으면 안됨
-        if(CollectionUtils.isEmpty(userIds)){
+        if(userIds.length <= 0){
             throw new AwesomeException("프로젝트 참여인력을 포함해 주세요.");
         }
 
@@ -69,6 +69,7 @@ public class ProjectTXService {
         toCreateProjectEntity.setProjectName(projectDto.getProjectName());
         toCreateProjectEntity.setSummary(projectDto.getSummary());
         toCreateProjectEntity.setStatus(projectDto.getStatus());
+        toCreateProjectEntity.setProjectPriority(projectDto.getProjectPriority());
         toCreateProjectEntity.setStartDate(projectDto.getStartDate());
         toCreateProjectEntity.setEndDate(projectDto.getEndDate());
         toCreateProjectEntity.setCreatedAt(LocalDateTime.now());
@@ -88,7 +89,7 @@ public class ProjectTXService {
      * @return
      */
     @Transactional
-    public ProjectDTO updateProject(ProjectDTO projectDto, Long projectId, List<Long> userIds){
+    public ProjectDTO updateProject(ProjectDTO projectDto, Long projectId, Long[] userIds){
         if(!validateProjectDate(projectDto)) {
             throw new AwesomeException("시작일은 종료일보다 뒤에 올 수 없습니다.");
         }
@@ -116,7 +117,7 @@ public class ProjectTXService {
         }
 
         // 프로젝트 참여인력 변경이 있을 경우
-        if(!CollectionUtils.isEmpty(userIds)){
+        if(userIds.length != 0){
             // 프로젝트 우선순위가 VERYHIGH 또는 HIGH로 급할 경우 인력 교체 불가
             if((ProjectPriority.HIGH.equals(projectDto.getProjectPriority()) || ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority()))){
                 throw new AwesomeException("프로젝트 우선순위가 " + projectDto.getProjectPriority() + " 입니다. 해당 우선순위의 프로젝트는 인력을 변경할 수 없습니다.");
@@ -211,7 +212,7 @@ public class ProjectTXService {
      * @param projectId
      * @param userIds
      */
-    private void projectUserMapping(Long projectId, List<Long> userIds) {
+    private void projectUserMapping(Long projectId, Long[] userIds) {
         for(Long userId : userIds){
             ProjectUserEntity projectUserEntity = new ProjectUserEntity();
 

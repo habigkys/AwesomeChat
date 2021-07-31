@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -59,7 +60,7 @@ public class ProjectController {
      * @return
      */
     @PostMapping("/create")
-    public ProjectDTO projectCreate(@RequestBody ProjectDTO projectDto, @RequestBody List<Long> userIds) {
+    public ProjectDTO projectCreate(ProjectDTO projectDto, Long[] userIds) {
         ProjectDTO createdProject = projectTXService.createProject(projectDto, userIds);
 
         return createdProject;
@@ -68,10 +69,12 @@ public class ProjectController {
     /**
      * 5. 프로젝트 수정
      * @param projectDto
+     * @param projectId
+     * @param userIds
      * @return
      */
     @PutMapping("/update/{projectId}")
-    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @PathVariable("projectId") Long projectId, @RequestBody List<Long> userIds) {
+    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @PathVariable("projectId") Long projectId, @RequestBody Long[] userIds) {
         ProjectDTO updatedProject = projectTXService.updateProject(projectDto, projectId, userIds);
 
         return updatedProject;
