@@ -66,8 +66,6 @@ public class ProjectTaskService {
         toCreateProjectTaskEntity.setTaskPriority(projectTaskDto.getTaskPriority());
         toCreateProjectTaskEntity.setTaskStartDate(projectTaskDto.getTaskStartDate());
         toCreateProjectTaskEntity.setTaskEndDate(projectTaskDto.getTaskEndDate());
-        toCreateProjectTaskEntity.setCreatedAt(LocalDateTime.now());
-        toCreateProjectTaskEntity.setUpdatedAt(LocalDateTime.now());
 
         return ProjectTaskDTO.convert(projectTaskDAO.save(toCreateProjectTaskEntity));
     }
@@ -91,7 +89,6 @@ public class ProjectTaskService {
         toUpdateOne.setTaskStartDate(projectTaskDto.getTaskStartDate());
         toUpdateOne.setTaskEndDate(projectTaskDto.getTaskEndDate());
         toUpdateOne.setType(projectTaskDto.getType());
-        toUpdateOne.setUpdatedAt(LocalDateTime.now());
 
         return ProjectTaskDTO.convert(projectTaskDAO.save(toUpdateOne));
     }

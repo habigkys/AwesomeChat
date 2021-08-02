@@ -4,8 +4,10 @@ import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
 import lombok.AllArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -56,8 +58,6 @@ public class UserService {
         toCreateUserEntity.setUserName(UserDto.getUserName());
         toCreateUserEntity.setUserPosition(UserDto.getUserPosition());
         toCreateUserEntity.setUserYear(UserDto.getUserYear());
-        toCreateUserEntity.setCreatedAt(LocalDateTime.now());
-        toCreateUserEntity.setUpdatedAt(LocalDateTime.now());
 
         return UserDTO.convert(userDao.save(toCreateUserEntity));
     }
@@ -74,7 +74,6 @@ public class UserService {
         toUpdateOne.setUserName(UserDto.getUserName());
         toUpdateOne.setUserPosition(UserDto.getUserPosition());
         toUpdateOne.setUserYear(UserDto.getUserYear());
-        toUpdateOne.setUpdatedAt(LocalDateTime.now());
 
         return UserDTO.convert(userDao.save(toUpdateOne));
     }
@@ -85,5 +84,19 @@ public class UserService {
      */
     public void deleteUser(Long userId){
         userDao.deleteById(userId);
+    }
+
+    /**
+     * 유저 연차 +1 - UserScheduler
+     */
+    @Transactional
+    public void updateUserYear(){
+        List<UserEntity> userList = userDao.findAll();
+
+        for(UserEntity user : userList){
+            user.setUserYear(user.getUserYear()+1);
+
+            userDao.save(user);
+        }
     }
 }

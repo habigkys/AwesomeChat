@@ -16,6 +16,7 @@ import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
 import com.awesome.infrastructures.AwesomeException;
+import com.awesome.infrastructures.AwesomeExceptionType;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -45,23 +46,23 @@ public class ProjectTXService {
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDto, Long[] userIds){
         if(!validateProjectDate(projectDto)) {
-            throw new AwesomeException("시작일은 종료일보다 뒤에 올 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
         // 프로젝트 참여인력이 없으면 안됨
         if(userIds.length <= 0){
-            throw new AwesomeException("프로젝트 참여인력을 포함해 주세요.");
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_USER);
         }
 
         // 프로젝트 리더는 1명을 초과할 수 없음
         if(getLeaderCnt(projectDto.getId()) > 1){
-            throw new AwesomeException("프로젝트 리더는 1명을 초과할 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.MULTI_LEADER);
         }
 
         // 과거 또는 현재의 프로젝트 생성시 TODO 불가
         if((LocalDate.now().isAfter(projectDto.getEndDate()) || LocalDate.now().isAfter(projectDto.getStartDate()) && LocalDate.now().isBefore(projectDto.getEndDate()))
                 && ProjectStatus.TODO.equals(projectDto.getStatus())){
-            throw new AwesomeException("설정된 프로젝트 기간은 해야 함 프로젝트로 등록할 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.TODO_DATE_INVALID);
         }
 
         ProjectEntity toCreateProjectEntity = new ProjectEntity();
@@ -72,8 +73,6 @@ public class ProjectTXService {
         toCreateProjectEntity.setProjectPriority(projectDto.getProjectPriority());
         toCreateProjectEntity.setStartDate(projectDto.getStartDate());
         toCreateProjectEntity.setEndDate(projectDto.getEndDate());
-        toCreateProjectEntity.setCreatedAt(LocalDateTime.now());
-        toCreateProjectEntity.setUpdatedAt(LocalDateTime.now());
 
         ProjectEntity savedProjectEntity = projectDao.save(toCreateProjectEntity);
 
@@ -91,7 +90,7 @@ public class ProjectTXService {
     @Transactional
     public ProjectDTO updateProject(ProjectDTO projectDto, Long projectId, Long[] userIds){
         if(!validateProjectDate(projectDto)) {
-            throw new AwesomeException("시작일은 종료일보다 뒤에 올 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
         Optional<ProjectEntity> byId = projectDao.findById(projectId);
@@ -101,31 +100,31 @@ public class ProjectTXService {
         // TODO 상태가 아닌 프로젝트의 상태를 CANCELED로 변경하려고 할 때 생성일부터 일주일 미만인 프로젝트일 때 변경 불가
         if(ProjectStatus.CANCELED.equals(projectDto.getStatus()) && !ProjectStatus.TODO.equals(toUpdateOne.getStatus())
                 && ChronoUnit.WEEKS.between(toUpdateOne.getCreatedAt(), LocalDateTime.now()) < 1){
-            throw new AwesomeException("프로젝트 생성일이 " + toUpdateOne.getCreatedAt() + " 입니다. 생성일부터 일주일 미만인 프로젝트는 취소상태로 변경할 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.ONE_WEEK_CANCEL);
         }
 
         // 프로젝트 종료까지 일주일 미만 남았으면 프로젝트 우선순위를 VERYHIGH로 변경 불가
         if(ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority())
                 && ChronoUnit.WEEKS.between(toUpdateOne.getEndDate(), LocalDateTime.now()) < 1){
-            throw new AwesomeException("프로젝트 종료일이 " + toUpdateOne.getEndDate() + " 입니다. 종료일까지 일주일 미만인 프로젝트는 우선순위를 매우 높음으로 변경할 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.ONE_WEEK_PRIORITY);
         }
 
         // 프로젝트 종료까지 이주일 미만 남았으면 프로젝트 우선순위를 HIGH로 변경 불가
         if(ProjectPriority.HIGH.equals(projectDto.getProjectPriority())
                 && ChronoUnit.WEEKS.between(toUpdateOne.getEndDate(), LocalDateTime.now()) < 2){
-            throw new AwesomeException("프로젝트 종료일이 " + toUpdateOne.getEndDate() + " 입니다. 종료일까지 이주일 미만인 프로젝트는 우선순위를 높음으로 변경할 수 없습니다.");
+            throw new AwesomeException(AwesomeExceptionType.TWO_WEEK_PRIORITY);
         }
 
         // 프로젝트 참여인력 변경이 있을 경우
         if(userIds.length != 0){
             // 프로젝트 우선순위가 VERYHIGH 또는 HIGH로 급할 경우 인력 교체 불가
             if((ProjectPriority.HIGH.equals(projectDto.getProjectPriority()) || ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority()))){
-                throw new AwesomeException("프로젝트 우선순위가 " + projectDto.getProjectPriority() + " 입니다. 해당 우선순위의 프로젝트는 인력을 변경할 수 없습니다.");
+                throw new AwesomeException(AwesomeExceptionType.HIGH_PRIORITY_USER_CHANGE);
             }
 
             // 프로젝트 리더는 1명을 초과할 수 없음
             if(getLeaderCnt(projectId) > 1){
-                throw new AwesomeException("프로젝트 리더는 1명을 초과할 수 없습니다.");
+                throw new AwesomeException(AwesomeExceptionType.MULTI_LEADER);
             }
 
             List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectDto.getId());
@@ -143,7 +142,6 @@ public class ProjectTXService {
         toUpdateOne.setStatus(projectDto.getStatus());
         toUpdateOne.setStartDate(projectDto.getStartDate());
         toUpdateOne.setEndDate(projectDto.getEndDate());
-        toUpdateOne.setUpdatedAt(LocalDateTime.now());
 
         return ProjectDTO.convert(projectDao.save(toUpdateOne));
     }
@@ -200,7 +198,6 @@ public class ProjectTXService {
 
                 documentEntity.setProjectId(projectDto.getId());
                 documentEntity.setDocumentType(documentType);
-                documentEntity.setCreatedAt(LocalDateTime.now());
 
                 documentDao.save(documentEntity);
             }
@@ -224,7 +221,6 @@ public class ProjectTXService {
             projectUserEntity.setUserId(userId);
             projectUserEntity.setUserPosition(userEntity.getUserPosition());
             projectUserEntity.setUserName(userEntity.getUserName());
-            projectUserEntity.setCreatedAt(LocalDateTime.now());
 
             projectUserDao.save(projectUserEntity);
         }
@@ -244,9 +240,7 @@ public class ProjectTXService {
      * @param projectId
      * @return
      */
-    private int getLeaderCnt(Long projectId) {
-        List<ProjectUserEntity> leaderCnt = projectUserDao.findAllByProjectIdAndUserPosition(projectId, UserPosition.LEADER);
-
-        return leaderCnt.size();
+    private Long getLeaderCnt(Long projectId) {
+        return projectUserDao.countByProjectIdAndUserPosition(projectId, UserPosition.LEADER);
     }
 }

@@ -18,12 +18,6 @@ public class UserScheduler {
     @Scheduled(cron="0 0 0 31 12 ?")
     @Transactional
     public void userYearAddition(){
-        List<UserDTO> allUserList = userService.getUserList();
-
-        for(UserDTO user : allUserList){
-            user.setUserYear(user.getUserYear()+1);
-
-            userService.updateUser(user, user.getId());
-        }
+        userService.updateUserYear();
     }
 }
