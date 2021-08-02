@@ -5,8 +5,10 @@ import com.awesome.configurations.WebConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+@EnableJpaAuditing
 @SpringBootApplication
 @EnableScheduling
 public class WebApplication {
