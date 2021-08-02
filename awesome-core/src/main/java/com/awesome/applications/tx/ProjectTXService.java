@@ -50,7 +50,7 @@ public class ProjectTXService {
         }
 
         // 프로젝트 참여인력이 없으면 안됨
-        if(userIds.length <= 0){
+        if(userIds == null || userIds.length <= 0){
             throw new AwesomeException(AwesomeExceptionType.EMPTY_USER);
         }
 

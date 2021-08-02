@@ -1,14 +1,11 @@
 package com.awesome.domains.user.dtos;
 
-import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
-import com.awesome.domains.projecttask.enums.TaskType;
 import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter

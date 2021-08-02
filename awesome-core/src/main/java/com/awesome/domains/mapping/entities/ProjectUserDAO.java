@@ -1,6 +1,5 @@
 package com.awesome.domains.mapping.entities;
 
-import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.user.enums.UserPosition;
 import org.springframework.data.jpa.repository.JpaRepository;
 
