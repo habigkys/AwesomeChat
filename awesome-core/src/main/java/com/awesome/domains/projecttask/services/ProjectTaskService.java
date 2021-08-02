@@ -28,20 +28,20 @@ public class ProjectTaskService {
 
     /**
      * 2. 특정 프로젝트 타스크/이슈 - ProjectTaskController
-     * @param id
+     * @param taskId
      * @return
      */
-    public ProjectTaskDTO getProjectTask(Long id){
-        return ProjectTaskDTO.convert(projectTaskDAO.findById(id).get());
+    public ProjectTaskDTO getProjectTask(Long taskId){
+        return ProjectTaskDTO.convert(projectTaskDAO.findById(taskId).get());
     }
 
     /**
      * 3. 특정 프로젝트의 타스크 리스트 - ProjectController
-     * @param id
+     * @param projectId
      * @return
      */
-    public List<ProjectTaskDTO> getProjectTaskListByProject(Long id){
-        List<ProjectTaskEntity> projectTaskEntityList = projectTaskDAO.findAllByProjectId(id);
+    public List<ProjectTaskDTO> getProjectTaskListByProject(Long projectId){
+        List<ProjectTaskEntity> projectTaskEntityList = projectTaskDAO.findAllByProjectId(projectId);
 
         return projectTaskEntityList.stream().map(ProjectTaskDTO::convert).collect(Collectors.toList());
     }
@@ -75,14 +75,15 @@ public class ProjectTaskService {
     /**
      * 5. 프로젝트 타스크/이슈 업데이트 - ProjectTaskController
      * @param projectTaskDto
+     * @param taskId
      * @return
      */
-    public ProjectTaskDTO updateProjectTask(ProjectTaskDTO projectTaskDto){
+    public ProjectTaskDTO updateProjectTask(ProjectTaskDTO projectTaskDto, Long taskId){
         if(!validateProjectTaskDate(projectTaskDto)) {
             throw new IllegalArgumentException();
         }
 
-        Optional<ProjectTaskEntity> byId = projectTaskDAO.findById(projectTaskDto.getId());
+        Optional<ProjectTaskEntity> byId = projectTaskDAO.findById(taskId);
 
         ProjectTaskEntity toUpdateOne = byId.get();
         toUpdateOne.setSummary(projectTaskDto.getSummary());
@@ -97,10 +98,10 @@ public class ProjectTaskService {
 
     /**
      * 6. 프로젝트 타스크/이슈 삭제- ProjectTaskController
-     * @param id
+     * @param taskId
      */
-    public void deleteProjectTask(Long id){
-        projectTaskDAO.deleteById(id);
+    public void deleteProjectTask(Long taskId){
+        projectTaskDAO.deleteById(taskId);
     }
 
     /**

@@ -32,11 +32,11 @@ public class ProjectService {
 
     /**
      * 2. 특정 프로젝트 - ProjectController
-     * @param id
+     * @param projectId
      * @return
      */
-    public ProjectDTO getProject(Long id){
-        return ProjectDTO.convert(projectDAO.findById(id).get());
+    public ProjectDTO getProject(Long projectId){
+        return ProjectDTO.convert(projectDAO.findById(projectId).get());
     }
 
     /**
@@ -52,9 +52,9 @@ public class ProjectService {
 
     /**
      * 3. 프로젝트 삭제 - ProjectController
-     * @param id
+     * @param projectId
      */
-    public void deleteProject(Long id){
-        projectDAO.deleteById(id);
+    public void deleteProject(Long projectId){
+        projectDAO.deleteById(projectId);
     }
 }

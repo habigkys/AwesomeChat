@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>LIST</title>
+    <link rel='stylesheet' href='/webjars/bootstrap/4.5.0/css/bootstrap.min.css'>
+  <script>
+    function fn_userList() {
+      $.ajax({
+        url:"/api/v1/users/",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          let userList = '<label for="projectUsers">프로젝트 참여인력</label></br>';
+          for(let i=0;i<data.length;i++) {
+            userList += '<input type="checkbox" name="userIds" id="userIds" value="' + data[i].id + '"/>' + data[i].userName;
+          }
+          $("#projectUsers").html("");
+          $("#projectUsers").append(userList);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
+    function fn_projectList() {
+      $.ajax({
+        url:"/api/v1/projects/",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          let projectList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ID</th><th scope="col">PROJECTNAME</th><th scope="col">SUMMARY</th></tr></thead><tbody>';
+          for(let i=0;i<data.length;i++) {
+            projectList += '<tr class="text-center">';
+
+            projectList += '<th scope="row"><span th:text="' + data[i].id + '">' + data[i].id + '</span></th>';
+            projectList += '<td><a th:href=""><span th:text="' + data[i].projectName+ '">' + data[i].projectName + '</span></a></td>';
+            projectList += '<td><span th:text="' + data[i].summary+ '">' + data[i].summary + '</span></td>';
+            projectList += '</tr>';
+          }
+          projectList += '</tbody></table>';
+
+          $("#projectTable").html("");
+          $("#projectTable").append(projectList);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+<header th:insert="common/header.html"></header>
+<div class="container">
+  <div id="projectTable">
+    <table class="table">
+      <thead class="thead-light">
+      <tr class="text-center">
+        <th scope="col">ID</th>
+        <th scope="col">PROJECTNAME</th>
+        <th scope="col">SUMMARY</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-12">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectCreateModal" onclick="fn_userList();">프로젝트 등록</button>
+    <button type="button" class="btn btn-primary" onclick="fn_projectList();">프로젝트 조회</button>
+  </div>
+  <div class="modal fade" id="projectCreateModal" tabindex="-1" role="dialog" aria-labelledby="projectCreateLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="projectCreateLabel">프로젝트 등록</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/api/v1/projects/create/" method="post">
+            <div class="form-group">
+              <label for="projectName">프로젝트명</label>
+              <input type="text" class="form-control" name="projectName" id="projectName" placeholder="프로젝트명을 입력하세요">
+            </div>
+            <div class="form-group">
+              <label for="summary">프로젝트 Summary</label>
+              <input type="text" class="form-control" name="summary" id="summary" placeholder="프로젝트 요약을 입력하세요">
+            </div>
+            <div class="form-group">
+              <label for="status">프로젝트 상태</label>
+              <select class="form-control" name="status" id="status">
+                <option value="TODO" selected>해야 함</option>
+                <option value="STOPPED">일시 정지</option>
+                <option value="PROGRESS">진행중</option>
+                <option value="CANCELED">취소됨</option>
+                <option value="RESOLVED">완료됨</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="projectPriority">프로젝트 우선순위</label>
+              <select class="form-control" name="projectPriority" id="projectPriority">
+                <option value="VERYHIGH" selected>중요도 매우 높음</option>
+                <option value="HIGH">중요도 높음</option>
+                <option value="NORMAL">보통</option>
+                <option value="LOW">중요도 낮음</option>
+                <option value="VERYLOW">중요도 매우 낮음</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="startDate">프로젝트 시작일</label>
+              <input type='date' class="form-control" name="startDate" id='startDate'/>
+            </div>
+            <div class="form-group">
+              <label for="endDate">프로젝트 종료일</label>
+              <input type='date' class="form-control" name="endDate" id='endDate'/>
+            </div>
+            <div class="form-group" id="projectUsers">
+            </div>
+            <div class="row">
+              <div class="col-auto mr-auto"></div>
+              <div class="col-auto">
+                <input class="btn btn-primary" type="submit" role="button" value="등록">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/webjars/jquery/3.5.1/jquery.min.js"></script>
+<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

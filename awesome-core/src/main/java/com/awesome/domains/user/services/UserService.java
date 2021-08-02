@@ -67,8 +67,8 @@ public class UserService {
      * @param UserDto
      * @return
      */
-    public UserDTO updateUser(UserDTO UserDto){
-        Optional<UserEntity> byId = userDao.findById(UserDto.getId());
+    public UserDTO updateUser(UserDTO UserDto, Long userId){
+        Optional<UserEntity> byId = userDao.findById(userId);
         UserEntity toUpdateOne = byId.get();
 
         toUpdateOne.setUserName(UserDto.getUserName());
