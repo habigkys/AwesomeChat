@@ -1,7 +1,6 @@
 package com.awesome.domains.mapping.dtos;
 
 import com.awesome.domains.mapping.entities.ProjectUserEntity;
-import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

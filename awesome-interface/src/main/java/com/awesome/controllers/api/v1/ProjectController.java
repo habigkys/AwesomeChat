@@ -1,16 +1,13 @@
 package com.awesome.controllers.api.v1;
 
 import com.awesome.applications.tx.ProjectTXService;
+import com.awesome.controllers.api.v1.dtos.ProjectDetailDTO;
 import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
-import com.awesome.domains.document.dtos.DocumentDTO;
-import com.awesome.domains.user.dtos.UserDTO;
 import lombok.AllArgsConstructor;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
@@ -55,12 +52,21 @@ public class ProjectController {
 
     /**
      * 4. 프로젝트 생성
-     * @param projectDto
-     * @param userIds
+     * @param projectDetailDTO
      * @return
      */
     @PostMapping("/create")
-    public ProjectDTO projectCreate(ProjectDTO projectDto, Long[] userIds) {
+    public ProjectDTO projectCreate(ProjectDetailDTO projectDetailDTO) {
+        ProjectDTO projectDto = new ProjectDTO();
+        projectDto.setProjectName(projectDetailDTO.getProjectName());
+        projectDto.setSummary(projectDetailDTO.getSummary());
+        projectDto.setStatus(projectDetailDTO.getStatus());
+        projectDto.setProjectPriority(projectDetailDTO.getProjectPriority());
+        projectDto.setStartDate(projectDetailDTO.getStartDate());
+        projectDto.setEndDate(projectDetailDTO.getEndDate());
+
+        Long[] userIds = projectDetailDTO.getUserIds();
+
         ProjectDTO createdProject = projectTXService.createProject(projectDto, userIds);
 
         return createdProject;

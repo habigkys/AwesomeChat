@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,6 +21,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "project_user")
 @ToString
+@EntityListeners(AuditingEntityListener.class)
 public class ProjectUserEntity {
 
     @Id
@@ -55,9 +59,11 @@ public class ProjectUserEntity {
     @Column(nullable = false, name = "user_name")
     private String userName;
 
+    @CreatedDate
     @Column(nullable = true, name = "created_at")
     private LocalDateTime createdAt;
 
+    @LastModifiedDate
     @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
 }
