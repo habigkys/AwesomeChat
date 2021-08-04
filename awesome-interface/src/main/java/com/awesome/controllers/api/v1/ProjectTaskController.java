@@ -55,7 +55,7 @@ public class ProjectTaskController {
      * @param projectId
      * @return
      */
-    @PostMapping("/create")
+    @PostMapping("/")
     public ProjectTaskDTO createProjectTask(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("projectId") Long projectId) {
         ProjectTaskDTO projectTask = projectTaskService.createProjectTask(projectTaskDto, projectId);
 
@@ -67,7 +67,7 @@ public class ProjectTaskController {
      * @param projectTaskDto
      * @return
      */
-    @PutMapping("/update/{taskId}")
+    @PutMapping("/{taskId}")
     public ProjectTaskDTO projectTaskUpdate(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("taskId") Long taskId) {
         ProjectTaskDTO updatedProjectTask = projectTaskService.updateProjectTask(projectTaskDto, taskId);
 
@@ -79,7 +79,7 @@ public class ProjectTaskController {
      * @param taskId
      * @return
      */
-    @DeleteMapping("/delete/{taskId}")
+    @DeleteMapping("/{taskId}")
     public String projectTaskDelete(@PathVariable("id") Long taskId) {
         projectTaskService.deleteProjectTask(taskId);
 

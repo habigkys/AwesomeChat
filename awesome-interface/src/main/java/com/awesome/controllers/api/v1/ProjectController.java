@@ -6,6 +6,7 @@ import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
 import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.user.dtos.UserDTO;
+import com.awesome.dtos.ProjectDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -55,13 +56,22 @@ public class ProjectController {
 
     /**
      * 4. 프로젝트 생성
-     * @param projectDto
-     * @param userIds
+     * @param projectDetail
      * @return
      */
-    @PostMapping("/create")
-    public ProjectDTO projectCreate(ProjectDTO projectDto, Long[] userIds) {
-        ProjectDTO createdProject = projectTXService.createProject(projectDto, userIds);
+    @PostMapping("/")
+    public ProjectDTO projectCreate(ProjectDetail projectDetail) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setProjectName(projectDetail.getProjectName());
+        projectDTO.setSummary(projectDetail.getSummary());
+        projectDTO.setStatus(projectDetail.getStatus());
+        projectDTO.setProjectPriority(projectDetail.getProjectPriority());
+        projectDTO.setStartDate(projectDetail.getStartDate());
+        projectDTO.setEndDate(projectDetail.getEndDate());
+
+        Long[] userIds = projectDetail.getUserIds();
+
+        ProjectDTO createdProject = projectTXService.createProject(projectDTO, userIds);
 
         return createdProject;
     }
@@ -73,7 +83,7 @@ public class ProjectController {
      * @param userIds
      * @return
      */
-    @PutMapping("/update/{projectId}")
+    @PutMapping("/{projectId}")
     public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @PathVariable("projectId") Long projectId, @RequestBody Long[] userIds) {
         ProjectDTO updatedProject = projectTXService.updateProject(projectDto, projectId, userIds);
 
@@ -85,7 +95,7 @@ public class ProjectController {
      * @param projectId
      * @return
      */
-    @DeleteMapping("/delete/{projectId}")
+    @DeleteMapping("/{projectId}")
     public String projectDelete(@PathVariable("id") Long projectId) {
         projectService.deleteProject(projectId);
 
