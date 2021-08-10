@@ -13,10 +13,4 @@ public class WebProjectController {
     public String projectList(){
         return "project/list.html";
     }
-
-    @GetMapping("/update")
-    public String projectCreate(@PathVariable("projectId") Long projectId, Model model){
-        model.addAttribute("projectId", projectId);
-        return "project/update.html";
-    }
 }

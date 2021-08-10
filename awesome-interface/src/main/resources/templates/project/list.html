@@ -25,6 +25,28 @@
       });
     }
 
+    function fn_getProjectUserList(projectId) {
+      $.ajax({
+        url:"/api/v1/users/",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          let userList = '<label for="projectUsers">프로젝트 참여인력</label></br>';
+          for(let i=0;i<data.length;i++) {
+            userList += '<input type="checkbox" name="userIds" id="userIds" value="' + data[i].id + '"/>' + data[i].userName;
+          }
+          $("#updateProjectUsers").html("");
+          $("#updateProjectUsers").append(userList);
+
+          fn_getProject(projectId);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
     function fn_projectList() {
       $.ajax({
         url:"/api/v1/projects/",
@@ -40,7 +62,7 @@
             projectList += '<tr class="text-center">';
 
             projectList += '<th scope="row"><span th:text="' + data[i].id + '">' + data[i].id + '</span></th>';
-            projectList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_getProject(' + data[i].id + ');">' + data[i].projectName + '</button></td>';
+            projectList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_getProjectUserList(' + data[i].id + ');">' + data[i].projectName + '</button></td>';
             projectList += '<td><span th:text="' + data[i].summary+ '">' + data[i].summary + '</span></td>';
             projectList += '<td><span th:text="' + data[i].status+ '">' + data[i].status + '</span></td>';
             projectList += '<td><span th:text="' + data[i].projectPriority+ '">' + data[i].projectPriority + '</span></td>';

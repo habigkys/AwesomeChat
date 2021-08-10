@@ -243,4 +243,23 @@ public class ProjectTXService {
     private Long getLeaderCnt(Long projectId) {
         return projectUserDao.countByProjectIdAndUserPosition(projectId, UserPosition.LEADER);
     }
+
+    /**
+     * 특정 프로젝트의 유저 ID 리스트 조회 - UserController
+     * @param projectId
+     * @return
+     */
+    public List<Long> getProjectUserIdList(Long projectId) {
+        List<Long> userList = new ArrayList<>();
+        List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
+
+        for(ProjectUserEntity projectUserEntity : byProjectId){
+            Optional<UserEntity> user = userDao.findById(projectUserEntity.getUserId());
+
+            UserDTO userDTO = UserDTO.convert(user.get());
+            userList.add(userDTO.getId());
+        }
+
+        return userList;
+    }
 }

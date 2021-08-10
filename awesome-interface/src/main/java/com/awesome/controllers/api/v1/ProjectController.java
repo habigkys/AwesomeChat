@@ -36,10 +36,20 @@ public class ProjectController {
      * @return
      */
     @GetMapping("/{projectId}")
-    public ProjectDTO projectOne(@PathVariable("projectId") Long projectId) {
+    public ProjectDetail projectOne(@PathVariable("projectId") Long projectId) {
         ProjectDTO project = projectService.getProject(projectId);
+        List<Long> userIds = projectTXService.getProjectUserIdList(projectId);
 
-        return project;
+        ProjectDetail projectDetail = new ProjectDetail();
+        projectDetail.setProjectName(project.getProjectName());
+        projectDetail.setSummary(project.getSummary());
+        projectDetail.setStatus(project.getStatus());
+        projectDetail.setProjectPriority(project.getProjectPriority());
+        projectDetail.setStartDate(project.getStartDate());
+        projectDetail.setEndDate(project.getEndDate());
+        projectDetail.setUserIds(userIds);
+
+        return projectDetail;
     }
 
     /**
@@ -62,7 +72,7 @@ public class ProjectController {
     @PostMapping("/")
     public ProjectDTO projectCreate(ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
-        List<Long> userIds = getUserIds(projectDetail);
+        List<Long> userIds = projectDetail.getUserIds();
 
         ProjectDTO createdProject = projectTXService.createProject(projectDTO, userIds);
 
@@ -77,7 +87,7 @@ public class ProjectController {
     @PutMapping("/")
     public ProjectDTO projectUpdate(ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
-        List<Long> userIds = getUserIds(projectDetail);
+        List<Long> userIds = projectDetail.getUserIds();
 
         ProjectDTO updatedProject = projectTXService.updateProject(projectDTO, userIds);
 
@@ -107,10 +117,6 @@ public class ProjectController {
         projectTXService.updateProjectDocuments(projectDto, documentTypes);
 
         return null;
-    }
-
-    private List<Long> getUserIds(ProjectDetail projectDetail) {
-        return projectDetail.getUserIds();
     }
 
     private ProjectDTO getProjectDTO(ProjectDetail projectDetail) {
