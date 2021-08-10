@@ -56,7 +56,7 @@ public class UserController {
      * @param UserDTO
      * @return
      */
-    @PostMapping("/create")
+    @PostMapping("/")
     public UserDTO userCreate(@RequestBody UserDTO UserDTO) {
         UserDTO createduser = userService.createUser(UserDTO);
 
@@ -68,7 +68,7 @@ public class UserController {
      * @param UserDTO
      * @return
      */
-    @PutMapping("/update/{userId}")
+    @PutMapping("/{userId}")
     public UserDTO userUpdate(@RequestBody UserDTO UserDTO, @PathVariable("userId") Long userId) {
         UserDTO updateduser = userService.updateUser(UserDTO, userId);
 
@@ -80,7 +80,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @DeleteMapping("/delete/{userId}")
+    @DeleteMapping("/{userId}")
     public String userDelete(@PathVariable("userId") Long userId) {
         userService.deleteUser(userId);
 
@@ -92,7 +92,7 @@ public class UserController {
      * @param projectId
      * @return
      */
-    @GetMapping("/project/userList/{projectId}")
+    @GetMapping("/projects/{projectId}")
     public List<UserDTO> projectUserList(@PathVariable("projectId") Long projectId) {
         List<UserDTO> userList = projectTXService.getProjectUserList(projectId);
 
@@ -105,7 +105,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @GetMapping("/user/projectList/{userId}")
+    @GetMapping("/{userId}/projectList")
     public List<ProjectDTO> userProjectList(@PathVariable("userId") Long userId) {
         List<ProjectDTO> projectList = projectTXService.getUserProjectList(userId);
 

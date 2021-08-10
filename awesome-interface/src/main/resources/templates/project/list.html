@@ -25,6 +25,28 @@
       });
     }
 
+    function fn_getProjectUserList(projectId) {
+      $.ajax({
+        url:"/api/v1/users/",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          let userList = '<label for="projectUsers">프로젝트 참여인력</label></br>';
+          for(let i=0;i<data.length;i++) {
+            userList += '<input type="checkbox" name="userIds" id="userIds" value="' + data[i].id + '"/>' + data[i].userName;
+          }
+          $("#updateProjectUsers").html("");
+          $("#updateProjectUsers").append(userList);
+
+          fn_getProject(projectId);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
     function fn_projectList() {
       $.ajax({
         url:"/api/v1/projects/",
@@ -33,19 +55,45 @@
         data:{},
         dataType : "json",
         success:function(data){
-          let projectList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ID</th><th scope="col">PROJECTNAME</th><th scope="col">SUMMARY</th></tr></thead><tbody>';
+          let projectList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ID</th>'
+                  + '<th scope="col">PROJECT NAME</th><th scope="col">SUMMARY</th><th scope="col">PROJECT STATUS</th><th scope="col">PROJECT PRIORITY</th>'
+                  + '<th scope="col">START DATE</th><th scope="col">END DATE</th></tr></thead><tbody>';
           for(let i=0;i<data.length;i++) {
             projectList += '<tr class="text-center">';
 
             projectList += '<th scope="row"><span th:text="' + data[i].id + '">' + data[i].id + '</span></th>';
-            projectList += '<td><a th:href=""><span th:text="' + data[i].projectName+ '">' + data[i].projectName + '</span></a></td>';
+            projectList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_getProjectUserList(' + data[i].id + ');">' + data[i].projectName + '</button></td>';
             projectList += '<td><span th:text="' + data[i].summary+ '">' + data[i].summary + '</span></td>';
+            projectList += '<td><span th:text="' + data[i].status+ '">' + data[i].status + '</span></td>';
+            projectList += '<td><span th:text="' + data[i].projectPriority+ '">' + data[i].projectPriority + '</span></td>';
+            projectList += '<td><span th:text="' + data[i].startDate+ '">' + data[i].startDate + '</span></td>';
+            projectList += '<td><span th:text="' + data[i].endDate+ '">' + data[i].endDate + '</span></td>';
             projectList += '</tr>';
           }
           projectList += '</tbody></table>';
 
           $("#projectTable").html("");
           $("#projectTable").append(projectList);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
+    function fn_getProject(projectId) {
+      $.ajax({
+        url:"/api/v1/projects/" + projectId,
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          $("#projectUpdateName").val(data.projectName);
+          $("#updateSummary").val(data.summary);
+          $("#updateStatus").val(data.status);
+          $("#updateProjectPriority").val(data.projectPriority);
+          $("#updateStartDate").val(data.startDate);
+          $("#updateEndDate").val(data.endDate);
         },
         error:function(key, textStatus){
         }
@@ -61,8 +109,12 @@
       <thead class="thead-light">
       <tr class="text-center">
         <th scope="col">ID</th>
-        <th scope="col">PROJECTNAME</th>
+        <th scope="col">PROJECT NAME</th>
         <th scope="col">SUMMARY</th>
+        <th scope="col">PROJECT STATUS</th>
+        <th scope="col">PROJECT PRIORITY</th>
+        <th scope="col">START DATE</th>
+        <th scope="col">END DATE</th>
       </tr>
       </thead>
       <tbody>
@@ -83,7 +135,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <form action="/api/v1/projects/create/" method="post">
+          <form action="/api/v1/projects/" method="post">
             <div class="form-group">
               <label for="projectName">프로젝트명</label>
               <input type="text" class="form-control" name="projectName" id="projectName" placeholder="프로젝트명을 입력하세요">
@@ -126,6 +178,70 @@
               <div class="col-auto mr-auto"></div>
               <div class="col-auto">
                 <input class="btn btn-primary" type="submit" role="button" value="등록">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="projectUpdateModal" tabindex="-1" role="dialog" aria-labelledby="projectCreateLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="projectUpdateLabel">프로젝트 수정</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/api/v1/projects/" method="put">
+            <div class="form-group">
+              <label for="projectName">프로젝트명</label>
+              <input type="text" class="form-control" name="projectName" id="projectUpdateName" placeholder="프로젝트명을 입력하세요">
+            </div>
+            <div class="form-group">
+              <label for="summary">프로젝트 Summary</label>
+              <input type="text" class="form-control" name="summary" id="updateSummary" placeholder="프로젝트 요약을 입력하세요">
+            </div>
+            <div class="form-group">
+              <label for="status">프로젝트 상태</label>
+              <select class="form-control" name="status" id="updateStatus">
+                <option value="TODO" selected>해야 함</option>
+                <option value="STOPPED">일시 정지</option>
+                <option value="PROGRESS">진행중</option>
+                <option value="CANCELED">취소됨</option>
+                <option value="RESOLVED">완료됨</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="projectPriority">프로젝트 우선순위</label>
+              <select class="form-control" name="projectPriority" id="updateProjectPriority">
+                <option value="VERYHIGH" selected>중요도 매우 높음</option>
+                <option value="HIGH">중요도 높음</option>
+                <option value="NORMAL">보통</option>
+                <option value="LOW">중요도 낮음</option>
+                <option value="VERYLOW">중요도 매우 낮음</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="startDate">프로젝트 시작일</label>
+              <input type='date' class="form-control" name="startDate" id='updateStartDate'/>
+            </div>
+            <div class="form-group">
+              <label for="endDate">프로젝트 종료일</label>
+              <input type='date' class="form-control" name="endDate" id='updateEndDate'/>
+            </div>
+            <div class="form-group" id="updateProjectUsers">
+            </div>
+            <div class="row">
+              <div class="col-auto mr-auto"></div>
+              <div class="col-auto">
+                <input class="btn btn-primary" type="submit" role="button" value="수정">
               </div>
             </div>
           </form>

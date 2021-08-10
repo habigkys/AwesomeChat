@@ -5,6 +5,7 @@ import com.awesome.controllers.api.v1.dtos.ProjectDetailDTO;
 import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
+import com.awesome.dtos.ProjectDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,10 +33,20 @@ public class ProjectController {
      * @return
      */
     @GetMapping("/{projectId}")
-    public ProjectDTO projectOne(@PathVariable("projectId") Long projectId) {
+    public ProjectDetail projectOne(@PathVariable("projectId") Long projectId) {
         ProjectDTO project = projectService.getProject(projectId);
+        List<Long> userIds = projectTXService.getProjectUserIdList(projectId);
 
-        return project;
+        ProjectDetail projectDetail = new ProjectDetail();
+        projectDetail.setProjectName(project.getProjectName());
+        projectDetail.setSummary(project.getSummary());
+        projectDetail.setStatus(project.getStatus());
+        projectDetail.setProjectPriority(project.getProjectPriority());
+        projectDetail.setStartDate(project.getStartDate());
+        projectDetail.setEndDate(project.getEndDate());
+        projectDetail.setUserIds(userIds);
+
+        return projectDetail;
     }
 
     /**
@@ -52,36 +63,30 @@ public class ProjectController {
 
     /**
      * 4. 프로젝트 생성
-     * @param projectDetailDTO
+     * @param projectDetail
      * @return
      */
-    @PostMapping("/create")
-    public ProjectDTO projectCreate(ProjectDetailDTO projectDetailDTO) {
-        ProjectDTO projectDto = new ProjectDTO();
-        projectDto.setProjectName(projectDetailDTO.getProjectName());
-        projectDto.setSummary(projectDetailDTO.getSummary());
-        projectDto.setStatus(projectDetailDTO.getStatus());
-        projectDto.setProjectPriority(projectDetailDTO.getProjectPriority());
-        projectDto.setStartDate(projectDetailDTO.getStartDate());
-        projectDto.setEndDate(projectDetailDTO.getEndDate());
+    @PostMapping("/")
+    public ProjectDTO projectCreate(ProjectDetail projectDetail) {
+        ProjectDTO projectDTO = getProjectDTO(projectDetail);
+        List<Long> userIds = projectDetail.getUserIds();
 
-        Long[] userIds = projectDetailDTO.getUserIds();
-
-        ProjectDTO createdProject = projectTXService.createProject(projectDto, userIds);
+        ProjectDTO createdProject = projectTXService.createProject(projectDTO, userIds);
 
         return createdProject;
     }
 
     /**
      * 5. 프로젝트 수정
-     * @param projectDto
-     * @param projectId
-     * @param userIds
+     * @param projectDetail
      * @return
      */
-    @PutMapping("/update/{projectId}")
-    public ProjectDTO projectUpdate(@RequestBody ProjectDTO projectDto, @PathVariable("projectId") Long projectId, @RequestBody Long[] userIds) {
-        ProjectDTO updatedProject = projectTXService.updateProject(projectDto, projectId, userIds);
+    @PutMapping("/")
+    public ProjectDTO projectUpdate(ProjectDetail projectDetail) {
+        ProjectDTO projectDTO = getProjectDTO(projectDetail);
+        List<Long> userIds = projectDetail.getUserIds();
+
+        ProjectDTO updatedProject = projectTXService.updateProject(projectDTO, userIds);
 
         return updatedProject;
     }
@@ -91,7 +96,7 @@ public class ProjectController {
      * @param projectId
      * @return
      */
-    @DeleteMapping("/delete/{projectId}")
+    @DeleteMapping("/{projectId}")
     public String projectDelete(@PathVariable("id") Long projectId) {
         projectService.deleteProject(projectId);
 
@@ -109,5 +114,16 @@ public class ProjectController {
         projectTXService.updateProjectDocuments(projectDto, documentTypes);
 
         return null;
+    }
+
+    private ProjectDTO getProjectDTO(ProjectDetail projectDetail) {
+        ProjectDTO projectDTO = new ProjectDTO();
+        projectDTO.setProjectName(projectDetail.getProjectName());
+        projectDTO.setSummary(projectDetail.getSummary());
+        projectDTO.setStatus(projectDetail.getStatus());
+        projectDTO.setProjectPriority(projectDetail.getProjectPriority());
+        projectDTO.setStartDate(projectDetail.getStartDate());
+        projectDTO.setEndDate(projectDetail.getEndDate());
+        return projectDTO;
     }
 }
