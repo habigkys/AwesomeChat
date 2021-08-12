@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 public class ProjectTaskDTO {
     private Long id;
 
+    private String projectTaskName;
+
     private Long projectId;
 
     private Long parentTaskId;
@@ -37,6 +39,7 @@ public class ProjectTaskDTO {
     public static ProjectTaskDTO convert(ProjectTaskEntity projectTaskEntity) {
         ProjectTaskDTO taskDto = new ProjectTaskDTO();
         taskDto.setId(projectTaskEntity.getId());
+        taskDto.setProjectTaskName(projectTaskEntity.getProjectTaskName());
         taskDto.setProjectId(projectTaskEntity.getProjectId());
         taskDto.setParentTaskId(projectTaskEntity.getParentTaskId());
         taskDto.setSummary(projectTaskEntity.getSummary());

@@ -40,18 +40,19 @@ public class ProjectTXService {
 
     /**
      * 4. 프로젝트 생성 - ProjectController
-     * @param projectDto, userDto
+     * @param projectDto
+     * @param users
      * @return
      */
     @Transactional
-    public ProjectDTO createProject(ProjectDTO projectDto, List<Long> userIds){
+    public ProjectDTO createProject(ProjectDTO projectDto, List<UserDTO> users){
         if(!validateProjectDate(projectDto)) {
             throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
         // 프로젝트 참여인력이 없으면 안됨
-        if(userIds.size() <= 0){
-            throw new AwesomeException(AwesomeExceptionType.EMPTY_USER);
+        if(CollectionUtils.isEmpty(users)){
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_PROJECT_USER);
         }
 
         // 프로젝트 리더는 1명을 초과할 수 없음
@@ -77,7 +78,7 @@ public class ProjectTXService {
         ProjectEntity savedProjectEntity = projectDao.save(toCreateProjectEntity);
 
         // 프로젝트 <> 유저 매핑 정보 저장
-        projectUserMapping(savedProjectEntity.getId(), userIds);
+        projectUserMapping(savedProjectEntity.getId(), users);
 
         return ProjectDTO.convert(savedProjectEntity);
     }
@@ -85,15 +86,20 @@ public class ProjectTXService {
     /**
      * 5. 프로젝트 수정 - ProjectController
      * @param projectDto
+     * @param users
      * @return
      */
     @Transactional
-    public ProjectDTO updateProject(ProjectDTO projectDto, List<Long> userIds){
+    public ProjectDTO updateProject(ProjectDTO projectDto, List<UserDTO> users){
         if(!validateProjectDate(projectDto)) {
             throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
         Optional<ProjectEntity> byId = projectDao.findById(projectDto.getId());
+
+        if(byId.isEmpty()){
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_PROJECT);
+        }
 
         ProjectEntity toUpdateOne = byId.get();
 
@@ -116,7 +122,7 @@ public class ProjectTXService {
         }
 
         // 프로젝트 참여인력 변경이 있을 경우
-        if(userIds.size() != 0){
+        if(!CollectionUtils.isEmpty(users)){
             // 프로젝트 우선순위가 VERYHIGH 또는 HIGH로 급할 경우 인력 교체 불가
             if((ProjectPriority.HIGH.equals(projectDto.getProjectPriority()) || ProjectPriority.VERYHIGH.equals(projectDto.getProjectPriority()))){
                 throw new AwesomeException(AwesomeExceptionType.HIGH_PRIORITY_USER_CHANGE);
@@ -134,7 +140,7 @@ public class ProjectTXService {
                 projectUserDao.delete(mappingEntity);
             }
             // 프로젝트 <> 유저 매핑 정보 저장
-            projectUserMapping(projectDto.getId(), userIds);
+            projectUserMapping(projectDto.getId(), users);
         }
 
         toUpdateOne.setProjectName(projectDto.getProjectName());
@@ -155,6 +161,10 @@ public class ProjectTXService {
         List<UserDTO> userDTOList = new ArrayList<>();
         List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
 
+        if(byProjectId.isEmpty()){
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_PROJECT);
+        }
+
         for(ProjectUserEntity projectUserEntity : byProjectId){
             Optional<UserEntity> user = userDao.findById(projectUserEntity.getUserId());
 
@@ -173,6 +183,10 @@ public class ProjectTXService {
     public List<ProjectDTO> getUserProjectList(Long userId){
         List<ProjectDTO> projectDTOList = new ArrayList<>();
         List<ProjectUserEntity> byUserId = projectUserDao.findAllByUserId(userId);
+
+        if(byUserId.isEmpty()){
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_USER);
+        }
 
         for(ProjectUserEntity projectUserEntity : byUserId){
             Optional<ProjectEntity> project = projectDao.findById(projectUserEntity.getProjectId());
@@ -207,18 +221,18 @@ public class ProjectTXService {
     /**
      * 프로젝트 <> 유저 매핑
      * @param projectId
-     * @param userIds
+     * @param users
      */
-    private void projectUserMapping(Long projectId, List<Long> userIds) {
-        for(Long userId : userIds){
+    private void projectUserMapping(Long projectId, List<UserDTO> users) {
+        for(UserDTO user : users){
             ProjectUserEntity projectUserEntity = new ProjectUserEntity();
 
-            UserEntity userEntity = userDao.getOne(userId);
+            UserEntity userEntity = userDao.getOne(user.getId());
             ProjectEntity projectEntity = projectDao.getOne(projectId);
 
             projectUserEntity.setProjectId(projectId);
             projectUserEntity.setProjectName(projectEntity.getProjectName());
-            projectUserEntity.setUserId(userId);
+            projectUserEntity.setUserId(user.getId());
             projectUserEntity.setUserPosition(userEntity.getUserPosition());
             projectUserEntity.setUserName(userEntity.getUserName());
 
@@ -245,21 +259,21 @@ public class ProjectTXService {
     }
 
     /**
-     * 특정 프로젝트의 유저 ID 리스트 조회 - UserController
+     * 특정 프로젝트의 유저 리스트 조회 - UserController
      * @param projectId
      * @return
      */
-    public List<Long> getProjectUserIdList(Long projectId) {
-        List<Long> userList = new ArrayList<>();
+    public List<UserDTO> getProjectUserIdList(Long projectId) {
+        List<UserDTO> users = new ArrayList<>();
         List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
 
         for(ProjectUserEntity projectUserEntity : byProjectId){
             Optional<UserEntity> user = userDao.findById(projectUserEntity.getUserId());
 
             UserDTO userDTO = UserDTO.convert(user.get());
-            userList.add(userDTO.getId());
+            users.add(userDTO);
         }
 
-        return userList;
+        return users;
     }
 }

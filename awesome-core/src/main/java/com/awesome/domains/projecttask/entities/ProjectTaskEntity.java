@@ -30,15 +30,21 @@ public class ProjectTaskEntity {
     private Long id;
 
     /**
+     * 타스크명
+     */
+    @Column(nullable = false, name = "project_task_name")
+    private String projectTaskName;
+
+    /**
      * 타스크 소속 프로젝트
      */
-    @Column(nullable = false, name = "project_id")
+    @Column(nullable = true, name = "project_id")
     private Long projectId;
 
     /**
      * 타스크 소속 타스크(이슈)
      */
-    @Column(nullable = false, name = "parent_task_id")
+    @Column(nullable = true, name = "parent_task_id")
     private Long parentTaskId;
 
     /**

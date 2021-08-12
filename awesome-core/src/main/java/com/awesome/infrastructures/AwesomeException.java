@@ -12,6 +12,7 @@ public class AwesomeException extends RuntimeException{
     }
 
     public AwesomeException(AwesomeExceptionType awesomeExceptionType) {
+        super(awesomeExceptionType.name());
         this.exceptionType = awesomeExceptionType;
     }
 }

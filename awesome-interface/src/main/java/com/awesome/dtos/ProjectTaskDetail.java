@@ -2,6 +2,8 @@ package com.awesome.dtos;
 
 import com.awesome.domains.project.enums.ProjectPriority;
 import com.awesome.domains.project.enums.ProjectStatus;
+import com.awesome.domains.projecttask.enums.TaskPriority;
+import com.awesome.domains.projecttask.enums.TaskType;
 import com.awesome.domains.user.dtos.UserDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,22 +16,26 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ProjectDetail {
+public class ProjectTaskDetail {
+    private Long projectTaskId;
+
     private Long projectId;
 
-    private String projectName;
+    private Long parentTaskId;
 
-    private String summary;
+    private String projectTaskName;
 
-    private ProjectStatus status;
+    private String taskSummary;
 
-    private ProjectPriority projectPriority;
+    private TaskType taskType;
+
+    private TaskPriority taskPriority;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate startDate;
+    private LocalDate taskStartDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate endDate;
+    private LocalDate taskEndDate;
 
     List<UserDTO> users;
 }

@@ -1,7 +1,13 @@
 package com.awesome.controllers.api.v1;
 
+import com.awesome.applications.tx.ProjectTXService;
+import com.awesome.applications.tx.ProjectTaskTXService;
+import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
 import com.awesome.domains.projecttask.services.ProjectTaskService;
+import com.awesome.domains.user.dtos.UserDTO;
+import com.awesome.dtos.ProjectDetail;
+import com.awesome.dtos.ProjectTaskDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/v1/tasks")
 public class ProjectTaskController {
     private final ProjectTaskService projectTaskService;
+    private final ProjectTaskTXService projectTaskTXService;
 
     /**
      * 1. 프로젝트 타스크/이슈 리스트
@@ -19,9 +26,7 @@ public class ProjectTaskController {
      */
     @GetMapping("/")
     public List<ProjectTaskDTO> projectTaskList() {
-        List<ProjectTaskDTO> projectTaskList = projectTaskService.getProjectTaskList();
-
-        return projectTaskList;
+        return projectTaskService.getProjectTaskList();
     }
 
     /**
@@ -30,10 +35,23 @@ public class ProjectTaskController {
      * @return
      */
     @GetMapping("/{taskId}")
-    public ProjectTaskDTO projectTaskOne(@PathVariable("taskId") Long taskId) {
+    public ProjectTaskDetail projectTaskOne(@PathVariable("taskId") Long taskId) {
         ProjectTaskDTO projectTask = projectTaskService.getProjectTask(taskId);
+        List<UserDTO> users = projectTaskTXService.getProjectTaskUserIdList(taskId);
 
-        return null;
+        ProjectTaskDetail projectTaskDetail = new ProjectTaskDetail();
+        projectTaskDetail.setProjectTaskId(taskId);
+        projectTaskDetail.setProjectTaskName(projectTask.getProjectTaskName());
+        projectTaskDetail.setProjectId(projectTask.getProjectId());
+        projectTaskDetail.setParentTaskId(projectTask.getParentTaskId());
+        projectTaskDetail.setTaskPriority(projectTask.getTaskPriority());
+        projectTaskDetail.setTaskSummary(projectTask.getSummary());
+        projectTaskDetail.setTaskType(projectTask.getType());
+        projectTaskDetail.setTaskStartDate(projectTask.getTaskStartDate());
+        projectTaskDetail.setTaskEndDate(projectTask.getTaskEndDate());
+        projectTaskDetail.setUsers(users);
+
+        return projectTaskDetail;
     }
 
 
@@ -51,23 +69,37 @@ public class ProjectTaskController {
 
     /**
      * 4. 프로젝트 타스크/이슈 생성
-     * @param projectTaskDto
-     * @param projectId
+     * @param projectTaskDetail
      * @return
      */
     @PostMapping("/")
-    public ProjectTaskDTO createProjectTask(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("projectId") Long projectId) {
-        ProjectTaskDTO projectTask = projectTaskService.createProjectTask(projectTaskDto, projectId);
+    public ProjectTaskDetail createProjectTask(ProjectTaskDetail projectTaskDetail) {
+        ProjectTaskDTO projectTaskDTO = getProjectTaskDTO(projectTaskDetail);
+        List<UserDTO> users = projectTaskDetail.getUsers();
 
-        return projectTask;
+        ProjectTaskDTO createdProjectTask = projectTaskTXService.createTask(projectTaskDTO, users);
+
+        ProjectTaskDetail createProjectTaskDetail = new ProjectTaskDetail();
+        createProjectTaskDetail.setProjectTaskId(createdProjectTask.getId());
+        createProjectTaskDetail.setProjectTaskName(createdProjectTask.getProjectTaskName());
+        createProjectTaskDetail.setProjectId(createdProjectTask.getProjectId());
+        createProjectTaskDetail.setParentTaskId(createdProjectTask.getParentTaskId());
+        createProjectTaskDetail.setTaskPriority(createdProjectTask.getTaskPriority());
+        createProjectTaskDetail.setTaskSummary(createdProjectTask.getSummary());
+        createProjectTaskDetail.setTaskType(createdProjectTask.getType());
+        createProjectTaskDetail.setTaskStartDate(createdProjectTask.getTaskStartDate());
+        createProjectTaskDetail.setTaskEndDate(createdProjectTask.getTaskEndDate());
+        createProjectTaskDetail.setUsers(users);
+
+        return createProjectTaskDetail;
     }
 
     /**
-     * 5. 프로젝트 타스크/이슈 업데이트
+     * 5. 프로젝트 타스크/이슈 수정
      * @param projectTaskDto
      * @return
      */
-    @PutMapping("/{taskId}")
+    @PutMapping("/")
     public ProjectTaskDTO projectTaskUpdate(@RequestBody ProjectTaskDTO projectTaskDto, @PathVariable("taskId") Long taskId) {
         ProjectTaskDTO updatedProjectTask = projectTaskService.updateProjectTask(projectTaskDto, taskId);
 
@@ -80,9 +112,23 @@ public class ProjectTaskController {
      * @return
      */
     @DeleteMapping("/{taskId}")
-    public String projectTaskDelete(@PathVariable("id") Long taskId) {
+    public String projectTaskDelete(@PathVariable("taskId") Long taskId) {
         projectTaskService.deleteProjectTask(taskId);
 
         return null;
+    }
+
+    private ProjectTaskDTO getProjectTaskDTO(ProjectTaskDetail projectTaskDetail) {
+        ProjectTaskDTO projectTaskDTO = new ProjectTaskDTO();
+        projectTaskDTO.setId(projectTaskDetail.getProjectTaskId());
+        projectTaskDTO.setProjectTaskName(projectTaskDetail.getProjectTaskName());
+        projectTaskDTO.setProjectId(projectTaskDetail.getProjectId());
+        projectTaskDTO.setParentTaskId(projectTaskDetail.getParentTaskId());
+        projectTaskDTO.setTaskPriority(projectTaskDetail.getTaskPriority());
+        projectTaskDTO.setSummary(projectTaskDetail.getTaskSummary());
+        projectTaskDTO.setType(projectTaskDetail.getTaskType());
+        projectTaskDTO.setTaskStartDate(projectTaskDetail.getTaskStartDate());
+        projectTaskDTO.setTaskEndDate(projectTaskDetail.getTaskEndDate());
+        return projectTaskDTO;
     }
 }
