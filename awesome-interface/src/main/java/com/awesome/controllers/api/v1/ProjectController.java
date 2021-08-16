@@ -1,10 +1,10 @@
 package com.awesome.controllers.api.v1;
 
 import com.awesome.applications.tx.ProjectTXService;
-import com.awesome.controllers.api.v1.dtos.ProjectDetailDTO;
 import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
+import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.dtos.ProjectDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -35,16 +35,17 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public ProjectDetail projectOne(@PathVariable("projectId") Long projectId) {
         ProjectDTO project = projectService.getProject(projectId);
-        List<Long> userIds = projectTXService.getProjectUserIdList(projectId);
+        List<UserDTO> users = projectTXService.getProjectUserIdList(projectId);
 
         ProjectDetail projectDetail = new ProjectDetail();
+        projectDetail.setProjectId(projectId);
         projectDetail.setProjectName(project.getProjectName());
         projectDetail.setSummary(project.getSummary());
         projectDetail.setStatus(project.getStatus());
         projectDetail.setProjectPriority(project.getProjectPriority());
         projectDetail.setStartDate(project.getStartDate());
         projectDetail.setEndDate(project.getEndDate());
-        projectDetail.setUserIds(userIds);
+        projectDetail.setUsers(users);
 
         return projectDetail;
     }
@@ -67,13 +68,23 @@ public class ProjectController {
      * @return
      */
     @PostMapping("/")
-    public ProjectDTO projectCreate(ProjectDetail projectDetail) {
+    public ProjectDetail projectCreate(ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
-        List<Long> userIds = projectDetail.getUserIds();
+        List<UserDTO> users = projectDetail.getUsers();
 
-        ProjectDTO createdProject = projectTXService.createProject(projectDTO, userIds);
+        ProjectDTO createdProject = projectTXService.createProject(projectDTO, users);
 
-        return createdProject;
+        ProjectDetail createProjectDetail = new ProjectDetail();
+        createProjectDetail.setProjectId(createdProject.getId());
+        createProjectDetail.setProjectName(createdProject.getProjectName());
+        createProjectDetail.setSummary(createdProject.getSummary());
+        createProjectDetail.setStatus(createdProject.getStatus());
+        createProjectDetail.setProjectPriority(createdProject.getProjectPriority());
+        createProjectDetail.setStartDate(createdProject.getStartDate());
+        createProjectDetail.setEndDate(createdProject.getEndDate());
+        createProjectDetail.setUsers(users);
+
+        return createProjectDetail;
     }
 
     /**
@@ -84,9 +95,9 @@ public class ProjectController {
     @PutMapping("/")
     public ProjectDTO projectUpdate(ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
-        List<Long> userIds = projectDetail.getUserIds();
+        List<UserDTO> users = projectDetail.getUsers();
 
-        ProjectDTO updatedProject = projectTXService.updateProject(projectDTO, userIds);
+        ProjectDTO updatedProject = projectTXService.updateProject(projectDTO, users);
 
         return updatedProject;
     }
