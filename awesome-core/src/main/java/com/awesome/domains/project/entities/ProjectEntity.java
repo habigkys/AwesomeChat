@@ -36,7 +36,7 @@ public class ProjectEntity {
     /**
      * 프로젝트 요약
      */
-    @Column(nullable = true, name = "summray")
+    @Column(nullable = true, name = "summary")
     private String summary;
 
     /**

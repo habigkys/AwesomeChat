@@ -10,6 +10,7 @@ import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
 import com.awesome.domains.project.enums.ProjectPriority;
 import com.awesome.domains.project.enums.ProjectStatus;
+import com.awesome.domains.project.validator.AwesomeProjectHasInvalidDate;
 import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
@@ -17,17 +18,19 @@ import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
 import com.awesome.infrastructures.AwesomeException;
 import com.awesome.infrastructures.AwesomeExceptionType;
+import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
@@ -56,13 +59,13 @@ public class ProjectTXService {
         }
 
         // 프로젝트 리더는 1명을 초과할 수 없음
-        if(getLeaderCnt(projectDto.getId()) > 1){
+        List<UserDTO> leaders = users.stream().filter(e -> UserPosition.LEADER.equals(e.getUserPosition())).collect(Collectors.toList());
+        if(leaders.size() > 1){
             throw new AwesomeException(AwesomeExceptionType.MULTI_LEADER);
         }
 
         // 과거 또는 현재의 프로젝트 생성시 TODO 불가
-        if((LocalDate.now().isAfter(projectDto.getEndDate()) || LocalDate.now().isAfter(projectDto.getStartDate()) && LocalDate.now().isBefore(projectDto.getEndDate()))
-                && ProjectStatus.TODO.equals(projectDto.getStatus())){
+        if(AwesomeProjectHasInvalidDate.get().validate(projectDto)){
             throw new AwesomeException(AwesomeExceptionType.TODO_DATE_INVALID);
         }
 
@@ -181,21 +184,16 @@ public class ProjectTXService {
      * @return
      */
     public List<ProjectDTO> getUserProjectList(Long userId){
-        List<ProjectDTO> projectDTOList = new ArrayList<>();
         List<ProjectUserEntity> byUserId = projectUserDao.findAllByUserId(userId);
 
-        if(byUserId.isEmpty()){
+        if(CollectionUtils.isEmpty(byUserId)){
             throw new AwesomeException(AwesomeExceptionType.EMPTY_USER);
         }
 
-        for(ProjectUserEntity projectUserEntity : byUserId){
-            Optional<ProjectEntity> project = projectDao.findById(projectUserEntity.getProjectId());
+        List<Long> projectIds = byUserId.stream().map(ProjectUserEntity::getProjectId).collect(Collectors.toList());
 
-            ProjectDTO projectDTO = ProjectDTO.convert(project.get());
-            projectDTOList.add(projectDTO);
-        }
-
-        return projectDTOList;
+        List<ProjectEntity> usersProjects = projectDao.findAllById(projectIds);
+        return usersProjects.stream().map(ProjectDTO::convert).collect(Collectors.toList());
     }
 
     /**
@@ -206,16 +204,15 @@ public class ProjectTXService {
     @Transactional
     public void updateProjectDocuments(ProjectDTO projectDto, List<DocumentType> documentTypes){
         // 산출물 추가
-        if(!CollectionUtils.isEmpty(documentTypes)){
-            for(DocumentType documentType : documentTypes){
-                DocumentEntity documentEntity = new DocumentEntity();
-
-                documentEntity.setProjectId(projectDto.getId());
-                documentEntity.setDocumentType(documentType);
-
-                documentDao.save(documentEntity);
-            }
+        if(CollectionUtils.isEmpty(documentTypes)) {
+            return;
         }
+        documentDao.saveAll(documentTypes.stream().map(e -> {
+            DocumentEntity entity = new DocumentEntity();
+            entity.setProjectId(projectDto.getId());
+            entity.setDocumentType(e);
+            return entity;
+        }).collect(Collectors.toList()));
     }
 
     /**
@@ -224,20 +221,33 @@ public class ProjectTXService {
      * @param users
      */
     private void projectUserMapping(Long projectId, List<UserDTO> users) {
-        for(UserDTO user : users){
+        List<ProjectUserEntity> projectUserEntities = Lists.newArrayList();
+        //준비단계
+        //1
+        ProjectEntity projectEntity = projectDao.getOne(projectId);
+
+        //1 + CPU < IO
+        List<UserEntity> userEntities = userDao.findAllById(users.stream().map(e -> e.getId()).collect(Collectors.toList()));
+
+        Map<Long, UserEntity> recentUserMap = userEntities.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+
+        //O(N)
+        for(UserDTO user : users) {
             ProjectUserEntity projectUserEntity = new ProjectUserEntity();
-
-            UserEntity userEntity = userDao.getOne(user.getId());
-            ProjectEntity projectEntity = projectDao.getOne(projectId);
-
             projectUserEntity.setProjectId(projectId);
             projectUserEntity.setProjectName(projectEntity.getProjectName());
-            projectUserEntity.setUserId(user.getId());
-            projectUserEntity.setUserPosition(userEntity.getUserPosition());
-            projectUserEntity.setUserName(userEntity.getUserName());
 
-            projectUserDao.save(projectUserEntity);
+            UserEntity recentUserEntity = recentUserMap.get(user.getId());
+            projectUserEntity.setUserId(user.getId());
+            projectUserEntity.setUserPosition(recentUserEntity.getUserPosition());
+            projectUserEntity.setUserName(recentUserEntity.getUserName());
+
+            projectUserEntities.add(projectUserEntity);
         }
+
+        //O(3N)
+        //
+        projectUserDao.saveAll(projectUserEntities);
     }
 
     /**
@@ -264,16 +274,10 @@ public class ProjectTXService {
      * @return
      */
     public List<UserDTO> getProjectUserIdList(Long projectId) {
-        List<UserDTO> users = new ArrayList<>();
         List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
 
-        for(ProjectUserEntity projectUserEntity : byProjectId){
-            Optional<UserEntity> user = userDao.findById(projectUserEntity.getUserId());
+        List<Long> userIds = byProjectId.stream().map(e -> e.getUserId()).collect(Collectors.toList());
+        return userDao.findAllById(userIds).stream().map(UserDTO::convert).collect(Collectors.toList());
 
-            UserDTO userDTO = UserDTO.convert(user.get());
-            users.add(userDTO);
-        }
-
-        return users;
     }
 }
