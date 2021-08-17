@@ -35,7 +35,7 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public ProjectDetail projectOne(@PathVariable("projectId") Long projectId) {
         ProjectDTO project = projectService.getProject(projectId);
-        List<UserDTO> users = projectTXService.getProjectUserIdList(projectId);
+        List<UserDTO> users = projectTXService.getProjectUserList(projectId);
 
         ProjectDetail projectDetail = new ProjectDetail();
         projectDetail.setProjectId(projectId);
