@@ -8,10 +8,9 @@ import com.awesome.domains.mapping.entities.ProjectUserEntity;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
-import com.awesome.domains.project.enums.ProjectPriority;
-import com.awesome.domains.project.enums.ProjectStatus;
 import com.awesome.domains.project.validator.*;
-import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
+import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
+import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
@@ -24,11 +23,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -36,7 +32,6 @@ import java.util.stream.Collectors;
 @Service
 public class ProjectTXService {
     private ProjectDAO projectDao;
-    private ProjectTaskDAO projectTaskDao;
     private UserDAO userDao;
     private ProjectUserDAO projectUserDao;
     private DocumentDAO documentDao;
@@ -50,7 +45,7 @@ public class ProjectTXService {
     @Transactional
     public ProjectDTO createProject(ProjectDTO projectDto, List<UserDTO> users){
         // 종료일이 시작일보다 먼저 올 수 없음
-        if(AwesomeProjectDateValidator.get().validate(projectDto)) {
+        if(AwesomeProjectHasInvalidDate.get().validate(projectDto)) {
             throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
@@ -70,14 +65,7 @@ public class ProjectTXService {
             throw new AwesomeException(AwesomeExceptionType.TODO_DATE_INVALID);
         }
 
-        ProjectEntity toCreateProjectEntity = new ProjectEntity();
-
-        toCreateProjectEntity.setProjectName(projectDto.getProjectName());
-        toCreateProjectEntity.setSummary(projectDto.getSummary());
-        toCreateProjectEntity.setStatus(projectDto.getStatus());
-        toCreateProjectEntity.setProjectPriority(projectDto.getProjectPriority());
-        toCreateProjectEntity.setStartDate(projectDto.getStartDate());
-        toCreateProjectEntity.setEndDate(projectDto.getEndDate());
+        ProjectEntity toCreateProjectEntity = ProjectEntity.convert(projectDto);
 
         ProjectEntity savedProjectEntity = projectDao.save(toCreateProjectEntity);
 
@@ -96,7 +84,7 @@ public class ProjectTXService {
     @Transactional
     public ProjectDTO updateProject(ProjectDTO projectDto, List<UserDTO> users){
         // 종료일이 시작일보다 먼저 올 수 없음
-        if(AwesomeProjectDateValidator.get().validate(projectDto)) {
+        if(AwesomeProjectHasInvalidDate.get().validate(projectDto)) {
             throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
@@ -139,11 +127,7 @@ public class ProjectTXService {
             projectUserMapping(projectDto.getId(), users);
         }
 
-        toUpdateOne.setProjectName(projectDto.getProjectName());
-        toUpdateOne.setSummary(projectDto.getSummary());
-        toUpdateOne.setStatus(projectDto.getStatus());
-        toUpdateOne.setStartDate(projectDto.getStartDate());
-        toUpdateOne.setEndDate(projectDto.getEndDate());
+        toUpdateOne = ProjectEntity.convert(projectDto);
 
         return ProjectDTO.convert(projectDao.save(toUpdateOne));
     }
