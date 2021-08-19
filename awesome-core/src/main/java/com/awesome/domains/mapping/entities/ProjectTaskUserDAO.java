@@ -7,4 +7,5 @@ import java.util.List;
 public interface ProjectTaskUserDAO extends JpaRepository<ProjectTaskUserEntity, Long> {
     List<ProjectTaskUserEntity> findAllByTaskId(Long taskId);
     List<ProjectTaskUserEntity> findAllByUserId(Long userId);
+    void deleteAllByTaskId(Long taskId);
 }

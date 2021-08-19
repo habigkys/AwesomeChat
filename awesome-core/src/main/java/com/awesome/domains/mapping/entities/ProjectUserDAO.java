@@ -8,5 +8,5 @@ import java.util.List;
 public interface ProjectUserDAO extends JpaRepository<ProjectUserEntity, Long> {
     List<ProjectUserEntity> findAllByProjectId(Long projectId);
     List<ProjectUserEntity> findAllByUserId(Long userId);
-    Long countByProjectIdAndUserPosition(Long projectId, UserPosition leader);
+    void deleteAllByProjectId(Long projectId);
 }

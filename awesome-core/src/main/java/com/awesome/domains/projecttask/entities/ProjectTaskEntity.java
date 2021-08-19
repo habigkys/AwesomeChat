@@ -1,5 +1,6 @@
 package com.awesome.domains.projecttask.entities;
 
+import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
 import com.awesome.domains.projecttask.enums.TaskPriority;
 import com.awesome.domains.projecttask.enums.TaskType;
 import lombok.Getter;
@@ -86,4 +87,20 @@ public class ProjectTaskEntity {
     @LastModifiedDate
     @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public static ProjectTaskEntity convert(ProjectTaskDTO projectTaskDTO) {
+        ProjectTaskEntity entity = new ProjectTaskEntity();
+        entity.setId(projectTaskDTO.getId());
+        entity.setProjectTaskName(projectTaskDTO.getProjectTaskName());
+        entity.setProjectId(projectTaskDTO.getProjectId());
+        entity.setParentTaskId(projectTaskDTO.getParentTaskId());
+        entity.setSummary(projectTaskDTO.getSummary());
+        entity.setTaskStartDate(projectTaskDTO.getTaskStartDate());
+        entity.setTaskEndDate(projectTaskDTO.getTaskEndDate());
+        entity.setType(projectTaskDTO.getType());
+        entity.setTaskPriority(projectTaskDTO.getTaskPriority());
+        entity.setCreatedAt(projectTaskDTO.getCreatedAt());
+        entity.setUpdatedAt(projectTaskDTO.getUpdatedAt());
+        return entity;
+    }
 }
