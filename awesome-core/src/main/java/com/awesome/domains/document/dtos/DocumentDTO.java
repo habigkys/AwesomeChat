@@ -1,6 +1,7 @@
 package com.awesome.domains.document.dtos;
 
 import com.awesome.domains.document.entities.DocumentEntity;
+import com.awesome.domains.document.enums.DocumentStatus;
 import com.awesome.domains.document.enums.DocumentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,16 +15,31 @@ import java.time.LocalDateTime;
 public class DocumentDTO {
     private Long id;
 
+    private Long projectId;
+
     private DocumentType documentType;
+
+    private DocumentStatus documentStatus;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
-    public static DocumentDTO convert(DocumentEntity documentEntity) {
-        DocumentDTO documentDTO = new DocumentDTO();
-        documentDTO.setId(documentEntity.getId());
-        documentDTO.setDocumentType(documentEntity.getDocumentType());
-        return documentDTO;
+    public static DocumentDTO convertEntityToDto(DocumentEntity documentEntity) {
+        DocumentDTO dto = new DocumentDTO();
+        dto.setId(documentEntity.getId());
+        dto.setProjectId(documentEntity.getProjectId());
+        dto.setDocumentType(documentEntity.getDocumentType());
+        dto.setDocumentStatus(documentEntity.getDocumentStatus());
+        return dto;
+    }
+
+    public static DocumentEntity convertDtoToEntity(DocumentDTO documentDTO) {
+        DocumentEntity entity = new DocumentEntity();
+        entity.setId(documentDTO.getId());
+        entity.setProjectId(documentDTO.getProjectId());
+        entity.setDocumentType(documentDTO.getDocumentType());
+        entity.setDocumentStatus(documentDTO.getDocumentStatus());
+        return entity;
     }
 }

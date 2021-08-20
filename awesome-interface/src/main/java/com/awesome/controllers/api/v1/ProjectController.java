@@ -1,15 +1,21 @@
 package com.awesome.controllers.api.v1;
 
 import com.awesome.applications.tx.ProjectTXService;
+import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
 import com.awesome.domains.user.dtos.UserDTO;
+import com.awesome.domains.user.entities.UserEntity;
+import com.awesome.dtos.DocumentDetail;
 import com.awesome.dtos.ProjectDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.swing.text.Document;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
@@ -116,13 +122,15 @@ public class ProjectController {
 
     /**
      * 7. 프로젝트 산출물 수정
-     * @param projectDto
-     * @param documentTypes
+     * @param documentDetail
      * @return
      */
     @PutMapping("/documents")
-    public String projectDocumentUpdate(@RequestBody ProjectDTO projectDto, @RequestBody List<DocumentType> documentTypes) {
-        projectTXService.updateProjectDocuments(projectDto, documentTypes);
+    public String projectDocumentUpdate(List<DocumentDetail> documentDetail) {
+        List<DocumentDTO> documentDTOs = documentDetail.stream().map(e -> getDocumentDTO(e)).collect(Collectors.toList());
+        Map<Long, List<UserDTO>> documentUsers = documentDetail.stream().collect(Collectors.toMap(e -> e.getDocumentId(), e -> e.getUsers()));
+
+        projectTXService.updateProjectDocuments(documentDTOs, documentUsers);
 
         return null;
     }
@@ -136,5 +144,13 @@ public class ProjectController {
         projectDTO.setStartDate(projectDetail.getStartDate());
         projectDTO.setEndDate(projectDetail.getEndDate());
         return projectDTO;
+    }
+
+    private DocumentDTO getDocumentDTO(DocumentDetail documentDetail) {
+        DocumentDTO documentDTO = new DocumentDTO();
+        documentDTO.setProjectId(documentDetail.getProjectId());
+        documentDTO.setDocumentType(documentDetail.getDocumentType());
+        documentDTO.setDocumentStatus(documentDetail.getDocumentStatus());
+        return documentDTO;
     }
 }

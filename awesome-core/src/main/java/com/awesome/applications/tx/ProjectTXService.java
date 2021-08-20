@@ -1,5 +1,6 @@
 package com.awesome.applications.tx;
 
+import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.document.entities.DocumentDAO;
 import com.awesome.domains.document.entities.DocumentEntity;
 import com.awesome.domains.document.enums.DocumentType;
@@ -9,8 +10,6 @@ import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
 import com.awesome.domains.project.validator.*;
-import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
-import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
@@ -65,14 +64,12 @@ public class ProjectTXService {
             throw new AwesomeException(AwesomeExceptionType.TODO_DATE_INVALID);
         }
 
-        ProjectEntity toCreateProjectEntity = ProjectEntity.convert(projectDto);
-
-        ProjectEntity savedProjectEntity = projectDao.save(toCreateProjectEntity);
+        ProjectEntity savedProjectEntity = projectDao.save(ProjectDTO.convertDtoToEntity(projectDto));
 
         // 프로젝트 <> 유저 매핑 정보 저장
         projectUserMapping(savedProjectEntity.getId(), users);
 
-        return ProjectDTO.convert(savedProjectEntity);
+        return ProjectDTO.convertEntityToDto(savedProjectEntity);
     }
 
     /**
@@ -127,9 +124,7 @@ public class ProjectTXService {
             projectUserMapping(projectDto.getId(), users);
         }
 
-        toUpdateOne = ProjectEntity.convert(projectDto);
-
-        return ProjectDTO.convert(projectDao.save(toUpdateOne));
+        return ProjectDTO.convertEntityToDto(projectDao.save(ProjectDTO.convertDtoToEntity(projectDto)));
     }
 
     /**
@@ -145,7 +140,7 @@ public class ProjectTXService {
         }
 
         List<Long> userIds = byProjectId.stream().map(ProjectUserEntity::getUserId).collect(Collectors.toList());
-        return userDao.findAllById(userIds).stream().map(UserDTO::convert).collect(Collectors.toList());
+        return userDao.findAllById(userIds).stream().map(UserDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -161,16 +156,19 @@ public class ProjectTXService {
         }
 
         List<Long> projectIds = byUserId.stream().map(ProjectUserEntity::getProjectId).collect(Collectors.toList());
-        return projectDao.findAllById(projectIds).stream().map(ProjectDTO::convert).collect(Collectors.toList());
+        return projectDao.findAllById(projectIds).stream().map(ProjectDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
      * 7. 프로젝트 산출물 Add - ProjectController
-     * @param projectDto
+     * @param documentDTOs
+     * @param documentUsers
      * @return
      */
     @Transactional
-    public void updateProjectDocuments(ProjectDTO projectDto, List<DocumentType> documentTypes){
+    public void updateProjectDocuments(List<DocumentDTO> documentDTOs, Map<Long, List<UserDTO>> documentUsers){
+        /*
+        TODO IMPL
         // 산출물 추가
         if(CollectionUtils.isEmpty(documentTypes)) {
             return;
@@ -181,6 +179,7 @@ public class ProjectTXService {
             entity.setDocumentType(e);
             return entity;
         }).collect(Collectors.toList()));
+        */
     }
 
     /**

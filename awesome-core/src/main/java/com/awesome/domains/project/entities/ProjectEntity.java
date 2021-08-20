@@ -73,18 +73,4 @@ public class ProjectEntity {
     @LastModifiedDate
     @Column(nullable = true, name = "updated_at")
     private LocalDateTime updatedAt;
-
-    public static ProjectEntity convert(ProjectDTO projectDTO) {
-        ProjectEntity entity = new ProjectEntity();
-        entity.setId(projectDTO.getId());
-        entity.setProjectName(projectDTO.getProjectName());
-        entity.setSummary(projectDTO.getSummary());
-        entity.setStatus(projectDTO.getStatus());
-        entity.setProjectPriority(projectDTO.getProjectPriority());
-        entity.setStartDate(projectDTO.getStartDate());
-        entity.setEndDate(projectDTO.getEndDate());
-        entity.setCreatedAt(projectDTO.getCreatedAt());
-        entity.setUpdatedAt(projectDTO.getUpdatedAt());
-        return entity;
-    }
 }

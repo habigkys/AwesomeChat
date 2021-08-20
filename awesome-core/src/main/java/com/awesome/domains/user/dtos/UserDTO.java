@@ -24,14 +24,25 @@ public class UserDTO {
 
     private LocalDateTime updatedAt;
 
-    public static UserDTO convert(UserEntity userEntity) {
-        UserDTO userDto = new UserDTO();
-        userDto.setId(userEntity.getId());
-        userDto.setUserName(userEntity.getUserName());
-        userDto.setUserYear(userEntity.getUserYear());
-        userDto.setUserPosition(userEntity.getUserPosition());
-        userDto.setCreatedAt(userEntity.getCreatedAt());
-        userDto.setUpdatedAt(userEntity.getUpdatedAt());
-        return userDto;
+    public static UserDTO convertEntityToDto(UserEntity userEntity) {
+        UserDTO dto = new UserDTO();
+        dto.setId(userEntity.getId());
+        dto.setUserName(userEntity.getUserName());
+        dto.setUserYear(userEntity.getUserYear());
+        dto.setUserPosition(userEntity.getUserPosition());
+        dto.setCreatedAt(userEntity.getCreatedAt());
+        dto.setUpdatedAt(userEntity.getUpdatedAt());
+        return dto;
+    }
+
+    public static UserEntity convertDtoToEntity(UserDTO userDTO){
+        UserEntity entity = new UserEntity();
+        entity.setId(userDTO.getId());
+        entity.setUserName(userDTO.getUserName());
+        entity.setUserYear(userDTO.getUserYear());
+        entity.setUserPosition(userDTO.getUserPosition());
+        entity.setCreatedAt(userDTO.getCreatedAt());
+        entity.setUpdatedAt(userDTO.getUpdatedAt());
+        return entity;
     }
 }

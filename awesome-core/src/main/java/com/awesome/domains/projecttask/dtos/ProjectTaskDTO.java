@@ -36,7 +36,7 @@ public class ProjectTaskDTO {
 
     private LocalDateTime updatedAt;
 
-    public static ProjectTaskDTO convert(ProjectTaskEntity projectTaskEntity) {
+    public static ProjectTaskDTO convertEntityToDto(ProjectTaskEntity projectTaskEntity) {
         ProjectTaskDTO taskDto = new ProjectTaskDTO();
         taskDto.setId(projectTaskEntity.getId());
         taskDto.setProjectTaskName(projectTaskEntity.getProjectTaskName());
@@ -50,5 +50,21 @@ public class ProjectTaskDTO {
         taskDto.setCreatedAt(projectTaskEntity.getCreatedAt());
         taskDto.setUpdatedAt(projectTaskEntity.getUpdatedAt());
         return taskDto;
+    }
+
+    public static ProjectTaskEntity convertDtoToEntity(ProjectTaskDTO projectTaskDTO) {
+        ProjectTaskEntity entity = new ProjectTaskEntity();
+        entity.setId(projectTaskDTO.getId());
+        entity.setProjectTaskName(projectTaskDTO.getProjectTaskName());
+        entity.setProjectId(projectTaskDTO.getProjectId());
+        entity.setParentTaskId(projectTaskDTO.getParentTaskId());
+        entity.setSummary(projectTaskDTO.getSummary());
+        entity.setTaskStartDate(projectTaskDTO.getTaskStartDate());
+        entity.setTaskEndDate(projectTaskDTO.getTaskEndDate());
+        entity.setType(projectTaskDTO.getType());
+        entity.setTaskPriority(projectTaskDTO.getTaskPriority());
+        entity.setCreatedAt(projectTaskDTO.getCreatedAt());
+        entity.setUpdatedAt(projectTaskDTO.getUpdatedAt());
+        return entity;
     }
 }
