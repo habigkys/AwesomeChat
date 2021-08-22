@@ -167,6 +167,8 @@ public class ProjectTXService {
      */
     @Transactional
     public void updateProjectDocuments(List<DocumentDTO> documentDTOs, Map<Long, List<UserDTO>> documentUsers){
+        // Map은 Param으로 넘기지 않음 보통.
+        // Project 1 : Document N : Users M
         /*
         TODO IMPL
         // 산출물 추가

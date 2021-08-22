@@ -123,10 +123,11 @@ public class ProjectController {
     /**
      * 7. 프로젝트 산출물 수정
      * @param documentDetail
+     * @param projectId
      * @return
      */
-    @PutMapping("/documents")
-    public String projectDocumentUpdate(List<DocumentDetail> documentDetail) {
+    @PutMapping("/{projectId}/documents")
+    public String projectDocumentUpdate(List<DocumentDetail> documentDetail, @PathVariable("id") Long projectId) {
         List<DocumentDTO> documentDTOs = documentDetail.stream().map(e -> getDocumentDTO(e)).collect(Collectors.toList());
         Map<Long, List<UserDTO>> documentUsers = documentDetail.stream().collect(Collectors.toMap(e -> e.getDocumentId(), e -> e.getUsers()));
 
