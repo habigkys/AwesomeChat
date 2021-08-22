@@ -22,7 +22,7 @@ public class ProjectTaskService {
     public List<ProjectTaskDTO> getProjectTaskList(){
         List<ProjectTaskEntity> projectTaskEntityList = projectTaskDAO.findAll();
 
-        return projectTaskEntityList.stream().map(ProjectTaskDTO::convert).collect(Collectors.toList());
+        return projectTaskEntityList.stream().map(ProjectTaskDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -31,7 +31,7 @@ public class ProjectTaskService {
      * @return
      */
     public ProjectTaskDTO getProjectTask(Long taskId){
-        return ProjectTaskDTO.convert(projectTaskDAO.findById(taskId).get());
+        return ProjectTaskDTO.convertEntityToDto(projectTaskDAO.findById(taskId).get());
     }
 
     /**
@@ -42,7 +42,7 @@ public class ProjectTaskService {
     public List<ProjectTaskDTO> getProjectTaskListByProject(Long projectId){
         List<ProjectTaskEntity> projectTaskEntityList = projectTaskDAO.findAllByProjectId(projectId);
 
-        return projectTaskEntityList.stream().map(ProjectTaskDTO::convert).collect(Collectors.toList());
+        return projectTaskEntityList.stream().map(ProjectTaskDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -66,7 +66,7 @@ public class ProjectTaskService {
         toCreateProjectTaskEntity.setTaskStartDate(projectTaskDto.getTaskStartDate());
         toCreateProjectTaskEntity.setTaskEndDate(projectTaskDto.getTaskEndDate());
 
-        return ProjectTaskDTO.convert(projectTaskDAO.save(toCreateProjectTaskEntity));
+        return ProjectTaskDTO.convertEntityToDto(projectTaskDAO.save(toCreateProjectTaskEntity));
     }
 
     /**
@@ -89,7 +89,7 @@ public class ProjectTaskService {
         toUpdateOne.setTaskEndDate(projectTaskDto.getTaskEndDate());
         toUpdateOne.setType(projectTaskDto.getType());
 
-        return ProjectTaskDTO.convert(projectTaskDAO.save(toUpdateOne));
+        return ProjectTaskDTO.convertEntityToDto(projectTaskDAO.save(toUpdateOne));
     }
 
     /**

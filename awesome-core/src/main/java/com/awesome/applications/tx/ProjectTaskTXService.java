@@ -2,12 +2,9 @@ package com.awesome.applications.tx;
 
 import com.awesome.domains.mapping.entities.ProjectTaskUserDAO;
 import com.awesome.domains.mapping.entities.ProjectTaskUserEntity;
-import com.awesome.domains.mapping.entities.ProjectUserEntity;
-import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
 import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
 import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
-import com.awesome.domains.projecttask.enums.TaskType;
 import com.awesome.domains.projecttask.validator.AwesomeProjectHasInvalidScopeUsers;
 import com.awesome.domains.projecttask.validator.AwesomeProjectTaskHasInvalidDate;
 import com.awesome.domains.projecttask.validator.AwesomeProjectTaskHasInvalidParent;
@@ -17,15 +14,18 @@ import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.infrastructures.AwesomeException;
 import com.awesome.infrastructures.AwesomeExceptionType;
 import com.google.common.collect.Lists;
+import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
+@Service
 public class ProjectTaskTXService {
     private ProjectTaskDAO projectTaskDao;
     private UserDAO userDao;
@@ -53,14 +53,12 @@ public class ProjectTaskTXService {
             throw new AwesomeException(AwesomeExceptionType.EMPTY_TASK_PARENT);
         }
 
-        ProjectTaskEntity toCreateProjectTaskEntity = ProjectTaskEntity.convert(projectTaskDto);
-
-        ProjectTaskEntity savedProjectTaskEntity = projectTaskDao.save(toCreateProjectTaskEntity);
+        ProjectTaskEntity savedProjectTaskEntity = projectTaskDao.save(ProjectTaskDTO.convertDtoToEntity(projectTaskDto));
 
         // 타스크 <> 유저 매핑 정보 저장
         projectTaskUserMapping(savedProjectTaskEntity.getId(), users);
 
-        return ProjectTaskDTO.convert(savedProjectTaskEntity);
+        return ProjectTaskDTO.convertEntityToDto(savedProjectTaskEntity);
     }
 
     /**
@@ -94,9 +92,7 @@ public class ProjectTaskTXService {
             projectTaskUserMapping(projectTaskDto.getId(), users);
         }
 
-        toUpdateOne = ProjectTaskEntity.convert(projectTaskDto);
-
-        return ProjectTaskDTO.convert(projectTaskDao.save(toUpdateOne));
+        return ProjectTaskDTO.convertEntityToDto(projectTaskDao.save(ProjectTaskDTO.convertDtoToEntity(projectTaskDto)));
     }
 
     /**
@@ -137,7 +133,7 @@ public class ProjectTaskTXService {
         }
 
         List<Long> userIds = byTaskId.stream().map(ProjectTaskUserEntity::getUserId).collect(Collectors.toList());
-        return userDao.findAllById(userIds).stream().map(UserDTO::convert).collect(Collectors.toList());
+        return userDao.findAllById(userIds).stream().map(UserDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -153,22 +149,6 @@ public class ProjectTaskTXService {
         }
 
         List<Long> taskIds = byUserId.stream().map(ProjectTaskUserEntity::getTaskId).collect(Collectors.toList());
-        return projectTaskDao.findAllById(taskIds).stream().map(ProjectTaskDTO::convert).collect(Collectors.toList());
-    }
-
-    /**
-     * ProjectTaskDTO -> ProjectTaskEntity
-     * @param projectTaskDto
-     * @param projectTaskEntity
-     */
-    private void convertProjectTaskDtoToProjectTaskEntity(ProjectTaskDTO projectTaskDto, ProjectTaskEntity projectTaskEntity) {
-        projectTaskEntity.setProjectId(projectTaskDto.getProjectId());
-        projectTaskEntity.setProjectTaskName(projectTaskDto.getProjectTaskName());
-        projectTaskEntity.setParentTaskId(projectTaskDto.getParentTaskId());
-        projectTaskEntity.setTaskPriority(projectTaskDto.getTaskPriority());
-        projectTaskEntity.setSummary(projectTaskDto.getSummary());
-        projectTaskEntity.setType(projectTaskDto.getType());
-        projectTaskEntity.setTaskStartDate(projectTaskDto.getTaskStartDate());
-        projectTaskEntity.setTaskEndDate(projectTaskDto.getTaskEndDate());
+        return projectTaskDao.findAllById(taskIds).stream().map(ProjectTaskDTO::convertEntityToDto).collect(Collectors.toList());
     }
 }

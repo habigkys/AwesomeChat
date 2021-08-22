@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class UserService {
     public List<UserDTO> getUserList(){
         List<UserEntity> UserEntityList = userDao.findAll();
 
-        return UserEntityList.stream().map(UserDTO::convert).collect(Collectors.toList());
+        return UserEntityList.stream().map(UserDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -32,7 +33,7 @@ public class UserService {
      * @return
      */
     public UserDTO getUser(Long userId){
-        return UserDTO.convert(userDao.findById(userId).get());
+        return UserDTO.convertEntityToDto(userDao.findById(userId).get());
     }
 
     /**
@@ -43,7 +44,7 @@ public class UserService {
     public List<UserDTO> getUserNameLike(String userName){
         List<UserEntity> UserEntityNameLikeList = userDao.findAllByUserNameLike(userName);
 
-        return UserEntityNameLikeList.stream().map(UserDTO::convert).collect(Collectors.toList());
+        return UserEntityNameLikeList.stream().map(UserDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -57,7 +58,7 @@ public class UserService {
         toCreateUserEntity.setUserPosition(UserDto.getUserPosition());
         toCreateUserEntity.setUserYear(UserDto.getUserYear());
 
-        return UserDTO.convert(userDao.save(toCreateUserEntity));
+        return UserDTO.convertEntityToDto(userDao.save(toCreateUserEntity));
     }
 
     /**
@@ -73,7 +74,7 @@ public class UserService {
         toUpdateOne.setUserPosition(UserDto.getUserPosition());
         toUpdateOne.setUserYear(UserDto.getUserYear());
 
-        return UserDTO.convert(userDao.save(toUpdateOne));
+        return UserDTO.convertEntityToDto(userDao.save(toUpdateOne));
     }
 
     /**
@@ -93,8 +94,8 @@ public class UserService {
 
         for(UserEntity user : userList){
             user.setUserYear(user.getUserYear()+1);
-
-            userDao.save(user);
         }
+
+        userDao.saveAll(userList);
     }
 }

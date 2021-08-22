@@ -21,7 +21,7 @@ public class ProjectService {
     public List<ProjectDTO> getProjectList(){
         List<ProjectEntity> projectEntityList = projectDAO.findAll();
 
-        return projectEntityList.stream().map(ProjectDTO::convert).collect(Collectors.toList());
+        return projectEntityList.stream().map(ProjectDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
@@ -30,7 +30,7 @@ public class ProjectService {
      * @return
      */
     public ProjectDTO getProject(Long projectId){
-        return ProjectDTO.convert(projectDAO.findById(projectId).get());
+        return ProjectDTO.convertEntityToDto(projectDAO.findById(projectId).get());
     }
 
     /**
@@ -41,7 +41,7 @@ public class ProjectService {
     public List<ProjectDTO> getProjectNameLike(String projectName){
         List<ProjectEntity> projectEntityNameLikeList = projectDAO.findAllByProjectNameLike(projectName);
 
-        return projectEntityNameLikeList.stream().map(ProjectDTO::convert).collect(Collectors.toList());
+        return projectEntityNameLikeList.stream().map(ProjectDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**
