@@ -9,7 +9,12 @@ import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.dtos.DocumentDetail;
 import com.awesome.dtos.ProjectDetail;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
 import javax.swing.text.Document;
@@ -74,7 +79,7 @@ public class ProjectController {
      * @return
      */
     @PostMapping("/")
-    public ProjectDetail projectCreate(ProjectDetail projectDetail) {
+    public ProjectDetail projectCreate(@RequestBody ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
         List<UserDTO> users = projectDetail.getUsers();
 
@@ -99,7 +104,7 @@ public class ProjectController {
      * @return
      */
     @PutMapping("/")
-    public ProjectDTO projectUpdate(ProjectDetail projectDetail) {
+    public ProjectDTO projectUpdate(@RequestBody ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
         List<UserDTO> users = projectDetail.getUsers();
 
@@ -121,19 +126,22 @@ public class ProjectController {
     }
 
     /**
-     * 7. 프로젝트 산출물 수정
+     * 7. 프로젝트 산출물 등록
      * @param documentDetail
      * @param projectId
      * @return
      */
     @PutMapping("/{projectId}/documents")
-    public String projectDocumentUpdate(List<DocumentDetail> documentDetail, @PathVariable("id") Long projectId) {
-        List<DocumentDTO> documentDTOs = documentDetail.stream().map(e -> getDocumentDTO(e)).collect(Collectors.toList());
-        Map<Long, List<UserDTO>> documentUsers = documentDetail.stream().collect(Collectors.toMap(e -> e.getDocumentId(), e -> e.getUsers()));
+    public DocumentDetail projectDocumentCreate(@RequestBody DocumentDetail documentDetail, @PathVariable("id") Long projectId) {
+        DocumentDTO documentDTO = projectTXService.createProjectDocuments(getDocumentDTO(documentDetail, projectId), documentDetail.getUsers());
 
-        projectTXService.updateProjectDocuments(documentDTOs, documentUsers);
+        DocumentDetail createdDocumentDetail = new DocumentDetail();
+        createdDocumentDetail.setDocumentId(documentDTO.getId());
+        createdDocumentDetail.setProjectId(documentDTO.getProjectId());
+        createdDocumentDetail.setDocumentType(documentDTO.getDocumentType());
+        createdDocumentDetail.setDocumentStatus(documentDTO.getDocumentStatus());
 
-        return null;
+        return createdDocumentDetail;
     }
 
     private ProjectDTO getProjectDTO(ProjectDetail projectDetail) {
@@ -147,9 +155,9 @@ public class ProjectController {
         return projectDTO;
     }
 
-    private DocumentDTO getDocumentDTO(DocumentDetail documentDetail) {
+    private DocumentDTO getDocumentDTO(DocumentDetail documentDetail, Long projectId) {
         DocumentDTO documentDTO = new DocumentDTO();
-        documentDTO.setProjectId(documentDetail.getProjectId());
+        documentDTO.setProjectId(projectId);
         documentDTO.setDocumentType(documentDetail.getDocumentType());
         documentDTO.setDocumentStatus(documentDetail.getDocumentStatus());
         return documentDTO;
