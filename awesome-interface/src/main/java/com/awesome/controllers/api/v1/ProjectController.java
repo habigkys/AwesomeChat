@@ -1,33 +1,24 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.applications.tx.ProjectTXService;
+import com.awesome.applications.service.ProjectDocumentService;
+import com.awesome.applications.service.ProjectUserService;
 import com.awesome.domains.document.dtos.DocumentDTO;
-import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
-import com.awesome.domains.user.dtos.UserDTO;
-import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.dtos.DocumentDetail;
 import com.awesome.dtos.ProjectDetail;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.Document;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/api/v1/projects")
 public class ProjectController {
     private final ProjectService projectService;
-    private final ProjectTXService projectTXService;
+    private final ProjectUserService projectUserService;
+    private final ProjectDocumentService projectDocumentService;
 
     /**
      * 1. 프로젝트 리스트
@@ -46,7 +37,7 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public ProjectDetail projectOne(@PathVariable("projectId") Long projectId) {
         ProjectDTO project = projectService.getProject(projectId);
-        List<UserDTO> users = projectTXService.getProjectUserList(projectId);
+        List<Long> userIds = projectUserService.getProjectUserIdList(projectId);
 
         ProjectDetail projectDetail = new ProjectDetail();
         projectDetail.setProjectId(projectId);
@@ -56,7 +47,7 @@ public class ProjectController {
         projectDetail.setProjectPriority(project.getProjectPriority());
         projectDetail.setStartDate(project.getStartDate());
         projectDetail.setEndDate(project.getEndDate());
-        projectDetail.setUsers(users);
+        projectDetail.setUserIds(userIds);
 
         return projectDetail;
     }
@@ -81,9 +72,9 @@ public class ProjectController {
     @PostMapping("/")
     public ProjectDetail projectCreate(@RequestBody ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
-        List<UserDTO> users = projectDetail.getUsers();
+        List<Long> userIds = projectDetail.getUserIds();
 
-        ProjectDTO createdProject = projectTXService.createProject(projectDTO, users);
+        ProjectDTO createdProject = projectUserService.createProject(projectDTO, userIds);
 
         ProjectDetail createProjectDetail = new ProjectDetail();
         createProjectDetail.setProjectId(createdProject.getId());
@@ -93,7 +84,7 @@ public class ProjectController {
         createProjectDetail.setProjectPriority(createdProject.getProjectPriority());
         createProjectDetail.setStartDate(createdProject.getStartDate());
         createProjectDetail.setEndDate(createdProject.getEndDate());
-        createProjectDetail.setUsers(users);
+        createProjectDetail.setUserIds(userIds);
 
         return createProjectDetail;
     }
@@ -106,9 +97,9 @@ public class ProjectController {
     @PutMapping("/")
     public ProjectDTO projectUpdate(@RequestBody ProjectDetail projectDetail) {
         ProjectDTO projectDTO = getProjectDTO(projectDetail);
-        List<UserDTO> users = projectDetail.getUsers();
+        List<Long> userIds = projectDetail.getUserIds();
 
-        ProjectDTO updatedProject = projectTXService.updateProject(projectDTO, users);
+        ProjectDTO updatedProject = projectUserService.updateProject(projectDTO, userIds);
 
         return updatedProject;
     }
@@ -133,7 +124,7 @@ public class ProjectController {
      */
     @PutMapping("/{projectId}/documents")
     public DocumentDetail projectDocumentCreate(@RequestBody DocumentDetail documentDetail, @PathVariable("id") Long projectId) {
-        DocumentDTO documentDTO = projectTXService.createProjectDocuments(getDocumentDTO(documentDetail, projectId), documentDetail.getUsers());
+        DocumentDTO documentDTO = projectDocumentService.createProjectDocuments(getDocumentDTO(documentDetail, projectId), documentDetail.getUsers());
 
         DocumentDetail createdDocumentDetail = new DocumentDetail();
         createdDocumentDetail.setDocumentId(documentDTO.getId());

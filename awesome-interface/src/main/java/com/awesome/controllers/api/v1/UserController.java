@@ -1,7 +1,7 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.applications.tx.ProjectTXService;
-import com.awesome.applications.tx.ProjectTaskTXService;
+import com.awesome.applications.service.ProjectTaskUserService;
+import com.awesome.applications.service.ProjectUserService;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
 import com.awesome.domains.user.dtos.UserDTO;
@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/api/v1/users")
 public class UserController {
     private final UserService userService;
-    private final ProjectTXService projectTXService;
-    private final ProjectTaskTXService projectTaskTXService;
+    private final ProjectUserService projectUserService;
+    private final ProjectTaskUserService projectTaskUserService;
 
     /**
      * 1. 유저 리스트
@@ -97,7 +97,7 @@ public class UserController {
      */
     @GetMapping("/{userId}/projectList")
     public List<ProjectDTO> userProjectList(@PathVariable("userId") Long userId) {
-        List<ProjectDTO> projectList = projectTXService.getUserProjectList(userId);
+        List<ProjectDTO> projectList = projectUserService.getUserProjectList(userId);
 
         return projectList;
     }
@@ -109,7 +109,7 @@ public class UserController {
      */
     @GetMapping("/{userId}/taskList")
     public List<ProjectTaskDTO> userTaskList(@PathVariable("userId") Long userId) {
-        List<ProjectTaskDTO> projectTaskList = projectTaskTXService.getUserTaskList(userId);
+        List<ProjectTaskDTO> projectTaskList = projectTaskUserService.getUserTaskList(userId);
 
         return projectTaskList;
     }

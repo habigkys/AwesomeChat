@@ -3,14 +3,13 @@ package com.awesome.applications.tx;
 import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.document.entities.DocumentDAO;
 import com.awesome.domains.document.entities.DocumentEntity;
-import com.awesome.domains.document.enums.DocumentType;
 import com.awesome.domains.mapping.entities.DocumentUserDAO;
 import com.awesome.domains.mapping.entities.DocumentUserEntity;
 import com.awesome.domains.mapping.entities.ProjectUserDAO;
 import com.awesome.domains.mapping.entities.ProjectUserEntity;
 import com.awesome.domains.project.dtos.ProjectDTO;
-import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
+import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.validator.*;
 import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
@@ -24,7 +23,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.swing.text.Document;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -32,7 +30,7 @@ import java.util.stream.Collectors;
 
 @AllArgsConstructor
 @Service
-public class ProjectTXService {
+public class ProjectDocumentTXService {
     private ProjectDAO projectDao;
     private UserDAO userDao;
     private ProjectUserDAO projectUserDao;
@@ -42,23 +40,24 @@ public class ProjectTXService {
     /**
      * 4. 프로젝트 생성 - ProjectController
      * @param projectDto
-     * @param users
+     * @param userIds
      * @return
      */
     @Transactional
-    public ProjectDTO createProject(ProjectDTO projectDto, List<UserDTO> users){
+    public ProjectDTO createProject(ProjectDTO projectDto, List<Long> userIds){
         // 종료일이 시작일보다 먼저 올 수 없음
         if(AwesomeProjectHasInvalidDate.get().validate(projectDto)) {
             throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
         }
 
         // 프로젝트 참여인력이 없으면 안됨
-        if(CollectionUtils.isEmpty(users)){
+        if(CollectionUtils.isEmpty(userIds)){
             throw new AwesomeException(AwesomeExceptionType.EMPTY_PROJECT_USER);
         }
 
         // 프로젝트 리더는 1명을 초과할 수 없음
-        List<UserDTO> leaders = users.stream().filter(e -> UserPosition.LEADER.equals(e.getUserPosition())).collect(Collectors.toList());
+        List<UserEntity> users = userDao.findAllById(userIds);
+        List<UserEntity> leaders = users.stream().filter(e -> UserPosition.LEADER.equals(e.getUserPosition())).collect(Collectors.toList());
         if(leaders.size() > 1){
             throw new AwesomeException(AwesomeExceptionType.MULTI_LEADER);
         }
@@ -71,7 +70,7 @@ public class ProjectTXService {
         ProjectEntity savedProjectEntity = projectDao.save(ProjectDTO.convertDtoToEntity(projectDto));
 
         // 프로젝트 <> 유저 매핑 정보 저장
-        projectUserMapping(savedProjectEntity.getId(), users);
+        projectUserMapping(savedProjectEntity.getId(), userIds);
 
         return ProjectDTO.convertEntityToDto(savedProjectEntity);
     }
@@ -79,11 +78,11 @@ public class ProjectTXService {
     /**
      * 5. 프로젝트 수정 - ProjectController
      * @param projectDto
-     * @param users
+     * @param userIds
      * @return
      */
     @Transactional
-    public ProjectDTO updateProject(ProjectDTO projectDto, List<UserDTO> users){
+    public ProjectDTO updateProject(ProjectDTO projectDto, List<Long> userIds){
         // 종료일이 시작일보다 먼저 올 수 없음
         if(AwesomeProjectHasInvalidDate.get().validate(projectDto)) {
             throw new AwesomeException(AwesomeExceptionType.WRONG_DATE);
@@ -109,14 +108,15 @@ public class ProjectTXService {
         }
 
         // 프로젝트 참여인력 변경이 있을 경우
-        if(!CollectionUtils.isEmpty(users)){
+        if(!CollectionUtils.isEmpty(userIds)){
             // 프로젝트 우선순위가 VERYHIGH 또는 HIGH로 급할 경우 인력 교체 불가
             if(AwesomeProjectHasInvalidChangingUsers.get().validate(projectDto)){
                 throw new AwesomeException(AwesomeExceptionType.HIGH_PRIORITY_USER_CHANGE);
             }
 
             // 프로젝트 리더는 1명을 초과할 수 없음
-            List<UserDTO> leaders = users.stream().filter(e -> UserPosition.LEADER.equals(e.getUserPosition())).collect(Collectors.toList());
+            List<UserEntity> users = userDao.findAllById(userIds);
+            List<UserEntity> leaders = users.stream().filter(e -> UserPosition.LEADER.equals(e.getUserPosition())).collect(Collectors.toList());
             if(leaders.size() > 1){
                 throw new AwesomeException(AwesomeExceptionType.MULTI_LEADER);
             }
@@ -125,26 +125,25 @@ public class ProjectTXService {
             projectUserDao.deleteAllByProjectId(projectDto.getId());
 
             // 프로젝트 <> 유저 매핑 정보 저장
-            projectUserMapping(projectDto.getId(), users);
+            projectUserMapping(projectDto.getId(), userIds);
         }
 
         return ProjectDTO.convertEntityToDto(projectDao.save(ProjectDTO.convertDtoToEntity(projectDto)));
     }
 
     /**
-     * 7. 특정 프로젝트의 유저 리스트 조회 - UserController
+     * 7. 특정 프로젝트의 유저 ID 리스트 조회 - UserController
      * @param projectId
      * @return
      */
-    public List<UserDTO> getProjectUserList(Long projectId){
+    public List<Long> getProjectUserIdList(Long projectId){
         List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
 
         if(CollectionUtils.isEmpty(byProjectId)){
             throw new AwesomeException(AwesomeExceptionType.EMPTY_PROJECT);
         }
 
-        List<Long> userIds = byProjectId.stream().map(ProjectUserEntity::getUserId).collect(Collectors.toList());
-        return userDao.findAllById(userIds).stream().map(UserDTO::convertEntityToDto).collect(Collectors.toList());
+        return byProjectId.stream().map(ProjectUserEntity::getUserId).collect(Collectors.toList());
     }
 
     /**
@@ -190,27 +189,27 @@ public class ProjectTXService {
     /**
      * 프로젝트 <> 유저 매핑
      * @param projectId
-     * @param users
+     * @param userIds
      */
-    private void projectUserMapping(Long projectId, List<UserDTO> users) {
+    private void projectUserMapping(Long projectId, List<Long> userIds) {
         List<ProjectUserEntity> projectUserEntities = Lists.newArrayList();
         //준비단계
         //1
         ProjectEntity projectEntity = projectDao.getOne(projectId);
 
         //1 + CPU < IO
-        List<UserEntity> userEntities = userDao.findAllById(users.stream().map(e -> e.getId()).collect(Collectors.toList()));
+        List<UserEntity> userEntities = userDao.findAllById(userIds);
 
         Map<Long, UserEntity> recentUserMap = userEntities.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
 
         //O(N)
-        for(UserDTO user : users) {
+        for(Long userId : userIds) {
             ProjectUserEntity projectUserEntity = new ProjectUserEntity();
             projectUserEntity.setProjectId(projectId);
             projectUserEntity.setProjectName(projectEntity.getProjectName());
 
-            UserEntity recentUserEntity = recentUserMap.get(user.getId());
-            projectUserEntity.setUserId(user.getId());
+            UserEntity recentUserEntity = recentUserMap.get(userId);
+            projectUserEntity.setUserId(userId);
             projectUserEntity.setUserPosition(recentUserEntity.getUserPosition());
             projectUserEntity.setUserName(recentUserEntity.getUserName());
 

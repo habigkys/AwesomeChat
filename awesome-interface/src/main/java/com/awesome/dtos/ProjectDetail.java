@@ -41,5 +41,5 @@ public class ProjectDetail {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    List<UserDTO> users;
+    List<Long> userIds;
 }
