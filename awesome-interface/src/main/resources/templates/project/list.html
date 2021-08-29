@@ -99,6 +99,25 @@
         }
       });
     }
+
+    function fn_createProject() {
+      let param = $("form[name=createForm]").serialize();
+
+      $.ajax({
+        url:"/api/v1/projects/",
+        type:"POST",
+        cache: false,
+        data:JSON.stringify(param),
+        processData: false,
+        contentType: "application/json",
+        dataType : "json",
+        success:function(data){
+          fn_projectList();
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
   </script>
 </head>
 <body>
@@ -135,7 +154,7 @@
           </button>
         </div>
         <div class="modal-body">
-          <form action="/api/v1/projects/" method="post">
+          <form action="/api/v1/projects/" method="post" id="createForm" name="createForm">
             <div class="form-group">
               <label for="projectName">프로젝트명</label>
               <input type="text" class="form-control" name="projectName" id="projectName" placeholder="프로젝트명을 입력하세요">
@@ -177,7 +196,7 @@
             <div class="row">
               <div class="col-auto mr-auto"></div>
               <div class="col-auto">
-                <input class="btn btn-primary" type="submit" role="button" value="등록">
+                <input class="btn btn-primary" type="button" role="button" value="등록" onclick="fn_createProject()">
               </div>
             </div>
           </form>

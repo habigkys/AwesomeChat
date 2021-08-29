@@ -13,24 +13,4 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @AwesomeBootTest
 class UserTest {
-    @Autowired
-    private UserDAO userDAO;
-
-    @Test
-    void testAssertNotNull() {
-        assertNotNull(userDAO);
-    }
-
-    @Test
-    @Transactional
-    void createUserTest(){
-        UserEntity user = new UserEntity();
-
-        user.setId(1L);
-        user.setUserName("경력직 김씨");
-        user.setUserPosition(UserPosition.MEMBER);
-        user.setCreatedAt(LocalDateTime.now());
-
-        userDAO.save(user);
-    }
 }

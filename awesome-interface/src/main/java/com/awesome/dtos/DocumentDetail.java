@@ -22,10 +22,6 @@ public class DocumentDetail {
 
     private Long projectId;
 
-    private String projectName;
-
-    private String summary;
-
     private DocumentType documentType;
 
     private DocumentStatus documentStatus;

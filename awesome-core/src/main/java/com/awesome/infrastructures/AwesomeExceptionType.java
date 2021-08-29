@@ -12,7 +12,8 @@ public enum AwesomeExceptionType {
     WRONG_PRIORITY ("106", "종료일까지 일주일 또는 이주일 미만인 프로젝트는 특정 우선순위로 변경할 수 없습니다."),
     HIGH_PRIORITY_USER_CHANGE ("108", "매우높음, 또는 높음 우선순위의 프로젝트는 인력을 변경할 수 없습니다."),
     EMPTY_TASK_USER ("109", "타스크 참여인력을 포함해 주세요."),
-    EMPTY_TASK_PARENT ("110", "타스크 상위 프로젝트 및 타스크가 지정되어야 합니다.")
+    EMPTY_TASK_PARENT ("110", "타스크 상위 프로젝트 및 타스크가 지정되어야 합니다."),
+    EMPTY_DOCUMENT_USER("111", "산출물 담당인력을 포함해 주세요.")
     ;
 
     AwesomeExceptionType(String code, String description) {

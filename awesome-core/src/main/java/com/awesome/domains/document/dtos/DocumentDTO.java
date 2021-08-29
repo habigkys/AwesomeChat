@@ -6,6 +6,7 @@ import com.awesome.domains.document.enums.DocumentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 
@@ -21,8 +22,10 @@ public class DocumentDTO {
 
     private DocumentStatus documentStatus;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime createdAt;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime updatedAt;
 
     public static DocumentDTO convertEntityToDto(DocumentEntity documentEntity) {

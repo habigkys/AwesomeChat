@@ -8,11 +8,4 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @AwesomeBootTest
 class ProjectTaskTest {
-
-    @Autowired
-    private ProjectTaskDAO projectTaskDAO;
-    @Test
-    void testAssertNotNull() {
-        assertNotNull(projectTaskDAO);
-    }
 }

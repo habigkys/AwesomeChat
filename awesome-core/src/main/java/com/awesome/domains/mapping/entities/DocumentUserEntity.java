@@ -20,25 +20,13 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name = "project_document_user")
+@Table(name = "document_user")
 @ToString
 @EntityListeners(AuditingEntityListener.class)
-public class ProjectDocumentUserEntity {
+public class DocumentUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * 프로젝트 ID
-     */
-    @Column(nullable = false, name = "project_id")
-    private Long taskId;
-
-    /**
-     * 프로젝트명
-     */
-    @Column(nullable = true, name = "project_name")
-    private String projectName;
 
     /**
      * Document ID

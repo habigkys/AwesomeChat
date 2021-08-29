@@ -9,12 +9,4 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @AwesomeBootTest
 class ProjectTXServiceTest {
-
-    @Autowired
-    ProjectTXService projectTXService;
-
-    @Test
-    void testServiceNotNull() {
-        assertNotNull(projectTXService);
-    }
 }

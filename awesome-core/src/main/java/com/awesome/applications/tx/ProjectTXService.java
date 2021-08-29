@@ -4,6 +4,8 @@ import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.document.entities.DocumentDAO;
 import com.awesome.domains.document.entities.DocumentEntity;
 import com.awesome.domains.document.enums.DocumentType;
+import com.awesome.domains.mapping.entities.DocumentUserDAO;
+import com.awesome.domains.mapping.entities.DocumentUserEntity;
 import com.awesome.domains.mapping.entities.ProjectUserDAO;
 import com.awesome.domains.mapping.entities.ProjectUserEntity;
 import com.awesome.domains.project.dtos.ProjectDTO;
@@ -22,6 +24,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.Document;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +37,7 @@ public class ProjectTXService {
     private UserDAO userDao;
     private ProjectUserDAO projectUserDao;
     private DocumentDAO documentDao;
+    private DocumentUserDAO documentUserDao;
 
     /**
      * 4. 프로젝트 생성 - ProjectController
@@ -160,28 +164,27 @@ public class ProjectTXService {
     }
 
     /**
-     * 7. 프로젝트 산출물 Add - ProjectController
-     * @param documentDTOs
+     * 7. 프로젝트 산출물 등록 - ProjectController
+     * @param documentDTO
      * @param documentUsers
      * @return
      */
     @Transactional
-    public void updateProjectDocuments(List<DocumentDTO> documentDTOs, Map<Long, List<UserDTO>> documentUsers){
+    public DocumentDTO createProjectDocuments(DocumentDTO documentDTO, List<UserDTO> documentUsers){
         // Map은 Param으로 넘기지 않음 보통.
         // Project 1 : Document N : Users M
-        /*
-        TODO IMPL
-        // 산출물 추가
-        if(CollectionUtils.isEmpty(documentTypes)) {
-            return;
+
+        // 산출물 담당자 존재해야함
+        if(CollectionUtils.isEmpty(documentUsers)){
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_DOCUMENT_USER);
         }
-        documentDao.saveAll(documentTypes.stream().map(e -> {
-            DocumentEntity entity = new DocumentEntity();
-            entity.setProjectId(projectDto.getId());
-            entity.setDocumentType(e);
-            return entity;
-        }).collect(Collectors.toList()));
-        */
+
+        DocumentEntity savedDocumentEntity = documentDao.save(DocumentDTO.convertDtoToEntity(documentDTO));
+
+        // 산출물 <> 유저 매핑 정보 저장
+        documentUserMapping(savedDocumentEntity.getId(), documentUsers);
+
+        return DocumentDTO.convertEntityToDto(savedDocumentEntity);
     }
 
     /**
@@ -217,5 +220,33 @@ public class ProjectTXService {
         //O(3N)
         //
         projectUserDao.saveAll(projectUserEntities);
+    }
+
+    /**
+     * 산출물 <> 유저 매핑
+     * @param documentId
+     * @param users
+     */
+    private void documentUserMapping(Long documentId, List<UserDTO> users) {
+        List<DocumentUserEntity> documentUserEntities = Lists.newArrayList();
+        DocumentEntity documentEntity = documentDao.getOne(documentId);
+
+        List<UserEntity> userEntities = userDao.findAllById(users.stream().map(e -> e.getId()).collect(Collectors.toList()));
+
+        Map<Long, UserEntity> recentUserMap = userEntities.stream().collect(Collectors.toMap(e -> e.getId(), e -> e));
+
+        for(UserDTO user : users) {
+            DocumentUserEntity documentUserEntity = new DocumentUserEntity();
+            documentUserEntity.setDocumentId(documentId);
+            documentUserEntity.setDocumentType(documentEntity.getDocumentType());
+
+            UserEntity recentUserEntity = recentUserMap.get(user.getId());
+            documentUserEntity.setUserId(user.getId());
+            documentUserEntity.setUserName(recentUserEntity.getUserName());
+
+            documentUserEntities.add(documentUserEntity);
+        }
+
+        documentUserDao.saveAll(documentUserEntities);
     }
 }
