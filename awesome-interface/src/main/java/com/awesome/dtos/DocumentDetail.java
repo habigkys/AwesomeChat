@@ -32,5 +32,5 @@ public class DocumentDetail {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    List<UserDTO> users;
+    List<Long> userIds;
 }

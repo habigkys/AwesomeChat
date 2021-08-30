@@ -7,6 +7,7 @@ import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectDAO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.validator.*;
+import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
@@ -129,6 +130,23 @@ public class ProjectUserService {
         }
 
         return byProjectId.stream().map(ProjectUserEntity::getUserId).collect(Collectors.toList());
+    }
+
+    /**
+     * 7. 특정 프로젝트의 유저 리스트 조회 - ProjectController
+     * @param projectId
+     * @return
+     */
+    public List<UserDTO> getProjectUserList(Long projectId){
+        List<ProjectUserEntity> byProjectId = projectUserDao.findAllByProjectId(projectId);
+
+        if(CollectionUtils.isEmpty(byProjectId)){
+            throw new AwesomeException(AwesomeExceptionType.EMPTY_PROJECT);
+        }
+
+        List<Long> userIds = byProjectId.stream().map(ProjectUserEntity::getUserId).collect(Collectors.toList());
+
+        return userDao.findAllById(userIds).stream().map(UserDTO::convertEntityToDto).collect(Collectors.toList());
     }
 
     /**

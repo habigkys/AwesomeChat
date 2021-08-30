@@ -28,7 +28,7 @@
 
     function fn_getProjectUserList(projectId) {
       $.ajax({
-        url:"/api/v1/users/",
+        url:"/api/v1/projects/" + projectId + "/userList",
         type:"GET",
         cache: false,
         data:{},
@@ -103,9 +103,6 @@
 
     function fn_createProject() {
       let param = $("form[name=createForm]").serializeObject();
-
-      console.log(param);
-      console.log(JSON.stringify(param));
 
       $.ajax({
         url:"/api/v1/projects/",

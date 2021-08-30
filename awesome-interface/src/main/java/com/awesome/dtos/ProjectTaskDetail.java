@@ -37,5 +37,5 @@ public class ProjectTaskDetail {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate taskEndDate;
 
-    List<UserDTO> users;
+    List<Long> userIds;
 }

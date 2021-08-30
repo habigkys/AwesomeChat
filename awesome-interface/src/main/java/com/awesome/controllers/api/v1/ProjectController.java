@@ -5,6 +5,7 @@ import com.awesome.applications.service.ProjectUserService;
 import com.awesome.domains.document.dtos.DocumentDTO;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.services.ProjectService;
+import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.dtos.DocumentDetail;
 import com.awesome.dtos.ProjectDetail;
 import lombok.AllArgsConstructor;
@@ -122,9 +123,9 @@ public class ProjectController {
      * @param projectId
      * @return
      */
-    @PutMapping("/{projectId}/documents")
+    @PutMapping("/{projectId}/document")
     public DocumentDetail projectDocumentCreate(@RequestBody DocumentDetail documentDetail, @PathVariable("id") Long projectId) {
-        DocumentDTO documentDTO = projectDocumentService.createProjectDocuments(getDocumentDTO(documentDetail, projectId), documentDetail.getUsers());
+        DocumentDTO documentDTO = projectDocumentService.createProjectDocuments(getDocumentDTO(documentDetail, projectId), documentDetail.getUserIds());
 
         DocumentDetail createdDocumentDetail = new DocumentDetail();
         createdDocumentDetail.setDocumentId(documentDTO.getId());
@@ -133,6 +134,18 @@ public class ProjectController {
         createdDocumentDetail.setDocumentStatus(documentDTO.getDocumentStatus());
 
         return createdDocumentDetail;
+    }
+
+    /**
+     * 8. 특정 프로젝트의 유저 리스트 조회
+     * @param projectId
+     * @return
+     */
+    @GetMapping("/{projectId}/userList")
+    public List<UserDTO> userProjectList(@PathVariable("projectId") Long projectId) {
+        List<UserDTO> userList = projectUserService.getProjectUserList(projectId);
+
+        return userList;
     }
 
     private ProjectDTO getProjectDTO(ProjectDetail projectDetail) {

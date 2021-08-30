@@ -13,9 +13,9 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
-public class AwesomeProjectHasInvalidScopeUsers implements AwesomeBiValidator<ProjectTaskDTO, List<UserDTO>> {
+public class AwesomeProjectHasInvalidScopeUsers implements AwesomeBiValidator<ProjectTaskDTO, List<Long>> {
     @Override
-    public boolean validate(ProjectTaskDTO projectTaskDTO, List<UserDTO> users) {
+    public boolean validate(ProjectTaskDTO projectTaskDTO, List<Long> users) {
         return TaskType.TASK.equals(projectTaskDTO.getType()) && CollectionUtils.isEmpty(users);
     }
 
