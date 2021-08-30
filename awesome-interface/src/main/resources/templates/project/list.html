@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>LIST</title>
   <link rel='stylesheet' href='/webjars/bootstrap/4.5.0/css/bootstrap.min.css'>
+  <script src="/webjars/jquery/3.5.1/jquery.js"></script>
   <script>
     function fn_userList() {
       $.ajax({
@@ -27,7 +28,7 @@
 
     function fn_getProjectUserList(projectId) {
       $.ajax({
-        url:"/api/v1/users/",
+        url:"/api/v1/projects/" + projectId + "/userList",
         type:"GET",
         cache: false,
         data:{},
@@ -101,7 +102,7 @@
     }
 
     function fn_createProject() {
-      let param = $("form[name=createForm]").serialize();
+      let param = $("form[name=createForm]").serializeObject();
 
       $.ajax({
         url:"/api/v1/projects/",
@@ -117,6 +118,22 @@
         error:function(key, textStatus){
         }
       });
+    }
+
+    jQuery.fn.serializeObject = function() {
+      let obj = null;
+      try {
+        if(this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) {
+          let arr = this.serializeArray();
+          if(arr){ obj = {};
+            jQuery.each(arr, function() {
+              obj[this.name] = this.value; });
+          }
+        }
+      }catch(e) {
+        alert(e.message);
+      }finally {}
+      return obj;
     }
   </script>
 </head>
@@ -272,7 +289,6 @@
     </div>
   </div>
 </div>
-<script src="/webjars/jquery/3.5.1/jquery.min.js"></script>
 <script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </body>
 </html>

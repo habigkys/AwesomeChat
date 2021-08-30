@@ -39,7 +39,7 @@ public class ProjectTaskService {
      * @param projectId
      * @return
      */
-    public List<ProjectTaskDTO> getProjectTaskListByProject(Long projectId){
+    public List<ProjectTaskDTO> getProjectTaskListByProjectId(Long projectId){
         List<ProjectTaskEntity> projectTaskEntityList = projectTaskDAO.findAllByProjectId(projectId);
 
         return projectTaskEntityList.stream().map(ProjectTaskDTO::convertEntityToDto).collect(Collectors.toList());
