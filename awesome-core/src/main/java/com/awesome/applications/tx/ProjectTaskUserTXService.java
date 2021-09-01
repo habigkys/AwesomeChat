@@ -33,13 +33,13 @@ public class ProjectTaskUserTXService {
 
     /**
      * 4. 프로젝트 타스크/이슈 생성 - ProjectTaskUserService
-     * @param projectTaskDto
+     * @param projectTaskEntity
      * @param userIds
      * @return
      */
     @Transactional
-    public ProjectTaskEntity save(ProjectTaskDTO projectTaskDto, List<Long> userIds){
-        ProjectTaskEntity savedProjectTaskEntity = projectTaskDao.save(ProjectTaskDTO.convertDtoToEntity(projectTaskDto));
+    public ProjectTaskEntity save(ProjectTaskEntity projectTaskEntity, List<Long> userIds){
+        ProjectTaskEntity savedProjectTaskEntity = projectTaskDao.save(projectTaskEntity);
 
         // 타스크 <> 유저 매핑 정보 저장
         projectTaskUserMapping(savedProjectTaskEntity.getId(), userIds);
@@ -49,19 +49,16 @@ public class ProjectTaskUserTXService {
 
     /**
      * 5. 프로젝트 타스크/이슈 수정 - ProjectTaskController
-     * @param projectTaskDto
+     * @param projectTaskEntity
      * @param userIds
      * @return
      */
     @Transactional
-    public ProjectTaskEntity update(ProjectTaskDTO projectTaskDto, List<Long> userIds){
+    public ProjectTaskEntity update(ProjectTaskEntity projectTaskEntity, List<Long> userIds){
         // 기존 매핑 정보 삭제 후
-        projectTaskUserDao.deleteAllByTaskId(projectTaskDto.getId());
+        projectTaskUserDao.deleteAllByTaskId(projectTaskEntity.getId());
 
-        // 타스크 <> 유저 매핑 정보 저장
-        projectTaskUserMapping(projectTaskDto.getId(), userIds);
-
-        return projectTaskDao.save(ProjectTaskDTO.convertDtoToEntity(projectTaskDto));
+        return save(projectTaskEntity, userIds);
     }
 
     /**

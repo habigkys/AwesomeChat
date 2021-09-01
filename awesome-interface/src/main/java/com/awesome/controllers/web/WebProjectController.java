@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class WebProjectController {
     @GetMapping("/")
     public String projectList(){
-        return "project/list.html";
+        return "project/projectList.html";
+    }
+
+
+    @GetMapping("/users")
+    public String userList(){
+        return "user/userList.html";
     }
 }

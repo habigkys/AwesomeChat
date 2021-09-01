@@ -56,7 +56,7 @@ public class ProjectTaskController {
      * @param projectId
      * @return
      */
-    @GetMapping("/taskList/{projectId}")
+    @GetMapping("/{projectId}/tasks")
     public List<ProjectTaskDTO> projectTaskList(@PathVariable("projectId") Long projectId) {
         List<ProjectTaskDTO> projectTaskList = projectTaskService.getProjectTaskListByProjectId(projectId);
 

@@ -63,7 +63,7 @@ public class ProjectUserService {
         }
 
         // txService create + project&user mapping Atomic 동작 보장
-        return ProjectDTO.convertEntityToDto(projectUserTXService.save(projectDto, userIds));
+        return ProjectDTO.convertEntityToDto(projectUserTXService.save(ProjectDTO.convertDtoToEntity(projectDto), userIds));
     }
 
     /**
@@ -114,7 +114,7 @@ public class ProjectUserService {
         }
 
         // txService update + project&user mapping Atomic 동작 보장
-        return ProjectDTO.convertEntityToDto(projectUserTXService.update(projectDto, userIds));
+        return ProjectDTO.convertEntityToDto(projectUserTXService.update(ProjectDTO.convertDtoToEntity(projectDto), userIds));
     }
 
     /**

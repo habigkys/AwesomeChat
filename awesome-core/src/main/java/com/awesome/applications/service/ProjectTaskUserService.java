@@ -56,7 +56,7 @@ public class ProjectTaskUserService {
             throw new AwesomeException(AwesomeExceptionType.EMPTY_TASK_PARENT);
         }
 
-        return ProjectTaskDTO.convertEntityToDto(projectTaskUserTXService.save(projectTaskDto, userIds));
+        return ProjectTaskDTO.convertEntityToDto(projectTaskUserTXService.save(ProjectTaskDTO.convertDtoToEntity(projectTaskDto), userIds));
     }
 
     /**
@@ -77,7 +77,7 @@ public class ProjectTaskUserService {
             throw new AwesomeException(AwesomeExceptionType.EMPTY_TASK);
         }
 
-        return ProjectTaskDTO.convertEntityToDto(projectTaskUserTXService.update(projectTaskDto, userIds));
+        return ProjectTaskDTO.convertEntityToDto(projectTaskUserTXService.update(ProjectTaskDTO.convertDtoToEntity(projectTaskDto), userIds));
     }
 
     /**
