@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>USER LIST</title>
+  <link rel='stylesheet' href='/webjars/bootstrap/4.5.0/css/bootstrap.min.css'>
+  <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+  <script>
+    function fn_userList() {
+      $.ajax({
+        url:"/api/v1/users/",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          let userList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ID</th>'
+                  + '<th scope="col">USER NAME</th><th scope="col">USER POSITION</th><th scope="col">USER YEAR</th></tr></thead><tbody>';
+          for(let i=0;i<data.length;i++) {
+            userList += '<tr class="text-center">';
+
+            userList += '<th scope="row"><span th:text="' + data[i].id + '">' + data[i].id + '</span></th>';
+            userList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_getUser(' + data[i].id + ');">' + data[i].userName + '</button></td>';
+            userList += '<td><span th:text="' + data[i].userPosition+ '">' + data[i].userPosition + '</span></td>';
+            userList += '<td><span th:text="' + data[i].userYear+ '">' + data[i].userYear + '</span></td>';
+            userList += '</tr>';
+          }
+          userList += '</tbody></table>';
+
+          $("#userTable").html("");
+          $("#userTable").append(userList);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
+    function fn_getUser(userId) {
+      $.ajax({
+        url:"/api/v1/users/" + userId,
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          //todo
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
+    function fn_createUser() {
+      let param = $("form[name=createForm]").serializeObject();
+
+      $.ajax({
+        url:"/api/v1/users/",
+        type:"POST",
+        cache: false,
+        data:JSON.stringify(param),
+        processData: false,
+        contentType: "application/json",
+        dataType : "json",
+        success:function(data){
+          fn_userList();
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
+    jQuery.fn.serializeObject = function() {
+      let obj = null;
+      try {
+        if(this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) {
+          let arr = this.serializeArray();
+          if(arr){ obj = {};
+            jQuery.each(arr, function() {
+              obj[this.name] = this.value; });
+          }
+        }
+      }catch(e) {
+        alert(e.message);
+      }finally {}
+      return obj;
+    }
+  </script>
+</head>
+<body>
+<header th:insert="common/header.html"></header>
+<div class="container">
+  <div id="userTable">
+    <table class="table">
+      <thead class="thead-light">
+      <tr class="text-center">
+        <th scope="col">ID</th>
+        <th scope="col">USER NAME</th>
+        <th scope="col">USER POSITION</th>
+        <th scope="col">USER YEAR</th>
+      </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+  <div class="col-md-12">
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#userCreateModal">유저 등록</button>
+    <button type="button" class="btn btn-primary" onclick="fn_userList();">유저 조회</button>
+  </div>
+  <div class="modal fade" id="userCreateModal" tabindex="-1" role="dialog" aria-labelledby="userCreateLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="userCreateLabel">유저 등록</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="/api/v1/users/" method="post" id="createForm" name="createForm">
+            <div class="form-group">
+              <label for="userName">유저명</label>
+              <input type="text" class="form-control" name="userName" id="userName" placeholder="유저명을 입력하세요">
+            </div>
+            <div class="form-group">
+              <label for="userPosition">유저 직책</label>
+              <select class="form-control" name="userPosition" id="userPosition">
+                <option value="MEMBER" selected>멤버</option>
+                <option value="LEADER">리더</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="userYear">유저 연차</label>
+              <input type='text' class="form-control" name="userYear" id='userYear'/>
+            </div>
+            <div class="row">
+              <div class="col-auto mr-auto"></div>
+              <div class="col-auto">
+                <input class="btn btn-primary" type="button" role="button" value="등록" onclick="fn_createUser()">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>

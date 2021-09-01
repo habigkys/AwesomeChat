@@ -7,7 +7,7 @@ public class AwesomeProjectTaskHasInvalidDate implements AwesomeValidator<Projec
 
     @Override
     public boolean validate(ProjectTaskDTO projectTaskDTO) {
-        return projectTaskDTO.getTaskEndDate().isAfter(projectTaskDTO.getTaskEndDate());
+        return projectTaskDTO.getTaskEndDate().isAfter(projectTaskDTO.getTaskStartDate());
     }
 
     public static AwesomeProjectTaskHasInvalidDate get() {

@@ -32,13 +32,13 @@ public class ProjectDocumentTxService {
 
     /**
      * 7. 프로젝트 산출물 등록 - ProjectController
-     * @param documentDTO
+     * @param documentEntity
      * @param userIds
      * @return
      */
     @Transactional
-    public DocumentEntity save(DocumentDTO documentDTO, List<Long> userIds){
-        DocumentEntity savedDocumentEntity = documentDao.save(DocumentDTO.convertDtoToEntity(documentDTO));
+    public DocumentEntity save(DocumentEntity documentEntity, List<Long> userIds){
+        DocumentEntity savedDocumentEntity = documentDao.save(documentEntity);
 
         // 산출물 <> 유저 매핑 정보 저장
         documentUserMapping(savedDocumentEntity.getId(), userIds);

@@ -44,6 +44,6 @@ public class ProjectDocumentService {
             throw new AwesomeException(AwesomeExceptionType.EMPTY_DOCUMENT_USER);
         }
 
-        return DocumentDTO.convertEntityToDto(projectDocumentTxService.save(documentDTO, userIds));
+        return DocumentDTO.convertEntityToDto(projectDocumentTxService.save(DocumentDTO.convertDtoToEntity(documentDTO), userIds));
     }
 }

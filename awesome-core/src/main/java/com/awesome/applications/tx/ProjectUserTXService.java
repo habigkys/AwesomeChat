@@ -39,13 +39,13 @@ public class ProjectUserTXService {
 
     /**
      * 프로젝트 생성 - ProjectUserService
-     * @param projectDto
+     * @param projectEntity
      * @param userIds
      * @return
      */
     @Transactional
-    public ProjectEntity save(ProjectDTO projectDto, List<Long> userIds){
-        ProjectEntity savedProjectEntity = projectDao.save(ProjectDTO.convertDtoToEntity(projectDto));
+    public ProjectEntity save(ProjectEntity projectEntity, List<Long> userIds){
+        ProjectEntity savedProjectEntity = projectDao.save(projectEntity);
 
         // 프로젝트 <> 유저 매핑 정보 저장
         projectUserMapping(savedProjectEntity.getId(), userIds);
@@ -55,19 +55,16 @@ public class ProjectUserTXService {
 
     /**
      * 5. 프로젝트 수정 - ProjectController
-     * @param projectDto
+     * @param projectEntity
      * @param userIds
      * @return
      */
     @Transactional
-    public ProjectEntity update(ProjectDTO projectDto, List<Long> userIds){
+    public ProjectEntity update(ProjectEntity projectEntity, List<Long> userIds){
         // 기존 매핑 정보 삭제 후
-        projectUserDao.deleteAllByProjectId(projectDto.getId());
+        projectUserDao.deleteAllByProjectId(projectEntity.getId());
 
-        // 프로젝트 <> 유저 매핑 정보 저장
-        projectUserMapping(projectDto.getId(), userIds);
-
-        return projectDao.save(ProjectDTO.convertDtoToEntity(projectDto));
+        return save(projectEntity, userIds);
     }
 
     /**

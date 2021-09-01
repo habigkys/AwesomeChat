@@ -95,7 +95,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @GetMapping("/{userId}/projectList")
+    @GetMapping("/{userId}/projects")
     public List<ProjectDTO> userProjectList(@PathVariable("userId") Long userId) {
         List<ProjectDTO> projectList = projectUserService.getUserProjectList(userId);
 
@@ -107,7 +107,7 @@ public class UserController {
      * @param userId
      * @return
      */
-    @GetMapping("/{userId}/taskList")
+    @GetMapping("/{userId}/tasks")
     public List<ProjectTaskDTO> userTaskList(@PathVariable("userId") Long userId) {
         List<ProjectTaskDTO> projectTaskList = projectTaskUserService.getUserTaskList(userId);
 

@@ -72,7 +72,7 @@ public class ProjectController {
      */
     @PostMapping("/")
     public ProjectDetail projectCreate(@RequestBody ProjectDetail projectDetail) {
-        ProjectDTO projectDTO = getProjectDTO(projectDetail);
+        ProjectDTO projectDTO = buildProjectDTO(projectDetail);
         List<Long> userIds = projectDetail.getUserIds();
 
         ProjectDTO createdProject = projectUserService.createProject(projectDTO, userIds);
@@ -97,7 +97,7 @@ public class ProjectController {
      */
     @PutMapping("/")
     public ProjectDTO projectUpdate(@RequestBody ProjectDetail projectDetail) {
-        ProjectDTO projectDTO = getProjectDTO(projectDetail);
+        ProjectDTO projectDTO = buildProjectDTO(projectDetail);
         List<Long> userIds = projectDetail.getUserIds();
 
         ProjectDTO updatedProject = projectUserService.updateProject(projectDTO, userIds);
@@ -124,8 +124,8 @@ public class ProjectController {
      * @return
      */
     @PutMapping("/{projectId}/document")
-    public DocumentDetail projectDocumentCreate(@RequestBody DocumentDetail documentDetail, @PathVariable("id") Long projectId) {
-        DocumentDTO documentDTO = projectDocumentService.createProjectDocuments(getDocumentDTO(documentDetail, projectId), documentDetail.getUserIds());
+    public DocumentDetail projectDocumentCreate(@RequestBody DocumentDetail documentDetail, @PathVariable("projectId") Long projectId) {
+        DocumentDTO documentDTO = projectDocumentService.createProjectDocuments(buildDocumentDTO(documentDetail, projectId), documentDetail.getUserIds());
 
         DocumentDetail createdDocumentDetail = new DocumentDetail();
         createdDocumentDetail.setDocumentId(documentDTO.getId());
@@ -141,14 +141,14 @@ public class ProjectController {
      * @param projectId
      * @return
      */
-    @GetMapping("/{projectId}/userList")
+    @GetMapping("/{projectId}/users")
     public List<UserDTO> userProjectList(@PathVariable("projectId") Long projectId) {
         List<UserDTO> userList = projectUserService.getProjectUserList(projectId);
 
         return userList;
     }
 
-    private ProjectDTO getProjectDTO(ProjectDetail projectDetail) {
+    private ProjectDTO buildProjectDTO(ProjectDetail projectDetail) {
         ProjectDTO projectDTO = new ProjectDTO();
         projectDTO.setProjectName(projectDetail.getProjectName());
         projectDTO.setSummary(projectDetail.getSummary());
@@ -159,7 +159,7 @@ public class ProjectController {
         return projectDTO;
     }
 
-    private DocumentDTO getDocumentDTO(DocumentDetail documentDetail, Long projectId) {
+    private DocumentDTO buildDocumentDTO(DocumentDetail documentDetail, Long projectId) {
         DocumentDTO documentDTO = new DocumentDTO();
         documentDTO.setProjectId(projectId);
         documentDTO.setDocumentType(documentDetail.getDocumentType());
