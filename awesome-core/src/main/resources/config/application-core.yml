@@ -43,3 +43,8 @@ spring:
     username: root
     password: admin
 ---
+
+spring:
+  redis:
+    host: localhost
+    port: 6379

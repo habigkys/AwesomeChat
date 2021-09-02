@@ -4,8 +4,6 @@ import com.awesome.domains.user.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.util.List;
-
 @AllArgsConstructor
 public class UserScheduler {
     private final UserService userService;
