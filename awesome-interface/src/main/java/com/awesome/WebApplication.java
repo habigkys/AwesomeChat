@@ -5,12 +5,14 @@ import com.awesome.configurations.WebConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableJpaAuditing
 @SpringBootApplication
 @EnableScheduling
+@EnableAspectJAutoProxy
 public class WebApplication {
     public static void main(String[] args) {
         // 계층구조를 가진 멀티 모듈일 경우 빌더를 사용하여 부모와 자식관계를 만든다.

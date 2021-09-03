@@ -1,4 +1,4 @@
-package com.awesome.infrastructures;
+package com.awesome.infrastructures.redisnotice;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

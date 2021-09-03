@@ -1,4 +1,4 @@
-package com.awesome.infrastructures;
+package com.awesome.infrastructures.exceptions;
 
 public enum AwesomeExceptionType {
     EMPTY_TASK ("98", "존재하지 않는 타스크입니다."),

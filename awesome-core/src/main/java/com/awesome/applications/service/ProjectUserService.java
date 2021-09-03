@@ -11,16 +11,15 @@ import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
 import com.awesome.domains.user.enums.UserPosition;
-import com.awesome.infrastructures.AwesomeException;
-import com.awesome.infrastructures.AwesomeExceptionType;
-import com.google.common.collect.Lists;
+import com.awesome.infrastructures.exceptions.AwesomeException;
+import com.awesome.infrastructures.exceptions.AwesomeExceptionType;
+import com.awesome.infrastructures.excutionlog.LogExecutionTime;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -39,6 +38,7 @@ public class ProjectUserService {
      * @return
      */
     @Transactional
+    @LogExecutionTime
     public ProjectDTO createProject(ProjectDTO projectDto, List<Long> userIds){
         // 종료일이 시작일보다 먼저 올 수 없음
         if(AwesomeProjectHasInvalidDate.get().validate(projectDto)) {
@@ -73,6 +73,7 @@ public class ProjectUserService {
      * @return
      */
     @Transactional
+    @LogExecutionTime
     public ProjectDTO updateProject(ProjectDTO projectDto, List<Long> userIds){
         // 종료일이 시작일보다 먼저 올 수 없음
         if(AwesomeProjectHasInvalidDate.get().validate(projectDto)) {

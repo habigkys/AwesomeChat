@@ -1,6 +1,6 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.infrastructures.RedisCacheNotice;
+import com.awesome.infrastructures.redisnotice.RedisCacheNotice;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

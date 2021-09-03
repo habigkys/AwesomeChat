@@ -4,9 +4,6 @@ import com.awesome.domains.AwesomeBiValidator;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.enums.ProjectPriority;
-import com.awesome.domains.project.enums.ProjectStatus;
-import com.awesome.infrastructures.AwesomeException;
-import com.awesome.infrastructures.AwesomeExceptionType;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
