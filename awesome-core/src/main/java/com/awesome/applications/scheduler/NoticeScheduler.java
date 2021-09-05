@@ -1,6 +1,6 @@
 package com.awesome.applications.scheduler;
 
-import com.awesome.infrastructures.redisnotice.RedisCacheNotice;
+import com.awesome.infrastructures.redisnotice.services.RedisCacheNotice;
 import lombok.AllArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 
