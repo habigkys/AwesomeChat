@@ -1,7 +1,7 @@
 package com.awesome;
 
-import com.awesome.configurations.RootConfiguration;
-import com.awesome.configurations.WebConfiguration;
+import com.awesome.configurations.AwesomeDatasourceConfiguration;
+import com.awesome.configurations.LogDatasourceConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.ApplicationPidFileWriter;
@@ -25,7 +25,7 @@ public class WebApplication {
         // @EnableAutoConfiguration 를 각 컨피규레이션 객체에 넣어주면 된다.
         // @EnableAutoConfiguration 선언된 객체의 패키지를 ROOT 로 해서 스캔하면서 설정이 올라온다.
         new SpringApplicationBuilder()
-                .parent(RootApplication.class, RootConfiguration.class)
+                .parent(RootApplication.class, AwesomeDatasourceConfiguration.class, LogDatasourceConfiguration.class)
                 .listeners(new ApplicationPidFileWriter())
                 .build()
                 .run(WebApplication.class, args);
