@@ -6,6 +6,21 @@
   <link rel='stylesheet' href='/webjars/bootstrap/4.5.0/css/bootstrap.min.css'>
   <script src="/webjars/jquery/3.5.1/jquery.js"></script>
   <script>
+    $(document).ready(function() {
+      $.ajax({
+        url:"/api/v1/notice/",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          alert(data);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    });
+
     function fn_userList() {
       $.ajax({
         url:"/api/v1/users/",

@@ -2,26 +2,17 @@ package com.awesome.applications.tx;
 
 import com.awesome.domains.mapping.entities.ProjectTaskUserDAO;
 import com.awesome.domains.mapping.entities.ProjectTaskUserEntity;
-import com.awesome.domains.projecttask.dtos.ProjectTaskDTO;
 import com.awesome.domains.projecttask.entities.ProjectTaskDAO;
 import com.awesome.domains.projecttask.entities.ProjectTaskEntity;
-import com.awesome.domains.projecttask.validator.AwesomeProjectHasInvalidScopeUsers;
-import com.awesome.domains.projecttask.validator.AwesomeProjectTaskHasInvalidDate;
-import com.awesome.domains.projecttask.validator.AwesomeProjectTaskHasInvalidParent;
-import com.awesome.domains.user.dtos.UserDTO;
 import com.awesome.domains.user.entities.UserDAO;
 import com.awesome.domains.user.entities.UserEntity;
-import com.awesome.infrastructures.AwesomeException;
-import com.awesome.infrastructures.AwesomeExceptionType;
 import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor

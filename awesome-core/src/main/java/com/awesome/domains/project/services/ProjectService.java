@@ -3,6 +3,7 @@ package com.awesome.domains.project.services;
 import com.awesome.domains.project.dtos.ProjectDTO;
 import com.awesome.domains.project.entities.ProjectEntity;
 import com.awesome.domains.project.entities.ProjectDAO;
+import com.awesome.infrastructures.excutionlog.LogExecutionTime;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ public class ProjectService {
      * 1. 프로젝트 리스트 - ProjectController
      * @return
      */
+    @LogExecutionTime
     public List<ProjectDTO> getProjectList(){
         List<ProjectEntity> projectEntityList = projectDAO.findAll();
 

@@ -1,4 +1,4 @@
-package com.awesome.infrastructures;
+package com.awesome.infrastructures.exceptions;
 
 public class AwesomeException extends RuntimeException {
     AwesomeExceptionType exceptionType;
