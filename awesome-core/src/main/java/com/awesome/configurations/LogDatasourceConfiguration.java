@@ -27,7 +27,11 @@ import java.util.Objects;
 @EnableConfigurationProperties(LogDatasourceConfiguration.DataSourceProperties.class)
 @Configuration
 @EnableTransactionManagement
-@EnableJpaRepositories(basePackages = "com.awesome.infrastructures.excutionlog")
+@EnableJpaRepositories(
+    basePackages = "com.awesome.infrastructures.excutionlog",
+    entityManagerFactoryRef = "logEntityManagerFactory",
+    transactionManagerRef = "logTransactionManager"
+)
 public class LogDatasourceConfiguration {
     @Autowired
     private DataSourceProperties properties;

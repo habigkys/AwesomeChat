@@ -59,7 +59,7 @@ public class AwesomeDatasourceConfiguration {
 
     @Bean
     @Primary
-    PlatformTransactionManager awesomeTransactionManager(EntityManagerFactoryBuilder builder) {
+    PlatformTransactionManager transactionManager(EntityManagerFactoryBuilder builder) {
         return new JpaTransactionManager(Objects.requireNonNull(entityManagerFactory(builder).getObject()));
     }
 
