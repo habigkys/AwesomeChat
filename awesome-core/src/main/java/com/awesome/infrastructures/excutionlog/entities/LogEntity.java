@@ -1,4 +1,4 @@
-package com.awesome.domains.log.entities;
+package com.awesome.infrastructures.excutionlog.entities;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

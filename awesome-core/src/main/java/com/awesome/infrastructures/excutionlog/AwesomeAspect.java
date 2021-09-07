@@ -1,7 +1,7 @@
 package com.awesome.infrastructures.excutionlog;
 
-import com.awesome.domains.log.entities.LogDAO;
-import com.awesome.domains.log.entities.LogEntity;
+import com.awesome.infrastructures.excutionlog.entities.LogDAO;
+import com.awesome.infrastructures.excutionlog.entities.LogEntity;
 import lombok.AllArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
