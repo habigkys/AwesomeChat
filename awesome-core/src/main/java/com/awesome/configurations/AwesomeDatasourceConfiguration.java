@@ -26,7 +26,6 @@ import java.util.Objects;
 @EntityScan(basePackages = "com.awesome.domains")
 @EnableConfigurationProperties(AwesomeDatasourceConfiguration.DataSourceProperties.class)
 @Configuration
-@EnableTransactionManagement
 @EnableJpaRepositories(basePackages = "com.awesome.domains")
 public class AwesomeDatasourceConfiguration {
     @Autowired

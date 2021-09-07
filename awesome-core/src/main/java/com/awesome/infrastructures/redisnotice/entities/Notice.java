@@ -6,7 +6,6 @@ import lombok.Setter;
 import org.springframework.data.redis.core.RedisHash;
 
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.Id;
 
 @NoArgsConstructor
