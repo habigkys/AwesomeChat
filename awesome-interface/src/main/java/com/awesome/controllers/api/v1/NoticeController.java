@@ -1,11 +1,13 @@
 package com.awesome.controllers.api.v1;
 
+
 import com.awesome.infrastructures.redisnotice.services.RedisCacheNotice;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @AllArgsConstructor
 @RestController
@@ -17,8 +19,8 @@ public class NoticeController {
      * 1. Get Notice
      * @return
      */
-    @GetMapping("/{noticeId}")
-    public String userList(@PathVariable("noticeId") Long noticeId) {
-        return redisCacheNotice.getNotice(noticeId);
+    @GetMapping("/")
+    public String getNotice() {
+        return redisCacheNotice.getNotice(LocalDate.now().toString());
     }
 }

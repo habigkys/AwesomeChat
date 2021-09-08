@@ -1,21 +1,25 @@
 package com.awesome.infrastructures.redisnotice.entities;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
-import javax.persistence.Id;
+import java.time.LocalDate;
 
-@NoArgsConstructor
 @Getter
 @Setter
-@Entity
+@Cacheable
 @RedisHash("notice")
 public class Notice {
     @Id
-    String id;
+    private Long noticeId;
+
+    @Indexed
+    private String noticedDate;
 
     private String noticeContents;
 }

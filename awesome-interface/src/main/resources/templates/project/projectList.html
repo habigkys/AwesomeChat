@@ -8,11 +8,10 @@
   <script>
     $(document).ready(function() {
       $.ajax({
-        url:"/api/v1/notice/1",
+        url:"/api/v1/notice/",
         type:"GET",
         cache: false,
         data:{},
-        dataType : "json",
         success:function(data){
           alert(data);
         },
