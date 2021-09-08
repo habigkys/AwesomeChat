@@ -5,5 +5,4 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.Optional;
 
 public interface NoticeDAO extends CrudRepository<Notice, Long> {
-    Optional<Notice> findById(Long id);
 }

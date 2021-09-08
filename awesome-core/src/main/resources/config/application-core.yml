@@ -43,16 +43,11 @@ spring:
       jdbc-url: jdbc:mysql://localhost:3306/template?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
       username: root
       password: admin
----
-spring.profiles: local
-spring:
-  datasource:
     log:
       jdbc-url: jdbc:mysql://localhost:3306/logdb?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
       username: root
       password: admin
 ---
-
 spring:
   redis:
     host: localhost

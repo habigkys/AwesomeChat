@@ -26,7 +26,6 @@ import java.util.Objects;
 @EntityScan(basePackages = "com.awesome.infrastructures.excutionlog")
 @EnableConfigurationProperties(LogDatasourceConfiguration.DataSourceProperties.class)
 @Configuration
-@EnableTransactionManagement
 @EnableJpaRepositories(
     basePackages = "com.awesome.infrastructures.excutionlog",
     entityManagerFactoryRef = "logEntityManagerFactory",
