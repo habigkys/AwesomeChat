@@ -49,6 +49,8 @@ spring:
       password: admin
 ---
 spring:
+  cache:
+    type: redis
   redis:
     host: localhost
     port: 6379

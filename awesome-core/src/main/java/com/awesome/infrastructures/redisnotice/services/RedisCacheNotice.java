@@ -5,11 +5,12 @@ import com.awesome.infrastructures.exceptions.AwesomeExceptionType;
 import com.awesome.infrastructures.redisnotice.entities.Notice;
 import com.awesome.infrastructures.redisnotice.entities.NoticeDAO;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @AllArgsConstructor
@@ -17,12 +18,13 @@ import java.util.Optional;
 public class RedisCacheNotice {
     private NoticeDAO noticeDAO;
 
-    @Cacheable(key = "#id", value = "noticeCache")
-    public String getNotice(Long id){
-        Optional<Notice> byId = noticeDAO.findById(id);
+    @Cacheable(value = "noticeCache", key = "#noticedDate", unless = "#result == null", cacheManager = "redisNoticeCacheManager")
+    public String getNotice(String noticedDate){
+        Optional<Notice> byId = noticeDAO.findByNoticedDate(noticedDate);
 
         if(byId.isEmpty()){
-            //throw new AwesomeException();
+            // 공지 없음.
+            return null;
         }
 
         Notice notice = byId.get();
@@ -31,9 +33,11 @@ public class RedisCacheNotice {
     }
 
     @Transactional
-    public void setNotice(){
+    @CachePut(value = "noticeCache", key = "#noticedDate", cacheManager = "redisNoticeCacheManager")
+    public void setNotice(String noticedDate){
         Notice notice = new Notice();
-        notice.setNoticeContents(LocalDateTime.now().toString());
+        notice.setNoticedDate(LocalDate.now().toString());
+        notice.setNoticeContents(LocalDate.now().toString());
         noticeDAO.save(notice);
     }
 }
