@@ -14,9 +14,18 @@ public class WebProjectController {
         return "project/projectList.html";
     }
 
-
     @GetMapping("/users")
     public String userList(){
         return "user/userList.html";
+    }
+
+    @GetMapping("/userChat")
+    public String userChat(){
+        return "chat/userChat.html";
+    }
+
+    @GetMapping("/adminChat")
+    public String adminChat(){
+        return "chat/adminChat.html";
     }
 }

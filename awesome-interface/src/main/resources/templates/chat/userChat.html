@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>USER LIST</title>
+  <link rel='stylesheet' href='/webjars/bootstrap/4.5.0/css/bootstrap.min.css'>
+  <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+  <script>
+    function fn_createChatRoom() {
+      $.ajax({
+        url:"/api/v1/chat/create",
+        type:"GET",
+        cache: false,
+        data:{},
+        dataType : "json",
+        success:function(data){
+          console.log(data);
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+
+    function fn_sendMsg() {
+      var msg = $("msgText").val();
+
+      $.ajax({
+        url:"/api/v1/chat/send",
+        type:"GET",
+        cache: false,
+        data:msg,
+        processData: false,
+        contentType: "application/json",
+        dataType : "json",
+        success:function(data){
+        },
+        error:function(key, textStatus){
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+<header th:insert="common/header.html"></header>
+<div class="container">
+  <div class="col-md-12">
+    <button type="button" class="btn btn-primary" onclick="fn_createChatRoom();">1:1 채팅</button>
+    <br/>
+    <input type="text" class="form-control" name="msgText" id="msgText">
+    <button type="button" class="btn btn-primary" onclick="fn_sendMsg();">메시지 전송</button>
+  </div>
+</div>
+<script src="/webjars/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+</html>
