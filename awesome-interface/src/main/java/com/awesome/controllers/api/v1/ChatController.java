@@ -1,36 +1,29 @@
 package com.awesome.controllers.api.v1;
 
+import com.awesome.dtos.ChatMessage;
+import com.awesome.dtos.ChatRoom;
+import com.awesome.dtos.ChatService;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.*;
 
-@AllArgsConstructor
-@RestController("/api/v1/chat")
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/chat")
 public class ChatController {
+    private final ChatService chatService;
 
-    @GetMapping("/create")
-    public String createChatRoom() {
-        return null;
+    @PostMapping
+    public ChatRoom doChat(@RequestBody ChatMessage chatMessage) {
+        return chatService.doChat(chatMessage.getRoomName());
     }
 
-    @GetMapping("/send")
-    public String sendMsg() {
-        return null;
-    }
-
-    @GetMapping("/{id}")
-    public String joinChatRoom(@PathVariable Long id) {
-        return null;
-    }
-
-    @Getter
-    @Setter
-    public static class ChatDTO {
-        private Long id;
-
-        private String userId;
-
-        private String message;
+    @GetMapping("/chats")
+    public List<ChatRoom> findAllRoom() {
+        return chatService.findAllRoom();
     }
 }

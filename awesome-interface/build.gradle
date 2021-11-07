@@ -6,6 +6,7 @@ dependencies {
     api project(':awesome-core')
 
     api "org.springframework.boot:spring-boot-starter-web"
+    api "org.springframework.boot:spring-boot-starter-websocket"
 
     //Swagger
     api "io.springfox:springfox-swagger2:2.9.2"
@@ -22,6 +23,7 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
     implementation "pl.allegro.tech.boot:handlebars-spring-boot-starter:0.3.1"
+    implementation "com.google.code.gson:gson:2.8.6"
     runtimeOnly "org.webjars:bootstrap:4.5.0"
     runtimeOnly "org.webjars:jquery:3.5.1"
 }
