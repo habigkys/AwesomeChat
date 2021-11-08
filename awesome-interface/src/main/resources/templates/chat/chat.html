@@ -98,14 +98,14 @@
                     $("#msgArea").append(str);
                 });
 
-                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
+                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, user: username}))
             });
 
             $("#button-send").on("click", function(e){
                 var msg = document.getElementById("msg");
 
                 console.log(username + ":" + msg.value);
-                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
+                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, user: username}));
                 msg.value = '';
             });
         }

@@ -15,11 +15,13 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ChatRoomDTO {
+    private Long id;
     private String roomId;
     private String name;
 
     public static ChatRoomDTO convertEntityToDto(ChatRoomEntity chatRoomEntity) {
         ChatRoomDTO dto = new ChatRoomDTO();
+        dto.setId(chatRoomEntity.getId());
         dto.setRoomId(chatRoomEntity.getRoomId());
         dto.setName(chatRoomEntity.getName());
         return dto;
@@ -27,6 +29,7 @@ public class ChatRoomDTO {
 
     public static ChatRoomEntity convertDtoToEntity(ChatRoomDTO chatRoomDTO) {
         ChatRoomEntity entity = new ChatRoomEntity();
+        entity.setId(chatRoomDTO.getId());
         entity.setRoomId(chatRoomDTO.getRoomId());
         entity.setName(chatRoomDTO.getName());
         return entity;
