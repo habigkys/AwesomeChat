@@ -8,19 +8,19 @@
   <script>
     function fn_chatList() {
       $.ajax({
-        url:"/api/v1/chat/chats",
+        url:"/api/v1/chat/rooms",
         type:"GET",
         cache: false,
         data:{},
         dataType : "json",
         success:function(data){
-          let chatList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ROOM ID</th>'
-                  + '<th scope="col">ROOM CREATED</th></tr></thead><tbody>';
+          let chatList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ID</th>'
+                  + '<th scope="col">ROOM ID</th></tr></thead><tbody>';
           for(let i=0;i<data.length;i++) {
             chatList += '<tr class="text-center">';
 
             chatList += '<th scope="row"><span th:text="' + data[i].id + '">' + data[i].id + '</span></th>';
-            chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(' + data[i].id + ');">' + data[i].createdAt + '</button></td>';
+            chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(' + data[i].roomId + ');">' + data[i].roomId + '</button></td>';
             chatList += '</tr>';
           }
           chatList += '</tbody></table>';

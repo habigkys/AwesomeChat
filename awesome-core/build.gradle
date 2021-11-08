@@ -20,11 +20,15 @@ dependencies {
 
 	api "org.springframework.boot:spring-boot-starter-aop:${versions.springBoot}"
 	api "org.springframework.boot:spring-boot-starter-web:${versions.springBoot}"
+	api "org.springframework.boot:spring-boot-starter-websocket"
 
 	api "org.apache.httpcomponents:httpclient:${versions.httpclient}"
 
 	compileOnly "org.projectlombok:lombok:${versions.lombok}"
 	annotationProcessor "org.projectlombok:lombok:${versions.lombok}"
+
+	implementation "org.webjars:sockjs-client:1.1.2"
+	implementation "org.webjars:stomp-websocket:2.3.4"
 
 	api "mysql:mysql-connector-java:${versions.mysqlConnectorJava}"
 

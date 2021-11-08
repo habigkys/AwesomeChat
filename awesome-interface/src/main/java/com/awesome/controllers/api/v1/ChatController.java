@@ -1,29 +1,25 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.dtos.ChatMessage;
-import com.awesome.dtos.ChatRoom;
-import com.awesome.dtos.ChatService;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import com.awesome.domains.chat.dtos.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
-import java.util.List;
-
-@RestController
+@Controller
 @RequiredArgsConstructor
-@RequestMapping("/chat")
 public class ChatController {
-    private final ChatService chatService;
+    private final SimpMessagingTemplate template;
 
-    @PostMapping
-    public ChatRoom doChat(@RequestBody ChatMessage chatMessage) {
-        return chatService.doChat(chatMessage.getRoomName());
+    @MessageMapping("/chat/enter")
+    public void enter(ChatMessageDTO message){
+        message.setMessage(message.getUser() + "님이 채팅방에 참여하였습니다.");
+        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 
-    @GetMapping("/chats")
-    public List<ChatRoom> findAllRoom() {
-        return chatService.findAllRoom();
+    @MessageMapping("/chat/message")
+    public void message(ChatMessageDTO message){
+        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 }

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <link rel='stylesheet' href='/webjars/bootstrap/4.5.0/css/bootstrap.min.css'>
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+    <script th:inline="javascript">
+        $(document).ready(function() {
+
+        });
+
+        function fn_createRoom() {
+            let param = $("form[name=createForm]").serializeObject();
+
+            $.ajax({
+                url:"/api/v1/chat/room",
+                type:"POST",
+                cache: false,
+                data:JSON.stringify(param),
+                processData: false,
+                contentType: "application/json",
+                dataType : "json",
+                success:function(data){
+                    fn_chatList();
+                },
+                error:function(key, textStatus){
+                }
+            });
+        }
+
+        function fn_chatList() {
+            $.ajax({
+                url:"/api/v1/chat/rooms",
+                type:"GET",
+                cache: false,
+                data:{},
+                dataType : "json",
+                success:function(data){
+                    let chatList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ROOM ID</th>'
+                        + '<th scope="col">ROOM NAME</th></tr></thead><tbody>';
+                    for(let i=0;i<data.length;i++) {
+                        chatList += '<tr class="text-center">';
+
+                        chatList += '<th scope="row"><span th:text="' + data[i].roomId + '">' + data[i].roomId + '</span></th>';
+                        chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(\'' + data[i].roomId + '\',\'' + data[i].name + '\');">' + data[i].name + '</button></td>';
+                        chatList += '</tr>';
+                    }
+                    chatList += '</tbody></table>';
+
+                    $("#chatTable").html("");
+                    $("#chatTable").append(chatList);
+                },
+                error:function(key, textStatus){
+                }
+            });
+        }
+
+        function fn_joinChat(sRoomId, sRoomName) {
+            var roomId = sRoomId;
+            var roomName = sRoomName;
+            var username = "익명";
+
+            console.log(roomName + ", " + roomId + ", " + username);
+
+            var sockJs = new SockJS("/stomp/chat");
+            //1. SockJS를 내부에 들고있는 stomp를 내어줌
+            var stomp = Stomp.over(sockJs);
+
+            //2. connection이 맺어지면 실행
+            stomp.connect({}, function (){
+                console.log("STOMP Connection")
+
+                //4. subscribe(path, callback)으로 메세지를 받을 수 있음
+                stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
+                    var content = JSON.parse(chat.body);
+
+                    var writer = content.user;
+                    var message = content.message;
+                    var str = '';
+
+                    if(writer === username){
+                        str = "<div class='col-6'>";
+                        str += "<div class='alert alert-secondary'>";
+                        str += "<b>" + writer + " : " + message + "</b>";
+                        str += "</div></div>";
+                        $("#msgArea").append(str);
+                    }
+                    else{
+                        str = "<div class='col-6'>";
+                        str += "<div class='alert alert-warning'>";
+                        str += "<b>" + writer + " : " + message + "</b>";
+                        str += "</div></div>";
+                        $("#msgArea").append(str);
+                    }
+
+                    $("#msgArea").append(str);
+                });
+
+                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, writer: username}))
+            });
+
+            $("#button-send").on("click", function(e){
+                var msg = document.getElementById("msg");
+
+                console.log(username + ":" + msg.value);
+                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, writer: username}));
+                msg.value = '';
+            });
+        }
+
+        jQuery.fn.serializeObject = function() {
+            let obj = null;
+            try {
+                if(this[0].tagName && this[0].tagName.toUpperCase() == "FORM" ) {
+                    let arr = this.serializeArray();
+                    if(arr){ obj = {};
+                        jQuery.each(arr, function() {
+                            obj[this.name] = this.value; });
+                    }
+                }
+            }catch(e) {
+                alert(e.message);
+            }finally {}
+            return obj;
+        }
+    </script>
+</head>
+<th:block th:fragment="content">
+    <div id="chatTable">
+        <table class="table">
+            <thead class="thead-light">
+            <tr class="text-center">
+                <th scope="col">ROOM ID</th>
+                <th scope="col">ROOM NAME</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <form action="/api/v1/chat/room" method="post" id="createForm" name="createForm">
+        <div class="form-group">
+            <label for="roomName">방 이름</label>
+            <input type="text" class="form-control" name="roomName" id="roomName">
+        </div>
+        <div class="row">
+            <div class="col-auto mr-auto"></div>
+            <div class="col-auto">
+                <input class="btn btn-primary" type="button" role="button" value="등록" onclick="fn_createRoom()">
+            </div>
+        </div>
+    </form>
+
+    <button type="button" class="btn btn-primary" onclick="fn_chatList();">채팅 목록 조회</button>
+    <br/>
+    <br/>
+    <div id="msgArea" class="col"></div>
+    <div class="col-6">
+        <div class="input-group mb-3">
+            <input type="text" id="msg" class="form-control">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>
