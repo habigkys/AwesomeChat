@@ -26,9 +26,4 @@ public class ChatRoomController {
         chatRoomDetail.setRoomMaxUserNum(30L);
         return chatService.createChatRoom(chatRoomDetail.getRoomCreatorUserId(), chatRoomDetail.getRoomName(), chatRoomDetail.getRoomMaxUserNum());
     }
-
-    @GetMapping("/room/{roomId}")
-    public ChatRoomDTO getRoom(@PathVariable("roomId") String roomId){
-        return chatService.findRoomById(roomId);
-    }
 }

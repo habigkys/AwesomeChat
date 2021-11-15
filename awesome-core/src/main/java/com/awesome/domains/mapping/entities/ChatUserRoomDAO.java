@@ -7,5 +7,6 @@ import java.util.List;
 public interface ChatUserRoomDAO extends JpaRepository<ChatUserRoomEntity, Long> {
     List<ChatUserRoomEntity> findAllByRoomId(String roomId);
     List<ChatUserRoomEntity> findAllByUserId(String userId);
+    List<ChatUserRoomEntity> findAllByRoomIdAndUserId(String roomId, String userId);
     void deleteAllByRoomId(String roomId);
 }

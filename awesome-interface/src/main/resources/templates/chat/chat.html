@@ -39,12 +39,12 @@
                 dataType : "json",
                 success:function(data){
                     let chatList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ROOM ID</th>'
-                        + '<th scope="col">ROOM NAME</th><th scope="col">ROOM CREATOR</th><th scope="col">ROOM PEOPLE</th></tr></thead><tbody>';
+                        + '<th scope="col">ROOM NAME</th><th scope="col">ROOM CREATOR</th><th scope="col">ROOM CAPACITY</th></tr></thead><tbody>';
                     for(let i=0;i<data.length;i++) {
                         chatList += '<tr class="text-center">';
 
-                        chatList += '<th scope="row"><span th:text="' + data[i].id + '">' + data[i].id + '</span></th>';
-                        chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(\'' + data[i].id + '\',\'' + data[i].roomName + '\');">' + data[i].roomName + '</button></td>';
+                        chatList += '<th scope="row"><span th:text="' + data[i].roomId + '">' + data[i].roomId + '</span></th>';
+                        chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(\'' + data[i].roomId + '\',\'' + data[i].roomName + '\');">' + data[i].roomName + '</button></td>';
                         chatList += '<td>' + data[i].roomCreatorUserId + '</td>';
                         chatList += '<td>' + data[i].roomCurUserNum + '/' + data[i].roomMaxUserNum + '</td>';
                         chatList += '</tr>';
@@ -62,9 +62,9 @@
         function fn_joinChat(sRoomId, sRoomName) {
             var roomId = sRoomId;
             var roomName = sRoomName;
-            var username = "익명";
+            var messageSendUserId = $("#userId").val();
 
-            console.log(roomName + ", " + roomId + ", " + username);
+            console.log(roomName + ", " + roomId + ", " + messageSendUserId);
 
             var sockJs = new SockJS("/stomp/chat");
             //1. SockJS를 내부에 들고있는 stomp를 내어줌
@@ -78,11 +78,11 @@
                 stomp.subscribe("/sub/chat/room/" + roomId, function (chat) {
                     var content = JSON.parse(chat.body);
 
-                    var writer = content.user;
+                    var writer = content.messageSendUserId;
                     var message = content.message;
                     var str = '';
 
-                    if(writer === username){
+                    if(writer === messageSendUserId){
                         str = "<div class='col-6'>";
                         str += "<div class='alert alert-secondary'>";
                         str += "<b>" + writer + " : " + message + "</b>";
@@ -96,19 +96,22 @@
                         str += "</div></div>";
                         $("#msgArea").append(str);
                     }
-
-                    $("#msgArea").append(str);
                 });
 
-                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, user: username}))
+                stomp.send('/pub/chat/enter', {}, JSON.stringify({roomId: roomId, messageSendUserId: messageSendUserId}))
             });
 
             $("#button-send").on("click", function(e){
                 var msg = document.getElementById("msg");
 
-                console.log(username + ":" + msg.value);
-                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, user: username}));
+                console.log(messageSendUserId + ":" + msg.value);
+                stomp.send('/pub/chat/message', {}, JSON.stringify({roomId: roomId, message: msg.value, messageSendUserId: messageSendUserId}));
                 msg.value = '';
+            });
+
+            $("#button-out").on("click", function(e){
+                stomp.send('/pub/chat/disconnect', {}, JSON.stringify({roomId: roomId, messageSendUserId: messageSendUserId}));
+                stomp.disconnect();
             });
         }
 
@@ -158,6 +161,8 @@
     <button type="button" class="btn btn-primary" onclick="fn_chatList();">채팅 목록 조회</button>
     <br/>
     <br/>
+    <label for="userId">사용자ID</label>
+    <input type="text" name="userId" id="userId">
     <div id="msgArea" class="col"></div>
     <div class="col-6">
         <div class="input-group mb-3">
@@ -166,6 +171,7 @@
                 <button class="btn btn-outline-secondary" type="button" id="button-send">전송</button>
             </div>
         </div>
+        <button class="btn btn-outline-secondary" type="button" id="button-out">나가기</button>
     </div>
 </th:block>
 </html>

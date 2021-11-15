@@ -20,7 +20,10 @@ import java.util.Set;
 public class ChatRoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Long id;
+
+    @Column
+    private String roomId;
 
     @Column(nullable = false)
     private String roomCreatorUserId;
