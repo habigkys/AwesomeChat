@@ -9,16 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @AllArgsConstructor
 @Controller
 public class WebProjectController {
-    @GetMapping("/")
-    public String projectList(){
-        return "project/projectList.html";
-    }
-
-    @GetMapping("/users")
-    public String userList(){
-        return "user/userList.html";
-    }
-
     @GetMapping("/chat")
     public String chat(){
         return "chat/chat.html";

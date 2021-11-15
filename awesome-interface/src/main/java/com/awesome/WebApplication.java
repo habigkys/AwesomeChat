@@ -1,7 +1,5 @@
 package com.awesome;
 
-import com.awesome.configurations.AwesomeDatasourceConfiguration;
-import com.awesome.configurations.LogDatasourceConfiguration;
 import com.awesome.configurations.RootConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

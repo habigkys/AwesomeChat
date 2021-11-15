@@ -3,7 +3,6 @@ package com.awesome.controllers.api.v1;
 import com.awesome.domains.chat.dtos.ChatRoomDTO;
 import com.awesome.domains.chat.services.ChatService;
 import com.awesome.dtos.ChatRoomDetail;
-import com.awesome.dtos.ProjectDetail;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
