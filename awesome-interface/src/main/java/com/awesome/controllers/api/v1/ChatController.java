@@ -1,7 +1,7 @@
 package com.awesome.controllers.api.v1;
 
-import com.awesome.domains.chat.dtos.ChatMessageDTO;
-import com.awesome.domains.chat.services.ChatService;
+import com.awesome.domains.chatroom.dtos.ChatMessageDTO;
+import com.awesome.domains.chatroom.services.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
