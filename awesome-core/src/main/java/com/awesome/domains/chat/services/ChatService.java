@@ -35,6 +35,7 @@ public class ChatService {
         entity.setRoomCreatorUserId(roomCreatorUserId);
         entity.setRoomName(name);
         entity.setRoomMaxUserNum(roomMaxUserNum);
+        entity.setRoomCurUserNum(0L);
 
         return ChatRoomDTO.convertEntityToDto(chatRoomDAO.save(entity));
     }

@@ -10,4 +10,5 @@ public class ChatRoomDetail {
     private String roomName;
     private String roomCreatorUserId;
     private Long roomMaxUserNum;
+    private Long roomCurUserNum;
 }
