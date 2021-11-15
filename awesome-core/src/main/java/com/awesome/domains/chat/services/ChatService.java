@@ -26,13 +26,15 @@ public class ChatService {
     }
 
     public ChatRoomDTO findRoomById(String roomId){
-        return ChatRoomDTO.convertEntityToDto(chatRoomDAO.findByRoomId(roomId));
+        return ChatRoomDTO.convertEntityToDto(chatRoomDAO.findById(roomId));
     }
 
-    public ChatRoomDTO createChatRoom(String name){
+    public ChatRoomDTO createChatRoom(String roomCreatorUserId, String name, Long roomMaxUserNum){
         ChatRoomEntity entity = new ChatRoomEntity();
-        entity.setRoomId(UUID.randomUUID().toString());
-        entity.setName(name);
+        entity.setId(UUID.randomUUID().toString());
+        entity.setRoomCreatorUserId(roomCreatorUserId);
+        entity.setRoomName(name);
+        entity.setRoomMaxUserNum(roomMaxUserNum);
 
         return ChatRoomDTO.convertEntityToDto(chatRoomDAO.save(entity));
     }

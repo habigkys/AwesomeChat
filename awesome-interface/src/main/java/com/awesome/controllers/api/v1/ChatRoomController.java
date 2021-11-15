@@ -22,7 +22,9 @@ public class ChatRoomController {
 
     @PostMapping("/room")
     public ChatRoomDTO create(@RequestBody ChatRoomDetail chatRoomDetail){
-        return chatService.createChatRoom(chatRoomDetail.getRoomName());
+        chatRoomDetail.setRoomCreatorUserId("abcd@abc.com");
+        chatRoomDetail.setRoomMaxUserNum(30L);
+        return chatService.createChatRoom(chatRoomDetail.getRoomCreatorUserId(), chatRoomDetail.getRoomName(), chatRoomDetail.getRoomMaxUserNum());
     }
 
     @GetMapping("/room/{roomId}")

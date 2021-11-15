@@ -8,4 +8,6 @@ import lombok.Setter;
 public class ChatRoomDetail {
     private String roomId;
     private String roomName;
+    private String roomCreatorUserId;
+    private Long roomMaxUserNum;
 }

@@ -1,38 +1,30 @@
-package com.awesome.domains.chat.entities;
+package com.awesome.domains.mapping.entities;
 
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class ChatRoomEntity {
+public class ChatUserRoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
-
-    @Column(nullable = false)
-    private String roomCreatorUserId;
+    private Long id;
 
     @Column
-    private String roomName;
+    private String userId;
 
     @Column
-    private Long roomMaxUserNum;
-
-    @Column
-    private Long roomCurUserNum;
+    private String roomId;
 
     @CreatedDate
     @Column(nullable = true)
