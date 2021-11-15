@@ -7,8 +7,10 @@ import com.awesome.domains.chat.entities.ChatRoomDAO;
 import com.awesome.domains.chat.entities.ChatRoomEntity;
 import com.awesome.domains.mapping.entities.ChatUserRoomDAO;
 import com.awesome.domains.mapping.entities.ChatUserRoomEntity;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,6 +30,13 @@ public class ChatService {
         return ChatRoomDTO.convertEntityToDto(chatRoomDAO.findByRoomId(roomId));
     }
 
+    public List<ChatRoomDTO> findRoomByUserId(String userId){
+        List<String> roomIds = chatUserRoomDAO.findRoomIdsByUserId(userId);
+
+        return chatRoomDAO.findAllByRoomIds(roomIds).stream().map(ChatRoomDTO::convertEntityToDto).collect(Collectors.toList());
+    }
+
+    @Transactional
     public ChatRoomDTO createChatRoom(String roomCreatorUserId, String name, Long roomMaxUserNum){
         ChatRoomEntity entity = new ChatRoomEntity();
         entity.setRoomId(UUID.randomUUID().toString());
@@ -39,6 +48,7 @@ public class ChatService {
         return ChatRoomDTO.convertEntityToDto(chatRoomDAO.save(entity));
     }
 
+    @Transactional
     public void addUserToRoom(ChatMessageDTO chatMessageDTO){
         ChatUserRoomEntity entity = new ChatUserRoomEntity();
         entity.setRoomId(chatMessageDTO.getRoomId());
@@ -52,10 +62,12 @@ public class ChatService {
         chatRoomDAO.save(toBeUpdate);
     }
 
+    @Transactional
     public void saveMessage(ChatMessageDTO chatMessageDTO){
         chatMessageDAO.save(ChatMessageDTO.convertDtoToEntity(chatMessageDTO));
     }
 
+    @Transactional
     public void disconnectRoom(ChatMessageDTO chatMessageDTO){
         ChatRoomEntity toBeUpdate = chatRoomDAO.findByRoomId(chatMessageDTO.getRoomId());
         toBeUpdate.setRoomCurUserNum(toBeUpdate.getRoomCurUserNum()-1);
