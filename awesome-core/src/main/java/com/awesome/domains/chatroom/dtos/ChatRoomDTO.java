@@ -1,6 +1,6 @@
-package com.awesome.domains.chat.dtos;
+package com.awesome.domains.chatroom.dtos;
 
-import com.awesome.domains.chat.entities.ChatRoomEntity;
+import com.awesome.domains.chatroom.entities.ChatRoomEntity;
 import lombok.Getter;
 import lombok.Setter;
 
