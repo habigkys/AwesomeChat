@@ -1,47 +1,39 @@
-package com.awesome.domains.chat.entities;
+package com.awesome.domains.chatroom.entities;
 
+import com.awesome.domains.chatroom.enums.MessageType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.web.socket.WebSocketSession;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Set;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class ChatRoomEntity {
+public class ChatRoomMessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(nullable = false)
     private String roomId;
 
-    @Column(nullable = false)
-    private String roomCreatorUserId;
+    @Column
+    @Enumerated(EnumType.STRING)
+    private MessageType messageType;
 
     @Column
-    private String roomName;
+    private String messageSendUserId;
 
     @Column
-    private Long roomMaxUserNum;
-
-    @Column
-    private Long roomCurUserNum;
+    private String message;
 
     @CreatedDate
     @Column(nullable = true)
     private LocalDateTime regDateTime;
-
-    @LastModifiedDate
-    @Column(nullable = true)
-    private LocalDateTime updDateTime;
 }
