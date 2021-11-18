@@ -10,16 +10,16 @@ import java.util.List;
 
 @AllArgsConstructor
 @RestController
-@RequestMapping("/api/v1/chat")
+@RequestMapping("/api/v1/chat-rooms")
 public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
 
-    @GetMapping("/rooms")
+    @GetMapping("/")
     public List<ChatRoomDTO> rooms(){
         return chatRoomRepository.findAllRooms();
     }
 
-    @PostMapping("/room")
+    @PostMapping("/")
     public void create(@RequestBody ChatRoomDetail chatRoomDetail){
         chatRoomDetail.setRoomCreatorUserId("abcd@abc.com");
         chatRoomDetail.setRoomMaxUserNum(30L);

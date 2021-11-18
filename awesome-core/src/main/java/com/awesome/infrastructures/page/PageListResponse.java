@@ -106,7 +106,6 @@ public class PageListResponse<T> implements PageResponse {
         return pageListResponse;
     }
 
-
     @Override
     public int getTotalPageSize() {
         return totalPageSize;
@@ -136,5 +135,4 @@ public class PageListResponse<T> implements PageResponse {
     public int getPageSize() {
         return pageSize;
     }
-
 }
