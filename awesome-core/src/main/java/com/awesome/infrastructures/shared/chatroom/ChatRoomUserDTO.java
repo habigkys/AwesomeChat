@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class ChatRoomUserDTO {
     private Long id;
-    private String roomId;
+    private Long roomId;
     private String userId;
     private LocalDateTime regDateTime;
 

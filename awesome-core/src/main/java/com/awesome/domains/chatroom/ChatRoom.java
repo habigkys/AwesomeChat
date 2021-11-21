@@ -12,6 +12,6 @@ import java.util.List;
 public class ChatRoom {
     private ChatRoomEntity chatRoomEntity;
     private List<ChatRoomMessageEntity> chatRoomMessageEntities;
-    private List<ChatRoomUserEntity> chatUserEntities;
+    private List<ChatRoomUserEntity> chatRoomUserEntities;
     private ChatRoomPageInfoVO chatRoomMessagePageInfoVO;
 }

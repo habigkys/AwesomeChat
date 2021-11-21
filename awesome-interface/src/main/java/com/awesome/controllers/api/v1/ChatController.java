@@ -25,13 +25,15 @@ public class ChatController {
 
     @MessageMapping("/chat/message")
     public void message(ChatMessageDTO message){
-        chatRoomService.sendMessage(message);
+        ChatRoom chatRoom = chatRoomService.sendMessage(message);
+        chatRoomRepository.save(chatRoom);
         template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 
     @MessageMapping("/chat/disconnect")
     public void disconnect(ChatMessageDTO message){
         ChatRoom chatRoom = chatRoomService.disconnectRoom(message);
+        chatRoomRepository.save(chatRoom);
         template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getRoomId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 }

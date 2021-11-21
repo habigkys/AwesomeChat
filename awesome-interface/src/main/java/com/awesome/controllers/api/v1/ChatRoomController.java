@@ -24,10 +24,37 @@ public class ChatRoomController {
         return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
     }
 
+    @GetMapping("/{roomId}")
+    public ChatRoomDTO room(@PathVariable Long roomId){
+        ChatRoom room = chatRoomRepository.findById(roomId);
+        return ChatRoomDTO.convertEntityToDto(room.getChatRoomEntity());
+    }
+
+    @GetMapping("/owns")
+    public List<ChatRoomDTO> roomOwned(){
+        String userId = "123"; // 쿠키에서 UserId 가져오기 넣어야됨
+        List<ChatRoom> rooms = chatRoomRepository.findByRoomCreatorUserId(userId);
+        return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
+    }
+
+    @GetMapping("/joins")
+    public List<ChatRoomDTO> roomJoined(){
+        String userId = "123"; // 쿠키에서 UserId 가져오기 넣어야됨
+        List<ChatRoom> rooms = chatRoomRepository.findRoomByJoinUserId(userId);
+        return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
+    }
+
     @PostMapping("/")
-    public void create(@RequestBody ChatRoomDetail chatRoomDetail){
-        ChatRoom newChatRoom = chatRoomService.create(chatRoomDetail.getRoomCreatorUserId(),
-            chatRoomDetail.getRoomName(), chatRoomDetail.getRoomMaxUserNum());
+    public ChatRoomDTO create(@RequestBody ChatRoomDetail chatRoomDetail){
+        ChatRoom newChatRoom = chatRoomService.create(chatRoomDetail.getRoomName(), chatRoomDetail.getRoomMaxUserNum());
         chatRoomRepository.save(newChatRoom);
+
+        return ChatRoomDTO.convertEntityToDto(newChatRoom.getChatRoomEntity());
+    }
+
+    @DeleteMapping("/{roomId}")
+    public void delete(@PathVariable Long roomId){
+        ChatRoom room = chatRoomRepository.findById(roomId);
+        chatRoomRepository.remove(room);
     }
 }

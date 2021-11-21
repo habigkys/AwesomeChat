@@ -46,7 +46,7 @@ public class ChatRoomUserEntitySpec {
         };
     }
 
-    public static Specification<ChatRoomUserEntity> hasRoomId(String roomId) {
+    public static Specification<ChatRoomUserEntity> hasRoomId(Long roomId) {
         return new Specification<ChatRoomUserEntity>() {
             @Override
             public Predicate toPredicate(Root<ChatRoomUserEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
