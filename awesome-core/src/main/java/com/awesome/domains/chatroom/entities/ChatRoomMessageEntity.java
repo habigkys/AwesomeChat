@@ -21,7 +21,7 @@ public class ChatRoomMessageEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String roomId;
+    private Long roomId;
 
     @Column
     @Enumerated(EnumType.STRING)

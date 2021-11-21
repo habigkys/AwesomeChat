@@ -31,25 +31,25 @@ public class ChatRoomMessageEntitySpec {
         };
     }
 
-    public static Specification<ChatRoomMessageEntity> hasMemberIds(List<Long> memberIds) {
+    public static Specification<ChatRoomMessageEntity> hasMessageSendUserIds(List<String> messageSendUserIds) {
         return new Specification<ChatRoomMessageEntity>() {
             @Override
             public Predicate toPredicate(Root<ChatRoomMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return root.get("memberId").in(memberIds);
+                return root.get("messageSendUserId").in(messageSendUserIds);
             }
         };
     }
 
-    public static Specification<ChatRoomMessageEntity> hasMemberId(Long memberId) {
+    public static Specification<ChatRoomMessageEntity> hasMessageSendUserId(String messageSendUserId) {
         return new Specification<ChatRoomMessageEntity>() {
             @Override
             public Predicate toPredicate(Root<ChatRoomMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(root.get("memberId"), memberId);
+                return criteriaBuilder.equal(root.get("messageSendUserId"), messageSendUserId);
             }
         };
     }
 
-    public static Specification<ChatRoomMessageEntity> hasRoomId(String roomId) {
+    public static Specification<ChatRoomMessageEntity> hasRoomId(Long roomId) {
         return new Specification<ChatRoomMessageEntity>() {
             @Override
             public Predicate toPredicate(Root<ChatRoomMessageEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -77,5 +77,4 @@ public class ChatRoomMessageEntitySpec {
             }
         };
     }
-
 }

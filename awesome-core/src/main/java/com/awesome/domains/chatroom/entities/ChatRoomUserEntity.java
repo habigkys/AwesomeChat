@@ -20,7 +20,7 @@ public class ChatRoomUserEntity {
     private Long id;
 
     @Column
-    private String roomId;
+    private Long roomId;
 
     @Column
     private String userId;

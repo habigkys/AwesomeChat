@@ -9,7 +9,7 @@ import org.springframework.web.socket.config.annotation.*;
 public class StompWebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/stomp/chat").setAllowedOrigins("*").withSockJS();
+        registry.addEndpoint("/api/v1/chat/stomp").setAllowedOrigins("*").withSockJS();
     }
 
     @Override

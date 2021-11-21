@@ -1,4 +1,4 @@
-package com.awesome.domains.chatroom.dtos;
+package com.awesome.infrastructures.shared.chatroom;
 
 import com.awesome.domains.chatroom.entities.ChatRoomMessageEntity;
 import com.awesome.domains.chatroom.enums.MessageType;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ChatMessageDTO {
     private Long id;
-    private String roomId;
+    private Long roomId;
     private MessageType messageType;
     private String messageSendUserId;
     private String message;

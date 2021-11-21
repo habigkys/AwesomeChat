@@ -1,4 +1,4 @@
-package com.awesome.domains.chatroom.dtos;
+package com.awesome.infrastructures.shared.chatroom;
 
 import com.awesome.domains.chatroom.entities.ChatRoomUserEntity;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Setter
 public class ChatRoomUserDTO {
     private Long id;
-    private String roomId;
+    private Long roomId;
     private String userId;
     private LocalDateTime regDateTime;
 

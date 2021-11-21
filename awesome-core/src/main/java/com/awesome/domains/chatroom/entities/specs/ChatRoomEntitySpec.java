@@ -28,20 +28,20 @@ public class ChatRoomEntitySpec {
         };
     }
 
-    public static Specification<ChatRoomEntity> hasMemberIds(List<Long> memberIds) {
+    public static Specification<ChatRoomEntity> hasRoomCreatorUserIds(List<String> roomCreatorUserIds) {
         return new Specification<ChatRoomEntity>() {
             @Override
             public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return root.get("memberId").in(memberIds);
+                return root.get("roomCreatorUserId").in(roomCreatorUserIds);
             }
         };
     }
 
-    public static Specification<ChatRoomEntity> hasMemberId(Long memberId) {
+    public static Specification<ChatRoomEntity> hasRoomCreatorUserId(String roomCreatorUserId) {
         return new Specification<ChatRoomEntity>() {
             @Override
             public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-                return criteriaBuilder.equal(root.get("memberId"), memberId);
+                return criteriaBuilder.equal(root.get("roomCreatorUserId"), roomCreatorUserId);
             }
         };
     }
