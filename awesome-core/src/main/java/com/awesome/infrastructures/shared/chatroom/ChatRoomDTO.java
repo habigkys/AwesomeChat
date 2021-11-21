@@ -1,4 +1,4 @@
-package com.awesome.domains.chatroom.dtos;
+package com.awesome.infrastructures.shared.chatroom;
 
 import com.awesome.domains.chatroom.entities.ChatRoomEntity;
 import lombok.Getter;
