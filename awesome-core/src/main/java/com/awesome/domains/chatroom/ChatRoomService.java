@@ -3,19 +3,16 @@ package com.awesome.domains.chatroom;
 import com.awesome.domains.chatroom.entities.ChatRoomEntity;
 import com.awesome.domains.chatroom.entities.ChatRoomMessageEntity;
 import com.awesome.domains.chatroom.entities.ChatRoomUserEntity;
-import com.awesome.domains.chatroom.entities.specs.ChatRoomEntitySpec;
 import com.awesome.infrastructures.shared.chatroom.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +42,7 @@ public class ChatRoomService {
   }
 
   public ChatRoom enterRoom(ChatMessageDTO message){
-    ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId());
+    ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
 
     if(CollectionUtils.isEmpty(chatRoom.getChatRoomUserEntities())){
       ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();
@@ -69,11 +66,44 @@ public class ChatRoomService {
       chatRoom.setChatRoomMessageEntities(messageEntities);
     }
 
+    if(CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())){
+      List<ChatRoomUserEntity> userEntities = chatRoom.getChatRoomUserEntities();
+
+      ChatRoomUserEntity chatRoomUserEntity = new ChatRoomUserEntity();
+      chatRoomUserEntity.setRoomId(message.getRoomId());
+      chatRoomUserEntity.setUserId(message.getMessageSendUserId());
+      userEntities.add(chatRoomUserEntity);
+
+      chatRoom.setChatRoomUserEntities(userEntities);
+
+      message.setMessage(message.getMessageSendUserId() + "님이 채팅방에 참여하였습니다.");
+
+      List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
+      ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
+      messageEntities.add(messageEntity);
+
+      chatRoom.setChatRoomMessageEntities(messageEntities);
+    }
+
     return chatRoom;
   }
 
   public ChatRoom sendMessage(ChatMessageDTO message) {
-    ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId());
+    ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
+
+    if(Objects.isNull(chatRoom.getChatRoomEntity())){
+      throw new RuntimeException();
+    }
+
+    chatRoomRepository.appendChatRoomUser(chatRoom);
+
+    // new Predicate 적어보기
+    Optional<ChatRoomUserEntity> first = chatRoom.getChatRoomUserEntities().stream().filter(e ->
+            Objects.equals(e.getUserId(), message.getMessageSendUserId())).findFirst();
+
+    if(first.isEmpty()){
+      throw new RuntimeException();
+    }
 
     List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
     ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
@@ -85,7 +115,7 @@ public class ChatRoomService {
   }
 
   public ChatRoom disconnectRoom(ChatMessageDTO message) {
-    ChatRoom chatRoom = chatRoomRepository.findById(message.getRoomId());
+    ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
 
     if(CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())){
       ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();

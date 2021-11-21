@@ -35,8 +35,11 @@ public class ChatRoomRepository {
         if (CollectionUtils.isNotEmpty(chatRoom.getChatRoomMessageEntities())) {
             chatRoomMessageDAO.saveAll(chatRoom.getChatRoomMessageEntities());
         }
-    }
 
+        if (CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())){
+            chatRoomUserDAO.saveAll(chatRoom.getChatRoomUserEntities());
+        }
+    }
 
     @Transactional
     public void remove(ChatRoom chatRoom) {
@@ -51,20 +54,22 @@ public class ChatRoomRepository {
         if (CollectionUtils.isNotEmpty(chatRoom.getChatRoomMessageEntities())) {
             chatRoomMessageDAO.deleteAll(chatRoom.getChatRoomMessageEntities());
         }
+
+        if (CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())){
+            chatRoomUserDAO.deleteAll(chatRoom.getChatRoomUserEntities());
+        }
     }
 
-    public ChatRoom findById(Long id) {
+    public ChatRoom findChatRoomById(Long id) {
         ChatRoom chatRoom = new ChatRoom();
         Optional<ChatRoomEntity> byId = chatRoomDAO.findOne(ChatRoomEntitySpec.hasId(id));
 
         if (byId.isEmpty()) {
             return chatRoom;
         }
-        chatRoom.setChatRoomEntity(byId.get());
-        List<ChatRoomMessageEntity> roomMessageEntities = chatRoomMessageDAO.findAll(ChatRoomMessageEntitySpec.hasRoomId(id));
-        chatRoom.setChatRoomMessageEntities(roomMessageEntities);
-        List<ChatRoomUserEntity> roomUserEntities = chatRoomUserDAO.findAll(ChatRoomUserEntitySpec.hasRoomId(id));
-        chatRoom.setChatRoomUserEntities(roomUserEntities);
+
+
+
         return chatRoom;
     }
 
@@ -114,7 +119,7 @@ public class ChatRoomRepository {
         return chatRooms;
     }
 
-    public ChatRoom findAllMessage(Long roomId, Pageable pageable) {
+    public ChatRoom findAllMessage(Long roomId) {
         ChatRoom chatRoom = new ChatRoom();
         Optional<ChatRoomEntity> byId = chatRoomDAO.findOne(ChatRoomEntitySpec.hasId(roomId));
 
@@ -122,9 +127,8 @@ public class ChatRoomRepository {
             return chatRoom;
         }
         chatRoom.setChatRoomEntity(byId.get());
-        Page<ChatRoomMessageEntity> all = chatRoomMessageDAO.findAll(ChatRoomMessageEntitySpec.hasRoomId(roomId), pageable);
-        List<ChatRoomMessageEntity> content = all.getContent();
-        chatRoom.setChatRoomMessageEntities(content);
+        List<ChatRoomMessageEntity> all = chatRoomMessageDAO.findAll(ChatRoomMessageEntitySpec.hasRoomId(roomId));
+        chatRoom.setChatRoomMessageEntities(all);
         return chatRoom;
     }
 
@@ -157,5 +161,9 @@ public class ChatRoomRepository {
 
     public List<ChatRoom> findAll() {
         return null;
+    }
+
+    public void appendChatRoomUser(ChatRoom chatRoom) {
+        // todo
     }
 }
