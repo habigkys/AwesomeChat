@@ -26,7 +26,7 @@ public class ChatRoomController {
 
     @GetMapping("/{roomId}")
     public ChatRoomDTO room(@PathVariable Long roomId){
-        ChatRoom room = chatRoomRepository.findById(roomId);
+        ChatRoom room = chatRoomRepository.findChatRoomById(roomId);
         return ChatRoomDTO.convertEntityToDto(room.getChatRoomEntity());
     }
 
@@ -54,7 +54,7 @@ public class ChatRoomController {
 
     @DeleteMapping("/{roomId}")
     public void delete(@PathVariable Long roomId){
-        ChatRoom room = chatRoomRepository.findById(roomId);
+        ChatRoom room = chatRoomRepository.findChatRoomById(roomId);
         chatRoomRepository.remove(room);
     }
 }

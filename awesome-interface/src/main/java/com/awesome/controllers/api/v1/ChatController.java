@@ -25,8 +25,8 @@ public class ChatController {
 
     @MessageMapping("/chat/message")
     public void message(ChatMessageDTO message){
-        ChatRoom chatRoom = chatRoomService.sendMessage(message);
-        chatRoomRepository.save(chatRoom);
+        ChatRoom newChatRoom = chatRoomService.sendMessage(message);
+        chatRoomRepository.save(newChatRoom);
         template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 
