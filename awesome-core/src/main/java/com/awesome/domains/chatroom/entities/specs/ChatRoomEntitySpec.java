@@ -74,4 +74,15 @@ public class ChatRoomEntitySpec {
             }
         };
     }
+
+    public static Specification<ChatRoomEntity> idAsc() {
+        return new Specification<ChatRoomEntity>() {
+            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Order> orders = Lists.newArrayList();
+                orders.add(cb.asc(root.get("id")));
+                query.orderBy(orders);
+                return cb.conjunction();
+            }
+        };
+    }
 }

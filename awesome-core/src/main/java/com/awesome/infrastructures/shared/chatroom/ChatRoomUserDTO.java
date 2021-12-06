@@ -12,6 +12,7 @@ public class ChatRoomUserDTO {
     private Long id;
     private Long roomId;
     private String userId;
+    private String userName;
     private LocalDateTime regDateTime;
 
     public static ChatRoomUserDTO convertEntityToDto(ChatRoomUserEntity chatRoomUserEntity) {
@@ -19,6 +20,7 @@ public class ChatRoomUserDTO {
         dto.setId(chatRoomUserEntity.getId());
         dto.setRoomId(chatRoomUserEntity.getRoomId());
         dto.setUserId(chatRoomUserEntity.getUserId());
+        dto.setUserName(chatRoomUserEntity.getUserName());
         dto.setRegDateTime(chatRoomUserEntity.getRegDateTime());
         return dto;
     }
@@ -28,6 +30,7 @@ public class ChatRoomUserDTO {
         entity.setId(chatRoomUserDTO.getId());
         entity.setRoomId(chatRoomUserDTO.getRoomId());
         entity.setUserId(chatRoomUserDTO.getUserId());
+        entity.setUserName(chatRoomUserDTO.getUserName());
         entity.setRegDateTime(chatRoomUserDTO.getRegDateTime());
         return entity;
     }

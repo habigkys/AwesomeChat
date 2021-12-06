@@ -14,32 +14,33 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "chat_room")
 @EntityListeners(AuditingEntityListener.class)
 public class ChatRoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String roomId;
-
-    @Column(nullable = false)
+    @Column(name = "roomCreatorUserId", nullable = false)
     private String roomCreatorUserId;
 
-    @Column
+    @Column(name = "roomCreatorUserName")
+    private String roomCreatorUserName;
+
+    @Column(name = "roomName")
     private String roomName;
 
-    @Column
+    @Column(name = "roomMaxUserNum")
     private Long roomMaxUserNum;
 
-    @Column
+    @Column(name = "roomCurUserNum")
     private Long roomCurUserNum;
 
     @CreatedDate
-    @Column(nullable = true)
+    @Column(name = "regDateTime", nullable = true)
     private LocalDateTime regDateTime;
 
     @LastModifiedDate
-    @Column(nullable = true)
+    @Column(name = "updDateTime", nullable = true)
     private LocalDateTime updDateTime;
 }
