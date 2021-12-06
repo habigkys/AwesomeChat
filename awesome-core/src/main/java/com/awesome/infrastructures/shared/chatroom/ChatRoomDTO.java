@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 @Setter
 public class ChatRoomDTO {
     private Long id;
-    private String roomId;
     private String roomCreatorUserId;
+    private String roomCreatorUserName;
     private String roomName;
     private Long roomMaxUserNum;
     private Long roomCurUserNum;
@@ -21,8 +21,8 @@ public class ChatRoomDTO {
     public static ChatRoomDTO convertEntityToDto(ChatRoomEntity chatRoomEntity) {
         ChatRoomDTO dto = new ChatRoomDTO();
         dto.setId(chatRoomEntity.getId());
-        dto.setRoomId(chatRoomEntity.getRoomId());
         dto.setRoomCreatorUserId(chatRoomEntity.getRoomCreatorUserId());
+        dto.setRoomCreatorUserName(chatRoomEntity.getRoomCreatorUserName());
         dto.setRoomName(chatRoomEntity.getRoomName());
         dto.setRoomMaxUserNum(chatRoomEntity.getRoomMaxUserNum());
         dto.setRoomCurUserNum(chatRoomEntity.getRoomCurUserNum());
@@ -34,8 +34,8 @@ public class ChatRoomDTO {
     public static ChatRoomEntity convertDtoToEntity(ChatRoomDTO chatRoomDTO) {
         ChatRoomEntity entity = new ChatRoomEntity();
         entity.setId(chatRoomDTO.getId());
-        entity.setRoomId(chatRoomDTO.getRoomId());
         entity.setRoomCreatorUserId(chatRoomDTO.getRoomCreatorUserId());
+        entity.setRoomCreatorUserName(chatRoomDTO.getRoomCreatorUserName());
         entity.setRoomName(chatRoomDTO.getRoomName());
         entity.setRoomMaxUserNum(chatRoomDTO.getRoomMaxUserNum());
         entity.setRoomCurUserNum(chatRoomDTO.getRoomCurUserNum());

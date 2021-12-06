@@ -12,6 +12,7 @@ public class ChatMessageDTO {
     private Long roomId;
     private MessageType messageType;
     private String messageSendUserId;
+    private String messageSendUserName;
     private String message;
 
     public static ChatMessageDTO convertEntityToDto(ChatRoomMessageEntity chatRoomMessageEntity) {
@@ -20,6 +21,7 @@ public class ChatMessageDTO {
         dto.setRoomId(chatRoomMessageEntity.getRoomId());
         dto.setMessageType(chatRoomMessageEntity.getMessageType());
         dto.setMessageSendUserId(chatRoomMessageEntity.getMessageSendUserId());
+        dto.setMessageSendUserName(chatRoomMessageEntity.getMessageSendUserName());
         dto.setMessage(chatRoomMessageEntity.getMessage());
         return dto;
     }
@@ -30,6 +32,7 @@ public class ChatMessageDTO {
         entity.setRoomId(chatMessageDTO.getRoomId());
         entity.setMessageType(chatMessageDTO.getMessageType());
         entity.setMessageSendUserId(chatMessageDTO.getMessageSendUserId());
+        entity.setMessageSendUserName(chatMessageDTO.getMessageSendUserName());
         entity.setMessage(chatMessageDTO.getMessage());
         return entity;
     }

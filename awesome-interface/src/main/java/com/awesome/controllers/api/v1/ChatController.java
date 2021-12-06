@@ -20,7 +20,7 @@ public class ChatController {
     public void enter(ChatMessageDTO message){
         ChatRoom chatRoom = chatRoomService.enterRoom(message);
         chatRoomRepository.save(chatRoom);
-        template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getRoomId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
+        template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 
     @MessageMapping("/chat/message")
@@ -34,6 +34,6 @@ public class ChatController {
     public void disconnect(ChatMessageDTO message){
         ChatRoom chatRoom = chatRoomService.disconnectRoom(message);
         chatRoomRepository.save(chatRoom);
-        template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getRoomId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
+        template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 }

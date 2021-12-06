@@ -8,6 +8,7 @@ import com.awesome.domains.chatroom.entities.vos.ChatRoomPageInfoVO;
 import lombok.AllArgsConstructor;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +69,13 @@ public class ChatRoomRepository {
             return chatRoom;
         }
 
+        chatRoom.setChatRoomEntity(byId.get());
 
+        List<ChatRoomUserEntity> chatRoomUserEntities = chatRoomUserDAO.findAll(ChatRoomUserEntitySpec.hasRoomId(id));
+
+        if(CollectionUtils.isNotEmpty(chatRoomUserEntities)){
+            chatRoom.setChatRoomUserEntities(chatRoomUserEntities);
+        }
 
         return chatRoom;
     }
@@ -159,11 +166,113 @@ public class ChatRoomRepository {
         return chatRoom;
     }
 
-    public List<ChatRoom> findAll() {
-        return null;
+    public List<ChatRoom> findAllChatRoom() {
+        List<ChatRoom> chatRooms  = new ArrayList<>();
+
+        List<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll();
+
+        for(ChatRoomEntity entity : chatRoomEntities){
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setChatRoomEntity(entity);
+            chatRooms.add(chatRoom);
+        }
+
+        return chatRooms;
+    }
+
+    public List<ChatRoom> findInitChatRoom(Long id, int size) {
+        List<ChatRoom> chatRooms = new ArrayList<>();
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.regDateTimeDesc(), limit);
+
+        if (chatRoomEntities.isEmpty()) {
+            return chatRooms;
+        }
+
+        for(ChatRoomEntity entity : chatRoomEntities){
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setChatRoomEntity(entity);
+            chatRooms.add(chatRoom);
+        }
+
+        return chatRooms;
+    }
+
+    public List<ChatRoom> findAllChatRoomPageable(Long id, int size) {
+        List<ChatRoom> chatRooms  = new ArrayList<>();
+        Optional<ChatRoomEntity> byId = chatRoomDAO.findOne(ChatRoomEntitySpec.hasId(id));
+
+        if (byId.isEmpty()) {
+            return chatRooms;
+        }
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.regDateTimeGreaterThan(byId.get().getRegDateTime()), limit);
+
+        if (chatRoomEntities.isEmpty()) {
+            return chatRooms;
+        }
+
+        for(ChatRoomEntity entity : chatRoomEntities){
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setChatRoomEntity(entity);
+            chatRooms.add(chatRoom);
+        }
+
+        return chatRooms;
+    }
+
+    public List<ChatRoom> findInitChatOwnedRoom(Long id, String userId, int size) {
+        List<ChatRoom> chatRooms = new ArrayList<>();
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.hasRoomCreatorUserId(userId)
+                .and(ChatRoomEntitySpec.regDateTimeDesc()), limit);
+
+        if (chatRoomEntities.isEmpty()) {
+            return chatRooms;
+        }
+
+        for(ChatRoomEntity entity : chatRoomEntities){
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setChatRoomEntity(entity);
+            chatRooms.add(chatRoom);
+        }
+
+        return chatRooms;
+    }
+
+    public List<ChatRoom> findAllOwnsChatRoomPageable(Long id, String userId, int size) {
+        List<ChatRoom> chatRooms = new ArrayList<>();
+        Optional<ChatRoomEntity> byId = chatRoomDAO.findOne(ChatRoomEntitySpec.hasId(id));
+
+        if (byId.isEmpty()) {
+            return chatRooms;
+        }
+
+        Pageable limit = PageRequest.of(0, size);
+        Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.hasRoomCreatorUserId(userId)
+                .and(ChatRoomEntitySpec.regDateTimeGreaterThan(byId.get().getRegDateTime())), limit);
+
+        if (chatRoomEntities.isEmpty()) {
+            return chatRooms;
+        }
+
+        for(ChatRoomEntity entity : chatRoomEntities){
+            ChatRoom chatRoom = new ChatRoom();
+            chatRoom.setChatRoomEntity(entity);
+            chatRooms.add(chatRoom);
+        }
+
+        return chatRooms;
     }
 
     public void appendChatRoomUser(ChatRoom chatRoom) {
-        // todo
+        ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();
+
+        List<ChatRoomUserEntity> chatRoomUserEntities = chatRoomUserDAO.findAll(ChatRoomUserEntitySpec.hasRoomId(chatRoomEntity.getId()));
+
+        chatRoom.setChatRoomUserEntities(chatRoomUserEntities);
     }
 }

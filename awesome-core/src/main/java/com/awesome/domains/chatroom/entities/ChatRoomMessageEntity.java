@@ -14,26 +14,30 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @Entity
+@Table(name = "chat_room_message")
 @EntityListeners(AuditingEntityListener.class)
 public class ChatRoomMessageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "roomId", nullable = false)
     private Long roomId;
 
-    @Column
+    @Column(name = "messageType")
     @Enumerated(EnumType.STRING)
     private MessageType messageType;
 
-    @Column
+    @Column(name = "messageSendUserId")
     private String messageSendUserId;
 
-    @Column
+    @Column(name = "messageSendUserName")
+    private String messageSendUserName;
+
+    @Column(name = "message")
     private String message;
 
     @CreatedDate
-    @Column(nullable = true)
+    @Column(name = "regDateTime", nullable = true)
     private LocalDateTime regDateTime;
 }

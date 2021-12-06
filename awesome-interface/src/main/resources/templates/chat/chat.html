@@ -15,7 +15,7 @@
             let param = $("form[name=createForm]").serializeObject();
 
             $.ajax({
-                url:"/api/v1/chat/room",
+                url:"/api/v1/chat-rooms",
                 type:"POST",
                 cache: false,
                 data:JSON.stringify(param),
@@ -32,7 +32,7 @@
 
         function fn_chatList() {
             $.ajax({
-                url:"/api/v1/chat/rooms",
+                url:"/api/v1/chat-rooms?id=0&size=10",
                 type:"GET",
                 cache: false,
                 data:{},
@@ -40,13 +40,13 @@
                 success:function(data){
                     let chatList = '<table class="table"><thead class="thead-light"><tr class="text-center"><th scope="col">ROOM ID</th>'
                         + '<th scope="col">ROOM NAME</th><th scope="col">ROOM CREATOR</th><th scope="col">ROOM CAPACITY</th></tr></thead><tbody>';
-                    for(let i=0;i<data.length;i++) {
+                    for(let i=0;i<data.rooms.length;i++) {
                         chatList += '<tr class="text-center">';
 
-                        chatList += '<th scope="row"><span th:text="' + data[i].roomId + '">' + data[i].roomId + '</span></th>';
-                        chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(\'' + data[i].roomId + '\',\'' + data[i].roomName + '\');">' + data[i].roomName + '</button></td>';
-                        chatList += '<td>' + data[i].roomCreatorUserId + '</td>';
-                        chatList += '<td>' + data[i].roomCurUserNum + '/' + data[i].roomMaxUserNum + '</td>';
+                        chatList += '<th scope="row"><span th:text="' + data.rooms[i].id + '">' + data.rooms[i].id + '</span></th>';
+                        chatList += '<td><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#projectUpdateModal" onclick="fn_joinChat(\'' + data.rooms[i].id + '\',\'' + data.rooms[i].roomName + '\');">' + data.rooms[i].roomName + '</button></td>';
+                        chatList += '<td>' + data.rooms[i].roomCreatorUserId + '</td>';
+                        chatList += '<td>' + data.rooms[i].roomCurUserNum + '/' + data.rooms[i].roomMaxUserNum + '</td>';
                         chatList += '</tr>';
                     }
                     chatList += '</tbody></table>';

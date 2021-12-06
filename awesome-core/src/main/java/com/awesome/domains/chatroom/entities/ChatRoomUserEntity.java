@@ -13,19 +13,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "chat_room_user")
 @EntityListeners(AuditingEntityListener.class)
 public class ChatRoomUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(name = "roomId")
     private Long roomId;
 
-    @Column
+    @Column(name = "userId")
     private String userId;
 
+    @Column(name = "userName")
+    private String userName;
+
     @CreatedDate
-    @Column(nullable = true)
+    @Column(name = "regDateTime", nullable = true)
     private LocalDateTime regDateTime;
 }

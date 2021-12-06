@@ -4,6 +4,7 @@ import com.awesome.domains.chatroom.ChatRoom;
 import com.awesome.domains.chatroom.ChatRoomRepository;
 import com.awesome.domains.chatroom.ChatRoomService;
 import com.awesome.dtos.ChatRoomDetail;
+import com.awesome.infrastructures.shared.chatroom.ChatDetailDTO;
 import com.awesome.infrastructures.shared.chatroom.ChatRoomDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,10 +19,11 @@ public class ChatRoomController {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomService chatRoomService;
 
-    @GetMapping("/")
-    public List<ChatRoomDTO> rooms(){
-        List<ChatRoom> rooms = chatRoomRepository.findAll();
-        return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
+    @GetMapping
+    public ChatDetailDTO rooms(@RequestParam("id") Long id, @RequestParam("size") int size){
+        ChatDetailDTO chatDetailDTO = chatRoomService.getLimitedSizeChatRooms(id, size);
+
+        return chatDetailDTO;
     }
 
     @GetMapping("/{roomId}")
@@ -31,22 +33,23 @@ public class ChatRoomController {
     }
 
     @GetMapping("/owns")
-    public List<ChatRoomDTO> roomOwned(){
-        String userId = "123"; // 쿠키에서 UserId 가져오기 넣어야됨
-        List<ChatRoom> rooms = chatRoomRepository.findByRoomCreatorUserId(userId);
-        return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
+    public ChatDetailDTO roomOwned(@RequestParam("id") Long id, @RequestParam("size") int size){
+        String userId = "defaultServiceUser.getUuid()";
+        ChatDetailDTO chatDetailDTO = chatRoomService.getLimitedSizeOwnsChatRooms(id, size, userId);
+
+        return chatDetailDTO;
     }
 
     @GetMapping("/joins")
     public List<ChatRoomDTO> roomJoined(){
-        String userId = "123"; // 쿠키에서 UserId 가져오기 넣어야됨
+        String userId = "defaultServiceUser.getUuid()";
         List<ChatRoom> rooms = chatRoomRepository.findRoomByJoinUserId(userId);
         return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
     }
 
-    @PostMapping("/")
+    @PostMapping
     public ChatRoomDTO create(@RequestBody ChatRoomDetail chatRoomDetail){
-        ChatRoom newChatRoom = chatRoomService.create(chatRoomDetail.getRoomName(), chatRoomDetail.getRoomMaxUserNum());
+        ChatRoom newChatRoom = chatRoomService.create("aabc", "aabc", chatRoomDetail.getRoomName(), 30L);
         chatRoomRepository.save(newChatRoom);
 
         return ChatRoomDTO.convertEntityToDto(newChatRoom.getChatRoomEntity());
