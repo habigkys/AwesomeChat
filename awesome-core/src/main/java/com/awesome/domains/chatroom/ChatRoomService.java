@@ -3,6 +3,7 @@ package com.awesome.domains.chatroom;
 import com.awesome.domains.chatroom.entities.ChatRoomEntity;
 import com.awesome.domains.chatroom.entities.ChatRoomMessageEntity;
 import com.awesome.domains.chatroom.entities.ChatRoomUserEntity;
+import com.awesome.domains.chatroom.enums.MessageType;
 import com.awesome.infrastructures.shared.chatroom.ChatDetailDTO;
 import com.awesome.infrastructures.shared.chatroom.ChatMessageDTO;
 import com.awesome.infrastructures.shared.chatroom.ChatRoomDTO;
@@ -45,6 +46,7 @@ public class ChatRoomService {
 
   public ChatRoom enterRoom(ChatMessageDTO message){
     ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
+    message.setMessageType(MessageType.ENTER);
 
     if(CollectionUtils.isEmpty(chatRoom.getChatRoomUserEntities())){
       ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();
@@ -98,6 +100,7 @@ public class ChatRoomService {
 
   public ChatRoom sendMessage(ChatMessageDTO message) {
     ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
+    message.setMessageType(MessageType.MESSAGE);
 
     if(Objects.isNull(chatRoom.getChatRoomEntity())){
       throw new RuntimeException();
@@ -126,6 +129,7 @@ public class ChatRoomService {
 
   public ChatRoom disconnectRoom(ChatMessageDTO message) {
     ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
+    message.setMessageType(MessageType.OUT);
 
     if(CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())){
       ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();

@@ -3,8 +3,11 @@ package com.awesome.controllers.api.v1;
 import com.awesome.domains.chatroom.ChatRoom;
 import com.awesome.domains.chatroom.ChatRoomRepository;
 import com.awesome.domains.chatroom.ChatRoomService;
+import com.awesome.infrastructures.redis.RedisClient;
 import com.awesome.infrastructures.shared.chatroom.ChatMessageDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
@@ -12,28 +15,43 @@ import org.springframework.stereotype.Controller;
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
-    private final SimpMessagingTemplate template;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomService chatRoomService;
+    private final SimpMessagingTemplate template;
+
+    @Autowired
+    private final RedisClient redisClient;
+
+    @Autowired
+    private ChannelTopic topic;
 
     @MessageMapping("/chat/enter")
-    public void enter(ChatMessageDTO message){
+    public void enter(ChatMessageDTO message) throws Exception{
         ChatRoom chatRoom = chatRoomService.enterRoom(message);
         chatRoomRepository.save(chatRoom);
-        template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
+        // 저장 후 publish 구조    todo : redis List, 벌크 저장
+
+        redisClient.publish(topic, chatRoom);
+        //template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 
     @MessageMapping("/chat/message")
-    public void message(ChatMessageDTO message){
-        ChatRoom newChatRoom = chatRoomService.sendMessage(message);
-        chatRoomRepository.save(newChatRoom);
-        template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
+    public void message(ChatMessageDTO message) throws Exception{
+        ChatRoom chatRoom = chatRoomService.sendMessage(message);
+        chatRoomRepository.save(chatRoom);
+        // 저장 후 publish 구조    todo : redis List, 벌크 저장
+
+        redisClient.publish(topic, chatRoom);
+        //template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 
     @MessageMapping("/chat/disconnect")
-    public void disconnect(ChatMessageDTO message){
+    public void disconnect(ChatMessageDTO message) throws Exception{
         ChatRoom chatRoom = chatRoomService.disconnectRoom(message);
         chatRoomRepository.save(chatRoom);
-        template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
+        // 저장 후 publish 구조    todo : redis List, 벌크 저장
+
+        redisClient.publish(topic, chatRoom);
+        //template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 }

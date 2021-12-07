@@ -208,7 +208,8 @@ public class ChatRoomRepository {
         }
 
         Pageable limit = PageRequest.of(0, size);
-        Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.regDateTimeGreaterThan(byId.get().getRegDateTime()), limit);
+        Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.regDateTimeLessThan(byId.get().getRegDateTime())
+                .and(ChatRoomEntitySpec.regDateTimeDesc()), limit);
 
         if (chatRoomEntities.isEmpty()) {
             return chatRooms;
@@ -253,7 +254,8 @@ public class ChatRoomRepository {
 
         Pageable limit = PageRequest.of(0, size);
         Page<ChatRoomEntity> chatRoomEntities = chatRoomDAO.findAll(ChatRoomEntitySpec.hasRoomCreatorUserId(userId)
-                .and(ChatRoomEntitySpec.regDateTimeGreaterThan(byId.get().getRegDateTime())), limit);
+                .and(ChatRoomEntitySpec.regDateTimeLessThan(byId.get().getRegDateTime())
+                .and(ChatRoomEntitySpec.regDateTimeDesc())), limit);
 
         if (chatRoomEntities.isEmpty()) {
             return chatRooms;

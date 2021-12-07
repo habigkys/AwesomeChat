@@ -64,6 +64,15 @@ public class ChatRoomEntitySpec {
         };
     }
 
+    public static Specification<ChatRoomEntity> regDateTimeLessThan(LocalDateTime localDateTime) {
+        return new Specification<ChatRoomEntity>() {
+            @Override
+            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                return criteriaBuilder.lessThanOrEqualTo(root.get("regDateTime"), localDateTime);
+            }
+        };
+    }
+
     public static Specification<ChatRoomEntity> regDateTimeDesc() {
         return new Specification<ChatRoomEntity>() {
             public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {

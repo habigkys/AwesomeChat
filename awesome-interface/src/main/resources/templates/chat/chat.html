@@ -32,7 +32,7 @@
 
         function fn_chatList() {
             $.ajax({
-                url:"/api/v1/chat-rooms?id=0&size=10",
+                url:"/api/v1/chat-rooms?id=14&size=8",
                 type:"GET",
                 cache: false,
                 data:{},
@@ -64,8 +64,6 @@
             var roomName = sRoomName;
             var messageSendUserId = $("#userId").val();
 
-            console.log(roomName + ", " + roomId + ", " + messageSendUserId);
-
             var sockJs = new SockJS("/api/v1/chat/stomp");
             //1. SockJS를 내부에 들고있는 stomp를 내어줌
             var stomp = Stomp.over(sockJs);
@@ -81,6 +79,8 @@
                     var writer = content.messageSendUserId;
                     var message = content.message;
                     var str = '';
+
+                    console.log("writer : " + writer + "message : " + message);
 
                     if(writer === messageSendUserId){
                         str = "<div class='col-6'>";
