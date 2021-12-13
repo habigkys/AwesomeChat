@@ -42,7 +42,7 @@ public class ChatRoomController {
 
     @GetMapping("/joins")
     public List<ChatRoomDTO> roomJoined(){
-        String userId = "defaultServiceUser.getUuid()";
+        String userId = "ggg";
         List<ChatRoom> rooms = chatRoomRepository.findRoomByJoinUserId(userId);
         return rooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList());
     }

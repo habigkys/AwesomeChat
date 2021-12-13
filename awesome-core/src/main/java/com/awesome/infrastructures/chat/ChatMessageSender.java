@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Component
 public class ChatMessageSender {
-    @Autowired
-    private SimpMessagingTemplate template;
+    private final SimpMessagingTemplate template;
 
     public void send(ChatMessageDTO message){
         template.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);

@@ -18,12 +18,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisMessageSubscriber implements MessageListener {
     private final ObjectMapper redisObjectMapper;
-
-    @Autowired
-    private SimpMessagingTemplate template;
-
-    @Autowired
-    private ChatMessageSender chatMessageSender;
+    private final ChatMessageSender chatMessageSender;
 
     /**
      * Redis에서 메시지가 발행(publish)되면 대기하고 있던 onMessage가 해당 메시지를 받아 처리한다.
@@ -36,8 +31,7 @@ public class RedisMessageSubscriber implements MessageListener {
             ChatRoom chatRoom = redisObjectMapper.readValue(chatRoomJson, ChatRoom.class);
 
             ChatRoomMessageEntity chatMessage = chatRoom.getChatRoomMessageEntities().get(0);
-            //chatMessageSender.send(ChatMessageDTO.convertEntityToDto(chatMessage));
-            template.convertAndSend("/sub/chat/room/" + chatMessage.getRoomId(), ChatMessageDTO.convertEntityToDto(chatMessage));
+            chatMessageSender.send(ChatMessageDTO.convertEntityToDto(chatMessage));
         } catch (Exception e) {
             log.error(e.getMessage());
         }

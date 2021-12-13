@@ -4,6 +4,7 @@ import com.awesome.infrastructures.chat.ChatMessageSender;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,8 @@ public class RedisConfiguration {
     private long timeout;
     @Value("${awesomechat.chat.queue.global_event}")
     private String globalEventTopicName;
+    @Autowired
+    private RedisMessageSubscriber redisMessageSubscriber;
 
     /**
      * 기본 커넥션 팩토리
@@ -79,8 +82,6 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
-    //날짜관련 옵션 disable
-    @Bean(name = "redisObjectMapper")
     public ObjectMapper redisObjectMapper() {
         return Jackson2ObjectMapperBuilder.json()
                 .featuresToDisable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
@@ -114,6 +115,6 @@ public class RedisConfiguration {
 
     @Bean
     MessageListenerAdapter messageListener() {
-        return new MessageListenerAdapter(new RedisMessageSubscriber(this.redisObjectMapper()));
+        return new MessageListenerAdapter(redisMessageSubscriber);
     }
 }

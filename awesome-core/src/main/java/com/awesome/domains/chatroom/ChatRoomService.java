@@ -71,10 +71,12 @@ public class ChatRoomService {
     }else{
       List<ChatRoomUserEntity> chatRoomUserEntities = chatRoom.getChatRoomUserEntities();
 
+      message.setMessage(message.getMessageSendUserName() + "님이 채팅방에 참여하였습니다.");
+
       Optional<ChatRoomUserEntity> first = chatRoom.getChatRoomUserEntities().stream().filter(e ->
               Objects.equals(e.getUserId(), message.getMessageSendUserId())).findFirst();
 
-      if(first.isEmpty()){
+      if (first.isEmpty()) {
         ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();
         chatRoomEntity.setRoomCurUserNum(chatRoomEntity.getRoomCurUserNum() + 1);
         chatRoom.setChatRoomEntity(chatRoomEntity);
@@ -85,8 +87,12 @@ public class ChatRoomService {
 
         chatRoomUserEntities.add(chatRoomUserEntity);
 
-        message.setMessage(message.getMessageSendUserId() + "님이 채팅방에 참여하였습니다.");
+        List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
+        ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
+        messageEntities.add(messageEntity);
 
+        chatRoom.setChatRoomMessageEntities(messageEntities);
+      }else{
         List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
         ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
         messageEntities.add(messageEntity);
@@ -128,23 +134,14 @@ public class ChatRoomService {
   }
 
   public ChatRoom disconnectRoom(ChatMessageDTO message) {
-    ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
+    ChatRoom chatRoom = chatRoomRepository.findChatRoomByIdAndUserId(message.getRoomId(), message.getMessageSendUserId());
     message.setMessageType(MessageType.OUT);
 
-    if(CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())){
+    if (CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())) {
       ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();
       chatRoomEntity.setRoomCurUserNum(chatRoomEntity.getRoomCurUserNum() - 1);
       chatRoom.setChatRoomEntity(chatRoomEntity);
-
-      ChatRoomUserEntity chatRoomUserEntity = new ChatRoomUserEntity();
-      chatRoomUserEntity.setRoomId(message.getRoomId());
-      chatRoomUserEntity.setUserId(message.getMessageSendUserId());
-      List<ChatRoomUserEntity> userEntities = new ArrayList<>();
-      userEntities.add(chatRoomUserEntity);
-
-      chatRoom.setChatRoomUserEntities(userEntities);
-
-      message.setMessage(message.getMessageSendUserId() + "님이 채팅방에서 나갔습니다.");
+      message.setMessage(message.getMessageSendUserName() + "님이 채팅방에서 나갔습니다.");
 
       List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
       ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
@@ -152,7 +149,6 @@ public class ChatRoomService {
 
       chatRoom.setChatRoomMessageEntities(messageEntities);
     }
-
     return chatRoom;
   }
 

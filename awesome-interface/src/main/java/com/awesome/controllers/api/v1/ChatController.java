@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 @Controller
@@ -17,7 +16,6 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
     private final ChatRoomRepository chatRoomRepository;
     private final ChatRoomService chatRoomService;
-    private final SimpMessagingTemplate template;
 
     @Autowired
     private final RedisClient redisClient;
@@ -32,7 +30,6 @@ public class ChatController {
         // 저장 후 publish 구조    todo : redis List, 벌크 저장
 
         redisClient.publish(topic, chatRoom);
-        //template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 
     @MessageMapping("/chat/message")
@@ -42,16 +39,15 @@ public class ChatController {
         // 저장 후 publish 구조    todo : redis List, 벌크 저장
 
         redisClient.publish(topic, chatRoom);
-        //template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 
     @MessageMapping("/chat/disconnect")
     public void disconnect(ChatMessageDTO message) throws Exception{
         ChatRoom chatRoom = chatRoomService.disconnectRoom(message);
         chatRoomRepository.save(chatRoom);
+        chatRoomRepository.removeUser(chatRoom);
         // 저장 후 publish 구조    todo : redis List, 벌크 저장
 
         redisClient.publish(topic, chatRoom);
-        //template.convertAndSend("/sub/chat/room/" + chatRoom.getChatRoomEntity().getId(), ChatMessageDTO.convertEntityToDto(chatRoom.getChatRoomMessageEntities().get(0)));
     }
 }

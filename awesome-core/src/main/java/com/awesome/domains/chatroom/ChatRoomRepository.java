@@ -61,6 +61,17 @@ public class ChatRoomRepository {
         }
     }
 
+    @Transactional
+    public void removeUser(ChatRoom chatRoom) {
+        if (Objects.isNull(chatRoom)) {
+            return;
+        }
+
+        if (CollectionUtils.isNotEmpty(chatRoom.getChatRoomUserEntities())) {
+            chatRoomUserDAO.deleteAll(chatRoom.getChatRoomUserEntities());
+        }
+    }
+
     public ChatRoom findChatRoomById(Long id) {
         ChatRoom chatRoom = new ChatRoom();
         Optional<ChatRoomEntity> byId = chatRoomDAO.findOne(ChatRoomEntitySpec.hasId(id));
@@ -74,6 +85,26 @@ public class ChatRoomRepository {
         List<ChatRoomUserEntity> chatRoomUserEntities = chatRoomUserDAO.findAll(ChatRoomUserEntitySpec.hasRoomId(id));
 
         if(CollectionUtils.isNotEmpty(chatRoomUserEntities)){
+            chatRoom.setChatRoomUserEntities(chatRoomUserEntities);
+        }
+
+        return chatRoom;
+    }
+
+    public ChatRoom findChatRoomByIdAndUserId(Long id, String userId) {
+        ChatRoom chatRoom = new ChatRoom();
+        Optional<ChatRoomEntity> byId = chatRoomDAO.findOne(ChatRoomEntitySpec.hasId(id));
+
+        if (byId.isEmpty()) {
+            return chatRoom;
+        }
+
+        chatRoom.setChatRoomEntity(byId.get());
+
+        List<ChatRoomUserEntity> chatRoomUserEntities = chatRoomUserDAO.findAll(ChatRoomUserEntitySpec.hasRoomId(id)
+                .and(ChatRoomUserEntitySpec.hasUserId(userId)));
+
+        if (CollectionUtils.isNotEmpty(chatRoomUserEntities)) {
             chatRoom.setChatRoomUserEntities(chatRoomUserEntities);
         }
 
