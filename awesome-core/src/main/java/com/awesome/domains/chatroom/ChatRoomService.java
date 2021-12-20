@@ -6,12 +6,18 @@ import com.awesome.domains.chatroom.entities.ChatRoomUserEntity;
 import com.awesome.domains.chatroom.enums.MessageType;
 import com.awesome.infrastructures.shared.chatroom.ChatDetailDTO;
 import com.awesome.infrastructures.shared.chatroom.ChatMessageDTO;
+import com.awesome.infrastructures.shared.chatroom.ChatMessageDetailDTO;
 import com.awesome.infrastructures.shared.chatroom.ChatRoomDTO;
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.function.Predicate;
@@ -33,18 +39,51 @@ public class ChatRoomService {
       return chatRoom;
     }
 
+    if (userId == null) {
+      userId = "7";
+    }
+
+    if (userName == null) {
+      userName = "robin.son";
+    }
+
     ChatRoomEntity entity = new ChatRoomEntity();
     entity.setRoomCreatorUserId(userId);
     entity.setRoomCreatorUserName(userName);
     entity.setRoomName(name);
     entity.setRoomMaxUserNum(roomMaxUserNum);
-    entity.setRoomCurUserNum(0L);
+    entity.setRoomCurUserNum(1L);
     chatRoom.setChatRoomEntity(entity);
 
     return chatRoom;
   }
 
-  public ChatRoom enterRoom(ChatMessageDTO message){
+  @Transactional
+  public void enterChatRoomInitCreater(ChatRoom chatRoom) {
+    ChatRoomEntity chatRoomEntity = chatRoom.getChatRoomEntity();
+
+    ChatRoomUserEntity chatRoomUserEntity = new ChatRoomUserEntity();
+    chatRoomUserEntity.setRoomId(chatRoomEntity.getId());
+    chatRoomUserEntity.setUserId(chatRoomEntity.getRoomCreatorUserId());
+    chatRoomUserEntity.setUserName(chatRoomEntity.getRoomCreatorUserName());
+
+    List<ChatRoomUserEntity> chatRoomUserEntities = Lists.newArrayList(chatRoomUserEntity);
+    chatRoom.setChatRoomUserEntities(chatRoomUserEntities);
+
+    ChatRoomMessageEntity message = new ChatRoomMessageEntity();
+    message.setMessageType(MessageType.ENTER);
+    message.setRoomId(chatRoomEntity.getId());
+    message.setMessageSendUserId(chatRoomEntity.getRoomCreatorUserId());
+    message.setMessageSendUserName(chatRoomEntity.getRoomCreatorUserName());
+    message.setMessage(chatRoomEntity.getRoomCreatorUserName() + "님이 채팅방에 참여하였습니다.");
+
+    List<ChatRoomMessageEntity> chatRoomMessageEntities = Lists.newArrayList(message);
+    chatRoom.setChatRoomMessageEntities(chatRoomMessageEntities);
+
+    chatRoomRepository.save(chatRoom);
+  }
+
+  public ChatRoom enterRoom(ChatMessageDTO message) {
     ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
     message.setMessageType(MessageType.ENTER);
 
@@ -56,12 +95,13 @@ public class ChatRoomService {
       ChatRoomUserEntity chatRoomUserEntity = new ChatRoomUserEntity();
       chatRoomUserEntity.setRoomId(message.getRoomId());
       chatRoomUserEntity.setUserId(message.getMessageSendUserId());
+      chatRoomUserEntity.setUserName(message.getMessageSendUserName());
       List<ChatRoomUserEntity> userEntities = new ArrayList<>();
       userEntities.add(chatRoomUserEntity);
 
       chatRoom.setChatRoomUserEntities(userEntities);
 
-      message.setMessage(message.getMessageSendUserId() + "님이 채팅방에 참여하였습니다.");
+      message.setMessage(message.getMessageSendUserName() + "님이 채팅방에 참여하였습니다.");
 
       List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
       ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
@@ -70,8 +110,6 @@ public class ChatRoomService {
       chatRoom.setChatRoomMessageEntities(messageEntities);
     }else{
       List<ChatRoomUserEntity> chatRoomUserEntities = chatRoom.getChatRoomUserEntities();
-
-      message.setMessage(message.getMessageSendUserName() + "님이 채팅방에 참여하였습니다.");
 
       Optional<ChatRoomUserEntity> first = chatRoom.getChatRoomUserEntities().stream().filter(e ->
               Objects.equals(e.getUserId(), message.getMessageSendUserId())).findFirst();
@@ -84,10 +122,12 @@ public class ChatRoomService {
         ChatRoomUserEntity chatRoomUserEntity = new ChatRoomUserEntity();
         chatRoomUserEntity.setRoomId(message.getRoomId());
         chatRoomUserEntity.setUserId(message.getMessageSendUserId());
+        chatRoomUserEntity.setUserName(message.getMessageSendUserName());
 
         chatRoomUserEntities.add(chatRoomUserEntity);
 
         List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
+        message.setMessage(message.getMessageSendUserName() + "님이 채팅방에 참여하였습니다.");
         ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
         messageEntities.add(messageEntity);
 
@@ -104,11 +144,40 @@ public class ChatRoomService {
     return chatRoom;
   }
 
+  public void appendInitChatMessage(ChatRoom chatRoom){
+    Pageable limit = PageRequest.of(0, 50);
+
+    chatRoomRepository.appendEnterChatRoomMessage(chatRoom, limit);
+  }
+
+  public Boolean checkAlreadyJoined(Long roomId, String userId){
+    ChatRoom chatRoom = chatRoomRepository.findChatRoomById(roomId);
+
+    if(Objects.isNull(chatRoom.getChatRoomEntity())){
+      return false;
+    }
+
+    if(Objects.isNull(chatRoom.getChatRoomUserEntities())){
+      return false;
+    }
+
+    List<ChatRoomUserEntity> chatRoomUserEntities = chatRoom.getChatRoomUserEntities();
+
+    for(ChatRoomUserEntity entity : chatRoomUserEntities){
+      String entityUserId = entity.getUserId();
+      if(entityUserId.equals(userId)){
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   public ChatRoom sendMessage(ChatMessageDTO message) {
     ChatRoom chatRoom = chatRoomRepository.findChatRoomById(message.getRoomId());
     message.setMessageType(MessageType.MESSAGE);
 
-    if(Objects.isNull(chatRoom.getChatRoomEntity())){
+    if (Objects.isNull(chatRoom.getChatRoomEntity())) {
       throw new RuntimeException();
     }
     /*
@@ -152,70 +221,59 @@ public class ChatRoomService {
     return chatRoom;
   }
 
+  public ChatMessageDetailDTO getLimitedSizeChatMessages(Long roomId, Long id){
+    if(Objects.isNull(roomId)){
+      return ChatMessageDetailDTO.empty();
+    }
+
+    Pageable limit = PageRequest.of(0, 50);
+
+    ChatRoom chatRoom = chatRoomRepository.findChatRoomMessagePageable(roomId, id, limit);
+    ChatMessageDetailDTO chatMessageDetailDTO = new ChatMessageDetailDTO();
+    chatMessageDetailDTO.setNext(chatRoom.getChatRoomMessagePageInfoVO().hasNext());
+    chatMessageDetailDTO.setMessages(chatRoom.getChatRoomMessageEntities().stream().map(ChatMessageDTO::convertEntityToDto).collect(Collectors.toList()));
+
+    return chatMessageDetailDTO;
+  }
+
   public ChatDetailDTO getLimitedSizeChatRooms(Long id, int size) {
-    ChatDetailDTO chatDetailDTO = new ChatDetailDTO();
-    List<ChatRoom> chatRooms = new ArrayList<>();
-
     if (Objects.isNull(size)) {
-      return chatDetailDTO;
+      return ChatDetailDTO.empty();
     }
 
-    if (size < 1){
-      return chatDetailDTO;
+    if (size < 1) {
+      return ChatDetailDTO.empty();
     }
 
-    chatRooms = chatRoomRepository.findAllChatRoomPageable(id, size);
+    Pageable limit = PageRequest.of(0, size);
 
-    if(CollectionUtils.isEmpty(chatRooms)){
-      chatRooms = chatRoomRepository.findInitChatRoom(id, size);
-    }
+    Page<ChatRoom> chatRooms = Objects.isNull(id) ? chatRoomRepository.findInitAllChatRoom(limit) : chatRoomRepository.findAllChatRoomPageable(id, limit);
 
-    if(chatRooms.size() < size){
-      chatDetailDTO.setNext("false");
-    }
-
+    ChatDetailDTO chatDetailDTO = new ChatDetailDTO();
+    chatDetailDTO.setNext(chatRooms.hasNext());
     chatDetailDTO.setRooms(chatRooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList()));
 
     return chatDetailDTO;
   }
 
   public ChatDetailDTO getLimitedSizeOwnsChatRooms(Long id, int size, String userId) {
-    ChatDetailDTO chatDetailDTO = new ChatDetailDTO();
-    List<ChatRoom> chatRooms = new ArrayList<>();
 
     if (Objects.isNull(size)) {
-      return chatDetailDTO;
+      return ChatDetailDTO.empty();
     }
 
-    if (Objects.isNull(userId)) {
-      return chatDetailDTO;
+    if (size < 1) {
+      return ChatDetailDTO.empty();
     }
 
-    if (size < 1){
-      return chatDetailDTO;
-    }
+    Pageable limit = PageRequest.of(0, size);
 
-    chatRooms = chatRoomRepository.findAllOwnsChatRoomPageable(id, userId, size);
+    Page<ChatRoom> chatRooms = Objects.isNull(id) ? chatRoomRepository.findInitChatOwnedRoom(userId, limit) : chatRoomRepository.findAllOwnsChatRoomPageable(id, userId, limit);
 
-    if(CollectionUtils.isEmpty(chatRooms)){
-      chatRooms = chatRoomRepository.findInitChatOwnedRoom(id, userId, size);
-    }
-
-    if(chatRooms.size() < size){
-      chatDetailDTO.setNext("false");
-    }
-
+    ChatDetailDTO chatDetailDTO = new ChatDetailDTO();
+    chatDetailDTO.setNext(chatRooms.hasNext());
     chatDetailDTO.setRooms(chatRooms.stream().map(e -> ChatRoomDTO.convertEntityToDto(e.getChatRoomEntity())).collect(Collectors.toList()));
 
     return chatDetailDTO;
-  }
-
-  private static String uuidToBase64(String str) {
-    Base64 base64 = new Base64();
-    UUID uuid = UUID.fromString(str);
-    ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-    bb.putLong(uuid.getMostSignificantBits());
-    bb.putLong(uuid.getLeastSignificantBits());
-    return base64.encodeBase64URLSafeString(bb.array());
   }
 }

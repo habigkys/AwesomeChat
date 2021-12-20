@@ -52,10 +52,9 @@ spring:
 spring.profiles: local
 spring:
   datasource:
-    awesome:
-      jdbc-url: jdbc:mysql://localhost:3306/template?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
-      username: root
-      password: admin
+    jdbc-url: jdbc:mysql://localhost:3306/template?autoReconnect=true&connectTimeout=60000&socketTimeout=60000&useUnicode=true&allowPublicKeyRetrieval=true&useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    username: root
+    password: admin
   redis:
     host: 127.0.0.1
     port: 6389

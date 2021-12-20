@@ -82,6 +82,7 @@ public class RedisConfiguration {
         return redisTemplate;
     }
 
+    @Bean
     public ObjectMapper redisObjectMapper() {
         return Jackson2ObjectMapperBuilder.json()
                 .featuresToDisable(SerializationFeature.FAIL_ON_EMPTY_BEANS)

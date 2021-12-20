@@ -8,14 +8,14 @@ import java.util.List;
 
 @Getter
 @Setter
-public class ChatDetailDTO {
+public class ChatMessageDetailDTO {
     private boolean next;
-    private List<ChatRoomDTO> rooms;
+    private List<ChatMessageDTO> messages;
 
-    static public ChatDetailDTO empty() {
-        ChatDetailDTO dto = new ChatDetailDTO();
+    static public ChatMessageDetailDTO empty() {
+        ChatMessageDetailDTO dto = new ChatMessageDetailDTO();
         dto.setNext(false);
-        dto.setRooms(Lists.newArrayList());
+        dto.setMessages(Lists.newArrayList());
 
         return dto;
     }

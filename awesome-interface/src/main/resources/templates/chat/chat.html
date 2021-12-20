@@ -77,22 +77,23 @@
                     var content = JSON.parse(chat.body);
 
                     var writer = content.messageSendUserId;
+                    var writerName = content.messageSendUserName;
                     var message = content.message;
                     var str = '';
 
                     console.log("writer : " + writer + "message : " + message);
 
-                    if(writer === messageSendUserId){
+                    if(writer === messageSendUserId && message != null){
                         str = "<div class='col-6'>";
                         str += "<div class='alert alert-secondary'>";
-                        str += "<b>" + writer + " : " + message + "</b>";
+                        str += "<b>" + writerName + " : " + message + "</b>";
                         str += "</div></div>";
                         $("#msgArea").append(str);
                     }
-                    else{
+                    else if(writer !== messageSendUserId && message != null){
                         str = "<div class='col-6'>";
                         str += "<div class='alert alert-warning'>";
-                        str += "<b>" + writer + " : " + message + "</b>";
+                        str += "<b>" + writerName + " : " + message + "</b>";
                         str += "</div></div>";
                         $("#msgArea").append(str);
                     }

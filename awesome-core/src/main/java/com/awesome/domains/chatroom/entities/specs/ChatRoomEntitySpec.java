@@ -6,6 +6,7 @@ import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ChatRoomEntitySpec {
@@ -84,13 +85,46 @@ public class ChatRoomEntitySpec {
         };
     }
 
-    public static Specification<ChatRoomEntity> idAsc() {
+    public static Specification<ChatRoomEntity> lessThanIdOrderByIdDesc(Long id) {
         return new Specification<ChatRoomEntity>() {
-            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-                List<Order> orders = Lists.newArrayList();
-                orders.add(cb.asc(root.get("id")));
-                query.orderBy(orders);
-                return cb.conjunction();
+            @Override
+            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                query.orderBy(criteriaBuilder.desc(root.get("id")));
+                return criteriaBuilder.lessThan(root.get("id"), id);
+            }
+        };
+    }
+
+    public static Specification<ChatRoomEntity> orderByIdDesc() {
+        return new Specification<ChatRoomEntity>() {
+            @Override
+            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                query.orderBy(criteriaBuilder.desc(root.get("id")));
+                return criteriaBuilder.conjunction();
+            }
+        };
+    }
+
+    public static Specification<ChatRoomEntity> hasRoomCreatorUserIdAndLessThanIdOrderByIdDesc(String roomCreatorUserId, Long lastRoomId) {
+        return new Specification<ChatRoomEntity>() {
+            @Override
+            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                query.orderBy(criteriaBuilder.desc(root.get("id")));
+
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(criteriaBuilder.equal(root.get("roomCreatorUserId"), roomCreatorUserId));
+                predicates.add(criteriaBuilder.lessThan(root.get("id"), lastRoomId));
+                return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            }
+        };
+    }
+
+    public static Specification<ChatRoomEntity> hasRoomCreatorUserIdOrderByIdDesc(String roomCreatorUserId) {
+        return new Specification<ChatRoomEntity>() {
+            @Override
+            public Predicate toPredicate(Root<ChatRoomEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                query.orderBy(criteriaBuilder.desc(root.get("id")));
+                return criteriaBuilder.equal(root.get("roomCreatorUserId"), roomCreatorUserId);
             }
         };
     }
