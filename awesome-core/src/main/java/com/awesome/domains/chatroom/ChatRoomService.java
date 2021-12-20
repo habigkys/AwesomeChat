@@ -132,12 +132,6 @@ public class ChatRoomService {
         messageEntities.add(messageEntity);
 
         chatRoom.setChatRoomMessageEntities(messageEntities);
-      }else{
-        List<ChatRoomMessageEntity> messageEntities = new ArrayList<>();
-        ChatRoomMessageEntity messageEntity = ChatMessageDTO.convertDtoToEntity(message);
-        messageEntities.add(messageEntity);
-
-        chatRoom.setChatRoomMessageEntities(messageEntities);
       }
     }
 

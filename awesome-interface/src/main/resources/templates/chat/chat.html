@@ -79,6 +79,7 @@
                     var writer = content.messageSendUserId;
                     var writerName = content.messageSendUserName;
                     var message = content.message;
+                    var regDateTime = content.regDateTime;
                     var str = '';
 
                     console.log("writer : " + writer + "message : " + message);
@@ -86,14 +87,14 @@
                     if(writer === messageSendUserId && message != null){
                         str = "<div class='col-6'>";
                         str += "<div class='alert alert-secondary'>";
-                        str += "<b>" + writerName + " : " + message + "</b>";
+                        str += "<b>" + writerName + " : " + message + " 시간 " + regDateTime + "</b>";
                         str += "</div></div>";
                         $("#msgArea").append(str);
                     }
                     else if(writer !== messageSendUserId && message != null){
                         str = "<div class='col-6'>";
                         str += "<div class='alert alert-warning'>";
-                        str += "<b>" + writerName + " : " + message + "</b>";
+                        str += "<b>" + writerName + " : " + message + " 시간 " + regDateTime + "</b>";
                         str += "</div></div>";
                         $("#msgArea").append(str);
                     }

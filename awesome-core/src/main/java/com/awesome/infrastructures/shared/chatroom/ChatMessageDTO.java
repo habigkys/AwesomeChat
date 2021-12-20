@@ -5,15 +5,19 @@ import com.awesome.domains.chatroom.enums.MessageType;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class ChatMessageDTO {
     private Long id;
     private Long roomId;
+    private String uuid;
     private MessageType messageType;
     private String messageSendUserId;
     private String messageSendUserName;
     private String message;
+    private LocalDateTime regDateTime;
 
     public static ChatMessageDTO convertEntityToDto(ChatRoomMessageEntity chatRoomMessageEntity) {
         ChatMessageDTO dto = new ChatMessageDTO();
@@ -23,6 +27,7 @@ public class ChatMessageDTO {
         dto.setMessageSendUserId(chatRoomMessageEntity.getMessageSendUserId());
         dto.setMessageSendUserName(chatRoomMessageEntity.getMessageSendUserName());
         dto.setMessage(chatRoomMessageEntity.getMessage());
+        dto.setRegDateTime(chatRoomMessageEntity.getRegDateTime());
         return dto;
     }
 
@@ -34,6 +39,7 @@ public class ChatMessageDTO {
         entity.setMessageSendUserId(chatMessageDTO.getMessageSendUserId());
         entity.setMessageSendUserName(chatMessageDTO.getMessageSendUserName());
         entity.setMessage(chatMessageDTO.getMessage());
+        entity.setRegDateTime(chatMessageDTO.getRegDateTime());
         return entity;
     }
 }

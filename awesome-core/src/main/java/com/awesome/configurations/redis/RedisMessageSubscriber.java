@@ -13,6 +13,8 @@ import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -25,13 +27,14 @@ public class RedisMessageSubscriber implements MessageListener {
      */
     @Override
     public void onMessage(Message message, byte[] pattern) {
-        String chatRoomJson = message.toString();
+        String chatMessageJson = message.toString();
 
         try {
-            ChatRoom chatRoom = redisObjectMapper.readValue(chatRoomJson, ChatRoom.class);
+            ChatMessageDTO chatMessageDTO = redisObjectMapper.readValue(chatMessageJson, ChatMessageDTO.class);
 
-            ChatRoomMessageEntity chatMessage = chatRoom.getChatRoomMessageEntities().get(0);
-            chatMessageSender.send(ChatMessageDTO.convertEntityToDto(chatMessage));
+            if(!Objects.isNull(chatMessageDTO)){
+                chatMessageSender.send(chatMessageDTO);
+            }
         } catch (Exception e) {
             log.error(e.getMessage());
         }

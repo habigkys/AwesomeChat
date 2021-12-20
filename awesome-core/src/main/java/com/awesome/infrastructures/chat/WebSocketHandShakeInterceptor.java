@@ -21,9 +21,6 @@ public class WebSocketHandShakeInterceptor implements HandshakeInterceptor {
     @Autowired
     private WebSocketAuthCookieValueHandler webSocketAuthCookieValueHandler;
 
-    @Autowired
-    private WebSocketDefaultServiceUser webSocketDefaultServiceUser;
-
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         if (request instanceof ServletServerHttpRequest) {
@@ -40,11 +37,7 @@ public class WebSocketHandShakeInterceptor implements HandshakeInterceptor {
             if (CookieBaseServiceUserFactory.DEFAULT_USER.equals(serviceUser)) {
                 removeAuthCookie(servletResponse);
             } else {
-                webSocketDefaultServiceUser.setEmail(serviceUser.getEmail());
-                webSocketDefaultServiceUser.setName(serviceUser.getName());
-                webSocketDefaultServiceUser.setUuid(serviceUser.getUuid());
-                webSocketDefaultServiceUser.setMemberType(serviceUser.getMemberType());
-                webSocketDefaultServiceUser.setLoginDttm(serviceUser.getLoginDttm());
+                attributes.put("webSocketDefaultServiceUser", serviceUser);
 
                 keepAuthCookie(servletResponse, serviceUser);
             }
